@@ -18,4 +18,8 @@
         <Using Include="Xunit"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Flowxel.Core\Flowxel.Core.csproj" />
+    </ItemGroup>
+
 </Project>
