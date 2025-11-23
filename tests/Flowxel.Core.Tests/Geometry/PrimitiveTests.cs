@@ -45,14 +45,10 @@ public class PrimitivesTests
     [Fact]
     public void TestMatrixScale()
     {
-        Matrix scale;
-        Vector vector;
-        Vector transformed;
-
         // Scale up
-        scale = Matrix.Scale(2, 2);
-        vector = new Vector(2, 2);
-        transformed = vector.Transform(scale);
+        var scale = Matrix.Scale(2, 2);
+        var vector = new Vector(2, 2);
+        var transformed = vector.Transform(scale);
 
         Assert.Equal(4, transformed.X);
         Assert.Equal(4, transformed.Y);

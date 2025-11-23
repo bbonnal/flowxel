@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using OpenCvSharp;
-using Xunit.Abstractions;
 
 namespace Flowxel.Imaging.Tests;
 
@@ -38,14 +37,14 @@ public class BasicTests
         Cv2.ImWrite(filePath, srcMat);
         Assert.True(File.Exists(filePath));
 
-        try
-        {
-            Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
-        }
-        catch (Exception ex)
-        {
-            _testOutputHelper.WriteLine($"Failed to open image: {ex.Message}");
-        }
+        // try
+        // {
+        //     Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+        // }
+        // catch (Exception ex)
+        // {
+        //     _testOutputHelper.WriteLine($"Failed to open image: {ex.Message}");
+        // }
 
         return Task.CompletedTask;
     }
