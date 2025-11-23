@@ -37,10 +37,12 @@ public class GraphExecutor<TNode> where TNode : class, IExecutableNode
             var currentBatch = new List<TNode>();
             while (ready.Count > 0)
                 currentBatch.Add(ready.Dequeue());
+            
 
             // Execute all nodes in the current batch concurrently
             var tasks = currentBatch.Select(node => node.ExecuteAsync(cancellationToken));
             await Task.WhenAll(tasks);
+
 
             // Update in-degrees and enqueue newly ready nodes
             foreach (var successorId in currentBatch.SelectMany(node => _graph.GetSuccessorIds(node.Id)))

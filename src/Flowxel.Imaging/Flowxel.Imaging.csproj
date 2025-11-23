@@ -13,4 +13,12 @@
       <PackageReference Include="OpenCvSharp4.Extensions" Version="4.11.0.20250507" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Operations\Extractions\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Flowxel.Graph\Flowxel.Graph.csproj" />
+    </ItemGroup>
+
 </Project>
