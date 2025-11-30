@@ -34,10 +34,9 @@ public class Graph<TNode> where TNode : class
     /// <exception cref="ArgumentNullException">Thrown when node is null.</exception>
     public bool AddNode(Guid id, TNode node)
     {
-        if (node is null) throw new ArgumentNullException(nameof(node));
-        if (_nodes.ContainsKey(id)) return false;
+        ArgumentNullException.ThrowIfNull(node);
+        if (!_nodes.TryAdd(id, node)) return false;
 
-        _nodes.Add(id, node);
         _outgoing[id] = new HashSet<Guid>();
         _incoming[id] = new HashSet<Guid>();
         return true;
