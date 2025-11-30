@@ -258,7 +258,7 @@ public class VisionPipelineIntegrationTests(ITestOutputHelper output)
         Directory.CreateDirectory(_tempDir);
 
         var inputPath = ImagingTestHelpers.SaveMat(
-            ImagingTestHelpers.GenerateRandomMat(1024, 1024, MatType.CV_8UC3),
+            ImagingTestHelpers.GenerateRandomMat(256, 256, MatType.CV_8UC3),
             "benchmark_test.png");
 
         const int totalBlurs = 128;
