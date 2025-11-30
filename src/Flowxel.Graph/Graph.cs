@@ -28,17 +28,16 @@ public class Graph<TNode> where TNode : class, IExecutableNode
     /// <summary>
     /// Adds a node to the graph.
     /// </summary>
-    /// <param name="id">The unique identifier for the node.</param>
-    /// <param name="node">The node data to add.</param>
+    /// <param name="node">The node to add.</param>
     /// <returns>True if the node was added; false if a node with the same ID already exists.</returns>
     /// <exception cref="ArgumentNullException">Thrown when node is null.</exception>
-    public bool AddNode(Guid id, TNode node)
+    public bool AddNode(TNode node)
     {
         ArgumentNullException.ThrowIfNull(node);
-        if (!_nodes.TryAdd(id, node)) return false;
+        if (!_nodes.TryAdd(node.Id, node)) return false;
 
-        _outgoing[id] = new HashSet<Guid>();
-        _incoming[id] = new HashSet<Guid>();
+        _outgoing[node.Id] = [];
+        _incoming[node.Id] = [];
         return true;
     }
 
@@ -365,45 +364,6 @@ public class Graph<TNode> where TNode : class, IExecutableNode
         }
 
         // Verify all nodes were executed
-        if (inDegree.Values.Any(d => d > 0))
-            throw new InvalidOperationException("Graph contains cycles and cannot be fully executed.");
-    }
-
-    /// <summary>
-    /// Executes all nodes in the graph with custom execution logic.
-    /// </summary>
-    /// <param name="executeFunc">A custom function to execute each node.</param>
-    /// <param name="cancellationToken">A token to cancel the execution.</param>
-    /// <returns>A task representing the asynchronous operation.</returns>
-    public async Task ExecuteAsync(
-        Func<TNode, CancellationToken, Task> executeFunc,
-        CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(executeFunc);
-
-        var inDegree = Nodes.ToDictionary(n => n.Id, n => GetInDegree(n.Id));
-        var ready = new Queue<TNode>(Nodes.Where(n => inDegree[n.Id] == 0));
-
-        while (ready.Count > 0)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var currentBatch = new List<TNode>();
-            while (ready.Count > 0)
-                currentBatch.Add(ready.Dequeue());
-
-            var tasks = currentBatch.Select(node => executeFunc(node, cancellationToken));
-            await Task.WhenAll(tasks);
-
-            foreach (var successorId in currentBatch.SelectMany(node => GetSuccessorIds(node.Id)))
-            {
-                inDegree[successorId]--;
-                if (inDegree[successorId] != 0) continue;
-                if (TryGetNode(successorId, out var successor) && successor != null)
-                    ready.Enqueue(successor);
-            }
-        }
-
         if (inDegree.Values.Any(d => d > 0))
             throw new InvalidOperationException("Graph contains cycles and cannot be fully executed.");
     }
