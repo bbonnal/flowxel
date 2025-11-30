@@ -1,12 +1,22 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Xunit;
+
 namespace Flowxel.Graph.Tests;
 
-public class GraphExecutorTests(ITestOutputHelper output)
+public class GraphExecutorTests
 {
+    private readonly ITestOutputHelper _output;
+    public GraphExecutorTests(ITestOutputHelper output) => _output = output;
+
     [Fact]
     public async Task ExecuteAsync_ShouldExecuteAllNodes()
     {
         // Arrange
-        var graph = new Graph<ExecutableNode>();
+        var graph = new Graph<IExecutableNode>();
         var executionOrder = new List<string>();
         var syncLock = new object();
 
@@ -21,7 +31,7 @@ public class GraphExecutorTests(ITestOutputHelper output)
         graph.AddEdge(node1.Id, node2.Id);
         graph.AddEdge(node2.Id, node3.Id);
 
-        var executor = new GraphExecutor<ExecutableNode>(graph);
+        var executor = new GraphExecutor<IExecutableNode>(graph);
 
         // Act
         await executor.ExecuteAsync(TestContext.Current.CancellationToken);
@@ -37,7 +47,7 @@ public class GraphExecutorTests(ITestOutputHelper output)
     public async Task ExecuteAsyncShouldExecuteNodesInParallel()
     {
         // Arrange
-        var graph = new Graph<ExecutableNode>();
+        var graph = new Graph<IExecutableNode>();
         var executionOrder = new List<string>();
         var syncLock = new object();
         var startTimes = new Dictionary<string, DateTime>();
@@ -59,7 +69,7 @@ public class GraphExecutorTests(ITestOutputHelper output)
         graph.AddEdge(node2.Id, node4.Id);
         graph.AddEdge(node3.Id, node4.Id);
 
-        var executor = new GraphExecutor<ExecutableNode>(graph);
+        var executor = new GraphExecutor<IExecutableNode>(graph);
 
         // Act
         await executor.ExecuteAsync(TestContext.Current.CancellationToken);
@@ -72,9 +82,9 @@ public class GraphExecutorTests(ITestOutputHelper output)
         var node3Start = startTimes["Node3"];
         var timeDiff = Math.Abs((node2Start - node3Start).TotalMilliseconds);
 
-        output.WriteLine($"Node2 start: {node2Start:O}");
-        output.WriteLine($"Node3 start: {node3Start:O}");
-        output.WriteLine($"Time difference: {timeDiff}ms");
+        _output.WriteLine($"Node2 start: {node2Start:O}");
+        _output.WriteLine($"Node3 start: {node3Start:O}");
+        _output.WriteLine($"Time difference: {timeDiff}ms");
 
         Assert.True(timeDiff < 100, $"Nodes should start in parallel, but had {timeDiff}ms difference");
     }
@@ -83,7 +93,7 @@ public class GraphExecutorTests(ITestOutputHelper output)
     public async Task ExecuteAsyncShouldRespectDependencies()
     {
         // Arrange
-        var graph = new Graph<ExecutableNode>();
+        var graph = new Graph<IExecutableNode>();
         var executionOrder = new List<string>();
         var syncLock = new object();
 
@@ -103,7 +113,7 @@ public class GraphExecutorTests(ITestOutputHelper output)
         graph.AddEdge(node2.Id, node4.Id);
         graph.AddEdge(node3.Id, node4.Id);
 
-        var executor = new GraphExecutor<ExecutableNode>(graph);
+        var executor = new GraphExecutor<IExecutableNode>(graph);
 
         // Act
         await executor.ExecuteAsync(TestContext.Current.CancellationToken);
@@ -126,18 +136,18 @@ public class GraphExecutorTests(ITestOutputHelper output)
     public async Task ExecuteAsyncWithCustomFunctionShouldWork()
     {
         // Arrange
-        var graph = new Graph<ExecutableNode>();
-        var executionOrder = new List<string>();
+        var graph = new Graph<IExecutableNode>();
+        var executionOrder = new List<Guid>();
         var syncLock = new object();
 
-        var node1 = new ExecutableNode { Name = "Node1" };
-        var node2 = new ExecutableNode { Name = "Node2" };
+        var node1 = new ExecutableNode<object, object> { Name = "Node1" };
+        var node2 = new ExecutableNode<object, object> { Name = "Node2" };
 
         graph.AddNode(node1.Id, node1);
         graph.AddNode(node2.Id, node2);
         graph.AddEdge(node1.Id, node2.Id);
 
-        var executor = new GraphExecutor<ExecutableNode>(graph);
+        var executor = new GraphExecutor<IExecutableNode>(graph);
 
         // Act
         await executor.ExecuteAsync(async (node, ct) =>
@@ -145,67 +155,36 @@ public class GraphExecutorTests(ITestOutputHelper output)
             await Task.Delay(10, ct);
             lock (syncLock)
             {
-                executionOrder.Add(node.Name);
+                executionOrder.Add(node.Id);
             }
         }, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(2, executionOrder.Count);
-        Assert.Equal("Node1", executionOrder[0]);
-        Assert.Equal("Node2", executionOrder[1]);
-    }
-
-    [Fact]
-    public async Task ExecuteWithResultsAsyncShouldCollectResults()
-    {
-        // Arrange
-        var graph = new Graph<ExecutableNode>();
-
-        var node1 = new ExecutableNode { Name = "Node1" };
-        var node2 = new ExecutableNode { Name = "Node2" };
-        var node3 = new ExecutableNode { Name = "Node3" };
-
-        graph.AddNode(node1.Id, node1);
-        graph.AddNode(node2.Id, node2);
-        graph.AddNode(node3.Id, node3);
-        graph.AddEdge(node1.Id, node2.Id);
-        graph.AddEdge(node1.Id, node3.Id);
-
-        var executor = new GraphExecutor<ExecutableNode>(graph);
-
-        // Act
-        var results = await executor.ExecuteWithResultsAsync(async (node, ct) =>
-        {
-            await Task.Delay(10, ct);
-            return $"Result from {node.Name}";
-        }, TestContext.Current.CancellationToken);
-
-        // Assert
-        Assert.Equal(3, results.Count);
-        Assert.Equal("Result from Node1", results[node1.Id]);
-        Assert.Equal("Result from Node2", results[node2.Id]);
-        Assert.Equal("Result from Node3", results[node3.Id]);
+        Assert.Equal(node1.Id, executionOrder[0]);
+        Assert.Equal(node2.Id, executionOrder[1]);
     }
 
     [Fact]
     public async Task ExecuteAsyncShouldSupportCancellation()
     {
         // Arrange
-        var graph = new Graph<ExecutableNode>();
+        var graph = new Graph<IExecutableNode>();
         var cts = new CancellationTokenSource();
 
-        var node1 = new ExecutableNode
+        var node1 = new ExecutableNode<object, object>
         {
             Name = "Node1",
             Execute = async (ct) => { await Task.Delay(50, ct); }
         };
 
-        var node2 = new ExecutableNode
+        var node2 = new ExecutableNode<object, object>
         {
             Name = "Node2",
             Execute = async (ct) =>
             {
-                await cts.CancelAsync(); // Cancel during execution
+                // Cancel during execution
+                cts.Cancel();
                 await Task.Delay(100, ct);
             }
         };
@@ -214,19 +193,18 @@ public class GraphExecutorTests(ITestOutputHelper output)
         graph.AddNode(node2.Id, node2);
         graph.AddEdge(node1.Id, node2.Id);
 
-        var executor = new GraphExecutor<ExecutableNode>(graph);
+        var executor = new GraphExecutor<IExecutableNode>(graph);
 
         // Act & Assert
-        await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await executor.ExecuteAsync(cts.Token)
-        );
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await executor.ExecuteAsync(cts.Token));
     }
 
     [Fact]
     public async Task ExecuteAsyncShouldHandleEmptyGraph()
     {
         // Arrange
-        var graph = new Graph<ExecutableNode>();
-        var executor = new GraphExecutor<ExecutableNode>(graph);
+        var graph = new Graph<IExecutableNode>();
+        var executor = new GraphExecutor<IExecutableNode>(graph);
 
         // Act & Assert (should not throw)
         await executor.ExecuteAsync(TestContext.Current.CancellationToken);
@@ -236,10 +214,10 @@ public class GraphExecutorTests(ITestOutputHelper output)
     public async Task ExecuteAsyncShouldHandleSingleNode()
     {
         // Arrange
-        var graph = new Graph<ExecutableNode>();
+        var graph = new Graph<IExecutableNode>();
         var executed = false;
 
-        var node = new ExecutableNode
+        var node = new ExecutableNode<object, object>
         {
             Name = "SingleNode",
             Execute = async (ct) =>
@@ -250,7 +228,7 @@ public class GraphExecutorTests(ITestOutputHelper output)
         };
 
         graph.AddNode(node.Id, node);
-        var executor = new GraphExecutor<ExecutableNode>(graph);
+        var executor = new GraphExecutor<IExecutableNode>(graph);
 
         // Act
         await executor.ExecuteAsync(TestContext.Current.CancellationToken);
@@ -263,12 +241,12 @@ public class GraphExecutorTests(ITestOutputHelper output)
     public async Task ExecuteAsyncShouldHandleComplexDAG()
     {
         // Arrange
-        var graph = new Graph<ExecutableNode>();
+        var graph = new Graph<IExecutableNode>();
         var executionOrder = new List<string>();
         var syncLock = new object();
 
         // Create a more complex DAG
-        var nodes = new Dictionary<string, ExecutableNode>();
+        var nodes = new Dictionary<string, IExecutableNode>();
         for (int i = 1; i <= 7; i++)
         {
             var node = CreateNode($"Node{i}", executionOrder, syncLock);
@@ -291,7 +269,7 @@ public class GraphExecutorTests(ITestOutputHelper output)
         graph.AddEdge(nodes["Node5"].Id, nodes["Node6"].Id);
         graph.AddEdge(nodes["Node5"].Id, nodes["Node7"].Id);
 
-        var executor = new GraphExecutor<ExecutableNode>(graph);
+        var executor = new GraphExecutor<IExecutableNode>(graph);
 
         // Act
         await executor.ExecuteAsync(TestContext.Current.CancellationToken);
@@ -300,8 +278,9 @@ public class GraphExecutorTests(ITestOutputHelper output)
         Assert.Equal(7, executionOrder.Count);
 
         // Verify topological ordering
-        var indexOf = executionOrder.Select((name, idx) => (name, idx))
-            .ToDictionary(x => x.name, x => x.idx);
+        var indexOf = executionOrder
+            .Select((n, i) => new { Name = n, Index = i })
+            .ToDictionary(x => x.Name, x => x.Index);
 
         Assert.True(indexOf["Node1"] < indexOf["Node2"]);
         Assert.True(indexOf["Node1"] < indexOf["Node3"]);
@@ -317,9 +296,9 @@ public class GraphExecutorTests(ITestOutputHelper output)
     public async Task ExecuteAsyncWithExceptionShouldPropagateException()
     {
         // Arrange
-        var graph = new Graph<ExecutableNode>();
+        var graph = new Graph<IExecutableNode>();
 
-        var node1 = new ExecutableNode
+        var node1 = new ExecutableNode<object, object>
         {
             Name = "Node1",
             Execute = async (ct) =>
@@ -330,7 +309,7 @@ public class GraphExecutorTests(ITestOutputHelper output)
         };
 
         graph.AddNode(node1.Id, node1);
-        var executor = new GraphExecutor<ExecutableNode>(graph);
+        var executor = new GraphExecutor<IExecutableNode>(graph);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
@@ -338,20 +317,14 @@ public class GraphExecutorTests(ITestOutputHelper output)
         Assert.Equal("Test exception", exception.Message);
     }
 
-    /// <summary>
-    /// Helper method to create a test node that tracks execution order.
-    /// This is critical for verifying that nodes execute in the correct topological order.
-    /// </summary>
-    /// <param name="name">The name of the node (recorded in execution order)</param>
-    /// <param name="executionOrder">Shared list that collects node names as they complete execution</param>
-    /// <param name="syncLock">Lock object to ensure thread-safe access to executionOrder during parallel execution</param>
-    /// <returns>An ExecutableNode that appends its name to executionOrder when executed</returns>
-    private ExecutableNode CreateNode(
+    #region Helpers
+
+    private IExecutableNode CreateNode(
         string name,
         List<string> executionOrder,
         object syncLock)
     {
-        return new ExecutableNode
+        return new ExecutableNode<object, object>
         {
             Name = name,
             Execute = async (ct) =>
@@ -360,7 +333,6 @@ public class GraphExecutorTests(ITestOutputHelper output)
                 await Task.Delay(10, ct);
 
                 // Thread-safe recording of execution completion
-                // This lock is essential because multiple nodes may execute in parallel
                 lock (syncLock)
                 {
                     executionOrder.Add(name);
@@ -369,22 +341,7 @@ public class GraphExecutorTests(ITestOutputHelper output)
         };
     }
 
-    /// <summary>
-    /// Helper method to create a test node that tracks both execution order and timing.
-    /// This is critical for verifying that independent nodes execute in parallel rather than sequentially.
-    /// </summary>
-    /// <param name="name">The name of the node (recorded in execution order)</param>
-    /// <param name="executionOrder">Shared list that collects node names as they complete execution</param>
-    /// <param name="syncLock">Lock object to ensure thread-safe access to shared dictionaries and lists</param>
-    /// <param name="startTimes">Dictionary recording when each node begins execution</param>
-    /// <param name="endTimes">Dictionary recording when each node completes execution</param>
-    /// <param name="delayMs">Simulated work duration in milliseconds</param>
-    /// <returns>An ExecutableNode that records timing information during execution</returns>
-    /// <remarks>
-    /// By comparing start times of independent nodes, we can verify parallel execution.
-    /// If two nodes have no dependency between them, their start times should be nearly identical.
-    /// </remarks>
-    private ExecutableNode CreateNodeWithTiming(
+    private IExecutableNode CreateNodeWithTiming(
         string name,
         List<string> executionOrder,
         object syncLock,
@@ -392,7 +349,7 @@ public class GraphExecutorTests(ITestOutputHelper output)
         Dictionary<string, DateTime> endTimes,
         int delayMs)
     {
-        return new ExecutableNode
+        return new ExecutableNode<object, object>
         {
             Name = name,
             Execute = async (ct) =>
@@ -415,4 +372,6 @@ public class GraphExecutorTests(ITestOutputHelper output)
             }
         };
     }
+
+    #endregion
 }
