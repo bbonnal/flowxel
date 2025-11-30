@@ -350,7 +350,7 @@ public class Graph<TNode> where TNode : class, IExecutableNode
             
 
             // Execute all nodes in the current batch concurrently
-            var tasks = currentBatch.Select(node => node.ExecuteAsync(cancellationToken));
+            var tasks = currentBatch.Select(node => node.Execute(cancellationToken));
             await Task.WhenAll(tasks);
 
 

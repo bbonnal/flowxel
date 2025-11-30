@@ -1,15 +1,15 @@
-using Flowxel.Imaging.Pipeline;
 using OpenCvSharp;
 
 namespace Flowxel.Imaging.Operations.IO;
 
-public class LoadOperation : SourceOperation<Mat>
+public class LoadOperation : Operation<Empty, Mat>
 {
-    public override Task<Mat> ExecuteAsync(
+    public override Mat Execute(
+        IReadOnlyList<Empty> inputs, 
         IReadOnlyDictionary<string, object> parameters,
         CancellationToken ct)
     {
         var path = (string)parameters["Path"];
-        return Task.Run(() => Cv2.ImRead(path, ImreadModes.Grayscale), ct);
+        return Cv2.ImRead(path, ImreadModes.Grayscale);
     }
 }

@@ -3,8 +3,7 @@ using Flowxel.Graph;
 using Flowxel.Imaging.Operations.Filters;
 using Flowxel.Imaging.Operations.IO;
 using Flowxel.Imaging.Operations.Transforms;
-using Flowxel.Imaging.Pipeline;
-using Flowxel.Imaging.Pipeline.Nodes;
+using Flowxel.Imaging.Operations;
 using OpenCvSharp;
 
 namespace Flowxel.Imaging.Tests;
@@ -28,7 +27,7 @@ public class VisionPipelineIntegrationTests(ITestOutputHelper output)
          var graph = new Graph<IExecutableNode>();
          var pool = new ResourcePool();
 
-        var load = new SourceNode<Mat>(new LoadOperation(), pool, graph)
+        var load = new Node<Empty, Mat>(new LoadOperation(), pool, graph)
         {
             Name = "Load Image",
             Parameters =
@@ -37,7 +36,7 @@ public class VisionPipelineIntegrationTests(ITestOutputHelper output)
             }
         };
 
-        var blur1 = new StandardNode<Mat, Mat>(new GaussianBlurOperation(), pool, graph)
+        var blur1 = new Node<Mat, Mat>(new GaussianBlurOperation(), pool, graph)
         {
             Name = "Blur Small",
             Parameters =
@@ -47,7 +46,7 @@ public class VisionPipelineIntegrationTests(ITestOutputHelper output)
             }
         };
 
-        var blur2 = new StandardNode<Mat, Mat>(new GaussianBlurOperation(), pool, graph)
+        var blur2 = new Node<Mat, Mat>(new GaussianBlurOperation(), pool, graph)
         {
             Name = "Blur Large",
             Parameters =
@@ -57,12 +56,12 @@ public class VisionPipelineIntegrationTests(ITestOutputHelper output)
             } 
         };
 
-        var subtract = new CombineNode<Mat, Mat>(new SubtractOperation(), pool, graph)
+        var subtract = new Node<Mat, Mat>(new SubtractOperation(), pool, graph)
         {
             Name = "Subtract",
         };
 
-        var save = new SinkNode<Mat>(new SaveOperation(), pool, graph)
+        var save = new Node<Mat, Empty>(new SaveOperation(), pool, graph)
         {
             Name = "Save",
             Parameters =

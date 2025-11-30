@@ -1,16 +1,17 @@
-using Flowxel.Imaging.Pipeline;
 using OpenCvSharp;
 
 namespace Flowxel.Imaging.Operations.IO;
 
-public class SaveOperation : SinkOperation<Mat>
+public class SaveOperation : Operation<Mat, Empty>
 {
-    public override Task ExecuteAsync(
-        Mat input,
+    public override Empty Execute(
+        IReadOnlyList<Mat> inputs,
         IReadOnlyDictionary<string, object> parameters,
         CancellationToken ct)
     {
         var path = (string)parameters["Path"];
-        return Task.Run(() => Cv2.ImWrite(path, input), ct);
+        Cv2.ImWrite(path, inputs[0]);
+
+        return default;
     }
 }

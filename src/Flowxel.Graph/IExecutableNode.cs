@@ -18,5 +18,5 @@ public interface IExecutableNode
     /// </summary>
     /// <param name="cancellationToken">A token to cancel the operation.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    Task ExecuteAsync(CancellationToken cancellationToken = default);
+    Task Execute(CancellationToken cancellationToken = default);
 }
