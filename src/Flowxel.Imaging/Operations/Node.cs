@@ -2,8 +2,21 @@ using Flowxel.Graph;
 
 namespace Flowxel.Imaging.Operations;
 
-public class Node<TIn, TOut>(Operation<TIn, TOut> operation, ResourcePool pool, Graph<IExecutableNode> graph) : IExecutableNode
+public readonly struct Empty { }
+
+public abstract class Node<TIn, TOut> : IExecutableNode where TOut : notnull
 {
+    private readonly ResourcePool _pool;
+    private readonly Graph<IExecutableNode> _graph;
+
+    protected Node(ResourcePool pool, Graph<IExecutableNode> graph)
+    {
+        _pool = pool;
+        _graph = graph;
+    }
+
+ 
+
     public Guid Id { get; } = Guid.NewGuid();
     public string Name { get; set; } = "";
     public Type InputType => typeof(TIn);
@@ -16,14 +29,19 @@ public class Node<TIn, TOut>(Operation<TIn, TOut> operation, ResourcePool pool, 
         ct.ThrowIfCancellationRequested();
         
         // Look in the pool for resources provided by predecessors
-        var inputs = typeof(TIn) == typeof(Empty) ? [] : graph.GetPredecessorIds(Id).Select(pool.Get<TIn>).ToArray();
+        var inputs = typeof(TIn) == typeof(Empty) ? [] : _graph.GetPredecessorIds(Id).Select(_pool.Get<TIn>).ToArray();
 
         // Execute operation
-        var output = operation.Execute(inputs, Parameters, ct);
+        var output = ExecuteInternal(inputs, Parameters, ct);
 
         // Publish the result to the pool 
-        pool.Set(Id, output);
+        _pool.Set(Id, output);
         
         return Task.CompletedTask;
     }
+    
+    public abstract TOut ExecuteInternal(
+        IReadOnlyList<TIn> inputs,                
+        IReadOnlyDictionary<string, object> parameters,
+        CancellationToken ct);
 }

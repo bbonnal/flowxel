@@ -1,10 +1,11 @@
+using Flowxel.Graph;
 using OpenCvSharp;
 
 namespace Flowxel.Imaging.Operations.Transforms;
 
-public class SubtractOperation : Operation<Mat, Mat>
+public class SubtractOperation(ResourcePool pool, Graph<IExecutableNode> graph) : Node<Mat, Mat>(pool, graph)
 {
-    public override Mat Execute(
+    public override Mat ExecuteInternal(
         IReadOnlyList<Mat> inputs,
         IReadOnlyDictionary<string, object> parameters,
         CancellationToken ct)

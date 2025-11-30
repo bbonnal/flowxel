@@ -1,11 +1,14 @@
+using Flowxel.Graph;
 using OpenCvSharp;
 
 namespace Flowxel.Imaging.Operations.Filters;
 
-public class GaussianBlurOperation : Operation<Mat, Mat>
+public class GaussianBlurOperation(ResourcePool pool, Graph<IExecutableNode> graph) : Node<Mat, Mat>(pool, graph)
 {
-
-    public override Mat Execute(IReadOnlyList<Mat> inputs, IReadOnlyDictionary<string, object> parameters, CancellationToken ct)
+    public override Mat ExecuteInternal(
+        IReadOnlyList<Mat> inputs, 
+        IReadOnlyDictionary<string, object> parameters, 
+        CancellationToken ct)
     {
         var kernelSize = Convert.ToInt32(parameters["KernelSize"]);
         var sigma = Convert.ToDouble(parameters["Sigma"]);

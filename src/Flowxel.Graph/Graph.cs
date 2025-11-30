@@ -80,6 +80,18 @@ public class Graph<TNode> where TNode : class, IExecutableNode
     {
         return _nodes.TryGetValue(id, out node);
     }
+    
+    /// <summary>
+    /// Adds a directed edge from one node to another.
+    /// </summary>
+    /// <param name="from">The source node.</param>
+    /// <param name="to">The destination node.</param>
+    /// <exception cref="ArgumentException">Thrown when attempting to create a self-loop or when nodes don't exist.</exception>
+    /// <exception cref="InvalidOperationException">Thrown when adding the edge would create a cycle.</exception>
+    public void Connect(TNode from, TNode to)
+    {
+        AddEdge(from.Id, to.Id);
+    }
 
     /// <summary>
     /// Adds a directed edge from one node to another.

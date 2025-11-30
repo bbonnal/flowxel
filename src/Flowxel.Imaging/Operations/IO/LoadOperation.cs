@@ -1,10 +1,11 @@
+using Flowxel.Graph;
 using OpenCvSharp;
 
 namespace Flowxel.Imaging.Operations.IO;
 
-public class LoadOperation : Operation<Empty, Mat>
+public class LoadOperation(ResourcePool pool, Graph<IExecutableNode> graph) : Node<Empty, Mat>(pool, graph)
 {
-    public override Mat Execute(
+    public override Mat ExecuteInternal(
         IReadOnlyList<Empty> inputs, 
         IReadOnlyDictionary<string, object> parameters,
         CancellationToken ct)
