@@ -2,7 +2,6 @@ namespace Flowxel.Graph.Tests;
 
 public class GraphTests(ITestOutputHelper output)
 {
-    private readonly ITestOutputHelper output = output;
 
     [Fact]
     public void AddNodeShouldAddNodeSuccessfully()
@@ -422,8 +421,15 @@ public class GraphTests(ITestOutputHelper output)
         Assert.True(sortedList.IndexOf(ids[0]) < sortedList.IndexOf(ids[3]));
     }
 
-    private class TestNode
+    private class TestNode : IExecutableNode
     {
         public string Name { get; set; } = string.Empty;
+        public Guid Id { get; }
+        public Type InputType { get; }
+        public Type OutputType { get; }
+        public Task ExecuteAsync(CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

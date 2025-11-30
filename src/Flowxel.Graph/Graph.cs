@@ -4,7 +4,7 @@ namespace Flowxel.Graph;
 /// Represents a directed acyclic graph (DAG) with support for topological sorting and parallel execution.
 /// </summary>
 /// <typeparam name="TNode">The type of node data stored in the graph.</typeparam>
-public class Graph<TNode> where TNode : class
+public class Graph<TNode> where TNode : class, IExecutableNode
 {
     private readonly Dictionary<Guid, HashSet<Guid>> _incoming = new();
     private readonly Dictionary<Guid, TNode> _nodes = new();
@@ -325,6 +325,87 @@ public class Graph<TNode> where TNode : class
         {
             return false;
         }
+    }
+    
+    /// <summary>
+    /// Executes all nodes in the graph in topological order with maximum parallelism.
+    /// Nodes at the same level (with no dependencies between them) are executed concurrently.
+    /// </summary>
+    /// <param name="cancellationToken">A token to cancel the execution.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the graph contains cycles.</exception>
+    public async Task ExecuteAsync(CancellationToken cancellationToken = default)
+    {
+        var inDegree = Nodes.ToDictionary(n => n.Id, n => GetInDegree(n.Id));
+        var ready = new Queue<TNode>(Nodes.Where(n => inDegree[n.Id] == 0));
+
+        while (ready.Count > 0)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            // Collect all nodes ready to execute at this level
+            var currentBatch = new List<TNode>();
+            while (ready.Count > 0)
+                currentBatch.Add(ready.Dequeue());
+            
+
+            // Execute all nodes in the current batch concurrently
+            var tasks = currentBatch.Select(node => node.ExecuteAsync(cancellationToken));
+            await Task.WhenAll(tasks);
+
+
+            // Update in-degrees and enqueue newly ready nodes
+            foreach (var successorId in currentBatch.SelectMany(node => GetSuccessorIds(node.Id)))
+            {
+                inDegree[successorId]--;
+                if (inDegree[successorId] != 0) continue;
+                if (TryGetNode(successorId, out var successor) && successor != null)
+                    ready.Enqueue(successor);
+            }
+        }
+
+        // Verify all nodes were executed
+        if (inDegree.Values.Any(d => d > 0))
+            throw new InvalidOperationException("Graph contains cycles and cannot be fully executed.");
+    }
+
+    /// <summary>
+    /// Executes all nodes in the graph with custom execution logic.
+    /// </summary>
+    /// <param name="executeFunc">A custom function to execute each node.</param>
+    /// <param name="cancellationToken">A token to cancel the execution.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    public async Task ExecuteAsync(
+        Func<TNode, CancellationToken, Task> executeFunc,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(executeFunc);
+
+        var inDegree = Nodes.ToDictionary(n => n.Id, n => GetInDegree(n.Id));
+        var ready = new Queue<TNode>(Nodes.Where(n => inDegree[n.Id] == 0));
+
+        while (ready.Count > 0)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var currentBatch = new List<TNode>();
+            while (ready.Count > 0)
+                currentBatch.Add(ready.Dequeue());
+
+            var tasks = currentBatch.Select(node => executeFunc(node, cancellationToken));
+            await Task.WhenAll(tasks);
+
+            foreach (var successorId in currentBatch.SelectMany(node => GetSuccessorIds(node.Id)))
+            {
+                inDegree[successorId]--;
+                if (inDegree[successorId] != 0) continue;
+                if (TryGetNode(successorId, out var successor) && successor != null)
+                    ready.Enqueue(successor);
+            }
+        }
+
+        if (inDegree.Values.Any(d => d > 0))
+            throw new InvalidOperationException("Graph contains cycles and cannot be fully executed.");
     }
 
     /// <summary>

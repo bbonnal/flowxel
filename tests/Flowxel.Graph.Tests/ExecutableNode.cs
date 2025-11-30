@@ -1,9 +1,9 @@
-namespace Flowxel.Graph;
+namespace Flowxel.Graph.Tests;
 
 /// <summary>
 /// A simple implementation of an executable node.
 /// </summary>
-public class ExecutableNode : IExecutableNode
+public class ExecutableNode<TIn, TOut>: IExecutableNode
 {
     /// <summary>
     /// Gets the unique identifier for this node.
@@ -14,6 +14,9 @@ public class ExecutableNode : IExecutableNode
     /// Gets or sets the name of the node.
     /// </summary>
     public string Name { get; set; } = string.Empty;
+
+    public Type InputType => typeof(TIn);
+    public Type OutputType => typeof(TOut);
 
     /// <summary>
     /// Gets or sets the function to execute asynchronously.

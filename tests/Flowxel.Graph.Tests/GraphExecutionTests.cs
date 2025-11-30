@@ -1,16 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
-
 namespace Flowxel.Graph.Tests;
 
-public class GraphExecutorTests
+public class GraphExecutionTests
 {
     private readonly ITestOutputHelper _output;
-    public GraphExecutorTests(ITestOutputHelper output) => _output = output;
+    public GraphExecutionTests(ITestOutputHelper output) => _output = output;
 
     [Fact]
     public async Task ExecuteAsync_ShouldExecuteAllNodes()
@@ -31,10 +24,9 @@ public class GraphExecutorTests
         graph.AddEdge(node1.Id, node2.Id);
         graph.AddEdge(node2.Id, node3.Id);
 
-        var executor = new GraphExecutor<IExecutableNode>(graph);
 
         // Act
-        await executor.ExecuteAsync(TestContext.Current.CancellationToken);
+        await graph.ExecuteAsync(TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(3, executionOrder.Count);
@@ -69,10 +61,9 @@ public class GraphExecutorTests
         graph.AddEdge(node2.Id, node4.Id);
         graph.AddEdge(node3.Id, node4.Id);
 
-        var executor = new GraphExecutor<IExecutableNode>(graph);
 
         // Act
-        await executor.ExecuteAsync(TestContext.Current.CancellationToken);
+        await graph.ExecuteAsync(TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(4, executionOrder.Count);
@@ -113,10 +104,9 @@ public class GraphExecutorTests
         graph.AddEdge(node2.Id, node4.Id);
         graph.AddEdge(node3.Id, node4.Id);
 
-        var executor = new GraphExecutor<IExecutableNode>(graph);
 
         // Act
-        await executor.ExecuteAsync(TestContext.Current.CancellationToken);
+        await graph.ExecuteAsync(TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(4, executionOrder.Count);
@@ -147,10 +137,9 @@ public class GraphExecutorTests
         graph.AddNode(node2.Id, node2);
         graph.AddEdge(node1.Id, node2.Id);
 
-        var executor = new GraphExecutor<IExecutableNode>(graph);
 
         // Act
-        await executor.ExecuteAsync(async (node, ct) =>
+        await graph.ExecuteAsync(async (node, ct) =>
         {
             await Task.Delay(10, ct);
             lock (syncLock)
@@ -193,10 +182,8 @@ public class GraphExecutorTests
         graph.AddNode(node2.Id, node2);
         graph.AddEdge(node1.Id, node2.Id);
 
-        var executor = new GraphExecutor<IExecutableNode>(graph);
-
         // Act & Assert
-        await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await executor.ExecuteAsync(cts.Token));
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await graph.ExecuteAsync(cts.Token));
     }
 
     [Fact]
@@ -204,10 +191,9 @@ public class GraphExecutorTests
     {
         // Arrange
         var graph = new Graph<IExecutableNode>();
-        var executor = new GraphExecutor<IExecutableNode>(graph);
 
         // Act & Assert (should not throw)
-        await executor.ExecuteAsync(TestContext.Current.CancellationToken);
+        await graph.ExecuteAsync(TestContext.Current.CancellationToken);
     }
 
     [Fact]
@@ -228,10 +214,9 @@ public class GraphExecutorTests
         };
 
         graph.AddNode(node.Id, node);
-        var executor = new GraphExecutor<IExecutableNode>(graph);
 
         // Act
-        await executor.ExecuteAsync(TestContext.Current.CancellationToken);
+        await graph.ExecuteAsync(TestContext.Current.CancellationToken);
 
         // Assert
         Assert.True(executed);
@@ -269,10 +254,8 @@ public class GraphExecutorTests
         graph.AddEdge(nodes["Node5"].Id, nodes["Node6"].Id);
         graph.AddEdge(nodes["Node5"].Id, nodes["Node7"].Id);
 
-        var executor = new GraphExecutor<IExecutableNode>(graph);
-
         // Act
-        await executor.ExecuteAsync(TestContext.Current.CancellationToken);
+        await graph.ExecuteAsync(TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(7, executionOrder.Count);
@@ -309,11 +292,10 @@ public class GraphExecutorTests
         };
 
         graph.AddNode(node1.Id, node1);
-        var executor = new GraphExecutor<IExecutableNode>(graph);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
-            await executor.ExecuteAsync(TestContext.Current.CancellationToken));
+            await graph.ExecuteAsync(TestContext.Current.CancellationToken));
         Assert.Equal("Test exception", exception.Message);
     }
 

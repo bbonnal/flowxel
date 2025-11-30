@@ -3,15 +3,13 @@ using OpenCvSharp;
 
 namespace Flowxel.Imaging.Operations.IO;
 
-public class LoadOperation : Operation<None, Mat>
+public class LoadOperation : SourceOperation<Mat>
 {
-    public override async ValueTask<Mat> ExecuteAsync(
-        None input,
+    public override Task<Mat> ExecuteAsync(
         IReadOnlyDictionary<string, object> parameters,
-        CancellationToken ct = default)
+        CancellationToken ct)
     {
-        var path = parameters["Path"] as string ?? "";
-        var mode = parameters.GetValueOrDefault("Mode") as ImreadModes? ?? ImreadModes.Grayscale;
-        return await Task.Run(() => Cv2.ImRead(path, mode), ct);
+        var path = (string)parameters["Path"];
+        return Task.Run(() => Cv2.ImRead(path, ImreadModes.Grayscale), ct);
     }
 }

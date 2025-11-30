@@ -4,19 +4,21 @@ namespace Flowxel.Imaging.Operations.Filters;
 
 public class GaussianBlurOperation : Operation<Mat, Mat>
 {
-    public override ValueTask<Mat> ExecuteAsync(Mat input, IReadOnlyDictionary<string, object> parameters, CancellationToken ct)
+    public override Task<Mat> ExecuteAsync(
+        Mat input,
+        IReadOnlyDictionary<string, object> parameters,
+        CancellationToken ct)
     {
+        var kernelSize = Convert.ToInt32(parameters["KernelSize"]);
+        var sigma = Convert.ToDouble(parameters["Sigma"]);
 
-        var ksize = parameters.GetValueOrDefault("KernelSize", 0);
-        var sigma = parameters.GetValueOrDefault("Sigma", 0.0);
+        if (kernelSize % 2 == 0) kernelSize++;
 
-        var kernelSize = Convert.ToInt32(ksize);
-        var sigmaX = Convert.ToDouble(sigma);
-
-        if (kernelSize > 0 && kernelSize % 2 == 0) kernelSize++;
-
-        var output = new Mat();
-        Cv2.GaussianBlur(input, output, new Size(kernelSize, kernelSize), sigmaX);
-        return ValueTask.FromResult(output);
+        return Task.Run(() =>
+        {
+            var output = new Mat();
+            Cv2.GaussianBlur(input, output, new Size(kernelSize, kernelSize), sigma);
+            return output;
+        }, ct);
     }
 }

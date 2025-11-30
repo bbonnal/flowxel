@@ -9,6 +9,9 @@ public interface IExecutableNode
     /// Gets the unique identifier for this node.
     /// </summary>
     Guid Id { get; }
+    
+    Type InputType { get; }
+    Type OutputType { get; }
 
     /// <summary>
     /// Executes the node's task asynchronously.

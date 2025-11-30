@@ -20,6 +20,8 @@ public static class ImagingTestHelpers
     
     public static string SaveMat(Mat srcMat, string name)
     {
+        Directory.CreateDirectory(TempDir);
+        
         var filePath = Path.Combine(TempDir, name);
 
         Cv2.ImWrite(filePath, srcMat);
@@ -31,6 +33,8 @@ public static class ImagingTestHelpers
     
     public static void SaveAndOpenMat(Mat srcMat, string name)
     {
+        Directory.CreateDirectory(TempDir);
+
         var filePath = Path.Combine(TempDir, name);
 
         Cv2.ImWrite(filePath, srcMat);
