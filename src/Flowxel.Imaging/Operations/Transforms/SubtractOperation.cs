@@ -5,7 +5,7 @@ namespace Flowxel.Imaging.Operations.Transforms;
 
 public class SubtractOperation(ResourcePool pool, Graph<IExecutableNode> graph) : Node<Mat, Mat>(pool, graph)
 {
-    public override Mat ExecuteInternal(
+    protected override Mat ExecuteInternal(
         IReadOnlyList<Mat> inputs,
         IReadOnlyDictionary<string, object> parameters,
         CancellationToken ct)

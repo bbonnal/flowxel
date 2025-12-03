@@ -46,24 +46,19 @@ public class VisionPipelineIntegrationTests(ITestOutputHelper output)
 
         // Resolve nodes via DI (this triggers constructor injection of pool + graph)
         var load = provider.GetRequiredService<LoadOperation>();
-        load.Name = "Load Image";
         load.Parameters["Path"] = inputPath;
 
         var blurSmall = provider.GetRequiredService<GaussianBlurOperation>();
-        blurSmall.Name = "Blur Small";
         blurSmall.Parameters["KernelSize"] = 5;
         blurSmall.Parameters["Sigma"] = 10.0;
 
         var blurLarge = provider.GetRequiredService<GaussianBlurOperation>();
-        blurLarge.Name = "Blur Large";
         blurLarge.Parameters["KernelSize"] = 50;
         blurLarge.Parameters["Sigma"] = 10.0;
 
         var subtract = provider.GetRequiredService<SubtractOperation>();
-        subtract.Name = "Unsharp Mask (Subtract)";
 
         var save = provider.GetRequiredService<SaveOperation>();
-        save.Name = "Save Result";
         save.Parameters["Path"] = outputPath;
 
         // Build the graph topology
@@ -183,7 +178,6 @@ public class VisionPipelineIntegrationTests(ITestOutputHelper output)
         var graph = provider.GetRequiredService<Graph<IExecutableNode>>();
         var load = provider.GetRequiredService<LoadOperation>();
         load.Parameters["Path"] = path;
-        load.Name = "Load";
 
         graph.AddNode(load);
         return (provider, graph, load);
@@ -346,7 +340,6 @@ public class VisionPipelineIntegrationTests(ITestOutputHelper output)
     {
         var graph = provider.GetRequiredService<Graph<IExecutableNode>>();
         var blur = provider.GetRequiredService<GaussianBlurOperation>();
-        blur.Name = name;
         blur.Parameters["KernelSize"] = kernel;
         blur.Parameters["Sigma"] = sigma;
         graph.AddNode(blur);

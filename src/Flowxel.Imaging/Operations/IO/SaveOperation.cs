@@ -5,7 +5,7 @@ namespace Flowxel.Imaging.Operations.IO;
 
 public class SaveOperation(ResourcePool pool, Graph<IExecutableNode> graph) : Node<Mat, Empty>(pool, graph)
 {
-    public override Empty ExecuteInternal(
+    protected override Empty ExecuteInternal(
         IReadOnlyList<Mat> inputs,
         IReadOnlyDictionary<string, object> parameters,
         CancellationToken ct)

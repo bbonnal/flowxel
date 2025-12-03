@@ -15,10 +15,7 @@ public abstract class Node<TIn, TOut> : IExecutableNode where TOut : notnull
         _graph = graph;
     }
 
- 
-
     public Guid Id { get; } = Guid.NewGuid();
-    public string Name { get; set; } = "";
     public Type InputType => typeof(TIn);
     public Type OutputType => typeof(TOut);
 
@@ -26,22 +23,24 @@ public abstract class Node<TIn, TOut> : IExecutableNode where TOut : notnull
 
     public Task Execute(CancellationToken ct)
     {
-        ct.ThrowIfCancellationRequested();
+        // Returns an uncompleted Task to the DAG scheduler for true parallel execution in WhenAll
+        return Task.Run(() =>
+        {
+            ct.ThrowIfCancellationRequested();
         
-        // Look in the pool for resources provided by predecessors
-        var inputs = typeof(TIn) == typeof(Empty) ? [] : _graph.GetPredecessorIds(Id).Select(_pool.Get<TIn>).ToArray();
+            // Look in the pool for resources provided by predecessors
+            var inputs = typeof(TIn) == typeof(Empty) ? [] : _graph.GetPredecessorIds(Id).Select(_pool.Get<TIn>).ToArray();
 
-        // Execute operation
-        var output = ExecuteInternal(inputs, Parameters, ct);
+            // Execute operation
+            var output = ExecuteInternal(inputs, Parameters, ct);
 
-        // Publish the result to the pool 
-        _pool.Set(Id, output);
-        
-        return Task.CompletedTask;
+            // Publish the result to the pool 
+            _pool.Set(Id, output);
+        }, ct);
     }
-    
-    public abstract TOut ExecuteInternal(
-        IReadOnlyList<TIn> inputs,                
+
+    protected abstract TOut ExecuteInternal(
+        IReadOnlyList<TIn> inputs,
         IReadOnlyDictionary<string, object> parameters,
         CancellationToken ct);
 }

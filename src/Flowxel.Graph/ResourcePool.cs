@@ -1,8 +1,11 @@
+using System.Collections.Concurrent;
+
 namespace Flowxel.Graph;
 
 public class ResourcePool
 {
-    private readonly Dictionary<Guid, object> _data = new();
+    // Use ConcurrentDictionary for thread-safe access
+    private readonly ConcurrentDictionary<Guid, object> _data = new();
 
     public void Set<T>(Guid nodeId, T value) where T : notnull
     {

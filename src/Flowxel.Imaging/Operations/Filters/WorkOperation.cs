@@ -8,7 +8,7 @@ public class WorkOperation(ResourcePool pool, Graph<IExecutableNode> graph) : No
     private readonly Random _rnd = new();
 
 
-    public override Mat ExecuteInternal(IReadOnlyList<Mat> inputs, IReadOnlyDictionary<string, object> parameters,
+    protected override Mat ExecuteInternal(IReadOnlyList<Mat> inputs, IReadOnlyDictionary<string, object> parameters,
         CancellationToken ct)
     {
         var src = inputs[0];
