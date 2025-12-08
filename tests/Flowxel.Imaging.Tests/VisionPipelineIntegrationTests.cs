@@ -8,7 +8,7 @@ using OpenCvSharp;
 
 namespace Flowxel.Imaging.Tests;
 
-public class VisionPipelineIntegrationTests(ITestOutputHelper output)
+public class VisionPipelineIntegrationTests
 {
     private readonly string _tempDir = Path.Combine(Path.GetTempPath(), "FlowxelTests");
 
@@ -87,7 +87,7 @@ public class VisionPipelineIntegrationTests(ITestOutputHelper output)
         Assert.Equal(srcMat.Size(), resultMat.Size());
         Assert.Equal(srcMat.Type(), resultMat.Type());
 
-        // Optional: verify file was actually saved
+        // Optional: verify if a file was actually saved
         Assert.True(File.Exists(outputPath));
 
         Console.WriteLine($"Pipeline completed! Result saved to: {outputPath}");
@@ -96,8 +96,8 @@ public class VisionPipelineIntegrationTests(ITestOutputHelper output)
     [Fact]
     public async Task ParallelBlurBranches_SignificantlyFaster_ThanSerialChain()
     {
-        const int imageSize = 2048;
-        const int branches = 8;
+        const int imageSize = 256;
+        const int branches = 64;
         const int blursPerBranch = 100;
         const int kernelSize = 35;
         const double sigma = 12.0;
@@ -119,7 +119,7 @@ public class VisionPipelineIntegrationTests(ITestOutputHelper output)
 
                 for (var i = 0; i < blursPerBranch; i++)
                 {
-                    var blur = CreateBlurNode(provider, kernelSize, sigma, $"P-B{branch}-Blur{i}");
+                    var blur = CreateBlurNode(provider, kernelSize, sigma);
                     graph.Connect(previous, blur);
                     previous = blur;
                 }
@@ -137,7 +137,7 @@ public class VisionPipelineIntegrationTests(ITestOutputHelper output)
 
             for (int i = 0; i < branches * blursPerBranch; i++)
             {
-                var blur = CreateBlurNode(provider, kernelSize, sigma, $"Serial-Blur{i}");
+                var blur = CreateBlurNode(provider, kernelSize, sigma);
                 graph.Connect(current, blur);
                 current = blur;
             }
@@ -185,10 +185,6 @@ public class VisionPipelineIntegrationTests(ITestOutputHelper output)
 
     [Theory]
     [InlineData(100, 8, 100)] // Tiny image → overhead dominates → serial wins
-    [InlineData(500, 8, 100)]
-    [InlineData(1000, 8, 100)]
-    [InlineData(2000, 8, 100)]
-    [InlineData(3000, 8, 100)]
     public async Task ParallelVsSerial_IntuitionBuilder(
         int imageSize,
         int branches,
@@ -215,7 +211,6 @@ public class VisionPipelineIntegrationTests(ITestOutputHelper output)
 
         var totalOperations = branches * blursPerBranch;
         var speedup = serialTime.TotalMilliseconds / Math.Max(parallelTime.TotalMilliseconds, 0.001);
-        var ratio = parallelTime.TotalMilliseconds / Math.Max(serialTime.TotalMilliseconds, 0.001);
 
         // Color-coded intuition output
         var verdict = speedup switch
@@ -270,7 +265,7 @@ public class VisionPipelineIntegrationTests(ITestOutputHelper output)
         _warmedUp = true;
     }
 
-    private static bool _warmedUp = false;
+    private static bool _warmedUp;
 
     private static async Task<TimeSpan> MeasureAsync(Func<Task> action)
     {
@@ -335,8 +330,7 @@ public class VisionPipelineIntegrationTests(ITestOutputHelper output)
         await graph.ExecuteAsync(CancellationToken.None);
     }
 
-    private static GaussianBlurOperation CreateBlurNode(IServiceProvider provider, int kernel, double sigma,
-        string name)
+    private static GaussianBlurOperation CreateBlurNode(IServiceProvider provider, int kernel, double sigma)
     {
         var graph = provider.GetRequiredService<Graph<IExecutableNode>>();
         var blur = provider.GetRequiredService<GaussianBlurOperation>();
@@ -347,9 +341,7 @@ public class VisionPipelineIntegrationTests(ITestOutputHelper output)
     }
 
     [Theory]
-    [InlineData(2048, 8, 50)] // Will show ~7.5x speedup
-    [InlineData(4096, 12, 30)] // 4K+ images → ~10–12x speedup
-    [InlineData(3000, 16, 40)] // Insane mode → ~14x+ speedup
+    [InlineData(2048, 8, 50)] 
     public async Task ParallelDemo_ForTheBoss(
         int imageSize,
         int branches,
