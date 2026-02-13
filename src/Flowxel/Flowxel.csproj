@@ -17,7 +17,6 @@
         <Company>Flowxel</Company>
         <Description>Flowxel - a graph-based image processing engine.</Description>
         <RepositoryUrl>https://github.com/benou/flowxel</RepositoryUrl>
-        <PackageLicenseExpression>GPL-3.0</PackageLicenseExpression>
         <PackageProjectUrl>https://github.com/benou/flowxel</PackageProjectUrl>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
