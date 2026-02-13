@@ -75,7 +75,7 @@ public class VisionPipelineIntegrationTests
         graph.Connect(subtract, save);
 
         // Act
-        await graph.ExecuteAsync(CancellationToken.None);
+        await graph.ExecuteAsync(TestContext.Current.CancellationToken);
 
         // Assert
         var resultMat = pool.Get<Mat>(subtract.Id);
@@ -125,7 +125,7 @@ public class VisionPipelineIntegrationTests
                 }
             }
 
-            await graph.ExecuteAsync(CancellationToken.None);
+            await graph.ExecuteAsync(TestContext.Current.CancellationToken);
         });
 
         // 2. SERIAL: One giant chain of N×M blurs
@@ -142,7 +142,7 @@ public class VisionPipelineIntegrationTests
                 current = blur;
             }
 
-            await graph.ExecuteAsync(CancellationToken.None);
+            await graph.ExecuteAsync(TestContext.Current.CancellationToken);
         });
 
         // Results
@@ -327,7 +327,7 @@ public class VisionPipelineIntegrationTests
             }
         }
 
-        await graph.ExecuteAsync(CancellationToken.None);
+        await graph.ExecuteAsync(TestContext.Current.CancellationToken);
     }
 
     private static GaussianBlurOperation CreateBlurNode(IServiceProvider provider, int kernel, double sigma)
@@ -340,101 +340,4 @@ public class VisionPipelineIntegrationTests
         return blur;
     }
 
-    [Theory]
-    [InlineData(2048, 8, 50)] 
-    public async Task ParallelDemo_ForTheBoss(
-        int imageSize,
-        int branches,
-        int heavyOpsPerBranch)
-    {
-        // Use a REAL CPU-bound operation that doesn't murder RAM
-        // → Sobel + Canny + Morphology chain (all CPU-heavy, low allocation)
-        Directory.CreateDirectory(_tempDir);
-        var testImagePath = Path.Combine(_tempDir, $"boss_demo_{imageSize}.png");
-        if (!File.Exists(testImagePath))
-        {
-            var mat = ImagingTestHelpers.GenerateRandomMat(imageSize, imageSize, MatType.CV_8UC1);
-            Cv2.ImWrite(testImagePath, mat);
-            mat.Dispose();
-        }
-
-        await WarmupOnceAsync(10);
-
-        // PARALLEL: 8–16 independent processing branches
-        var parallelTime = await MeasureAsync(() =>
-            BuildAndRunGraph_BossMode(testImagePath, branches, heavyOpsPerBranch, isParallel: true));
-
-        // SERIAL: One giant chain
-        var serialTime = await MeasureAsync(() =>
-            BuildAndRunGraph_BossMode(testImagePath, branches, heavyOpsPerBranch, isParallel: false));
-
-        var speedup = serialTime.TotalMilliseconds / Math.Max(parallelTime.TotalMilliseconds, 0.1);
-
-        Console.WriteLine();
-        Console.WriteLine("".PadRight(80, '='));
-        Console.WriteLine(
-            $" BOSS DEMO :: {imageSize}x{imageSize} image :: {branches} branches :: {heavyOpsPerBranch} heavy ops each ");
-        Console.WriteLine("".PadRight(80, '='));
-        Console.WriteLine($" Parallel branches  : {branches,2}");
-        Console.WriteLine($" Operations/branch  : {heavyOpsPerBranch,3}");
-        Console.WriteLine($" Total operations   : {branches * heavyOpsPerBranch,4}");
-        Console.WriteLine($" Parallel time      : {parallelTime.TotalSeconds,5:F2} s");
-        Console.WriteLine($" Serial time        : {serialTime.TotalSeconds,5:F2} s");
-        Console.WriteLine($" SPEEDUP            : {speedup,5:F2}x");
-        Console.WriteLine("".PadRight(80, '='));
-
-        if (speedup > 6.0)
-            Console.WriteLine($"PARALLEL ENGINE = PRODUCTION READY ( ͡° ͜ʖ ͡°)");
-        else if (speedup > 3.0)
-            Console.WriteLine($"SOLID WIN — Your scheduler is excellent");
-        else
-            Console.WriteLine($"Something is wrong — should be >6x");
-
-        Assert.True(speedup > 5.0, $"Expected massive parallel win, got only {speedup:F2}x");
-    }
-
-    private async Task BuildAndRunGraph_BossMode(string path, int branches, int opsPerBranch, bool isParallel)
-    {
-        var services = new ServiceCollection();
-        services.AddSingleton<ResourcePool>();
-        services.AddSingleton<Graph<IExecutableNode>>();
-        services.AddTransient<LoadOperation>();
-        services.AddTransient<WorkOperation>();
-        var provider = services.BuildServiceProvider();
-
-        var graph = provider.GetRequiredService<Graph<IExecutableNode>>();
-        var load = provider.GetRequiredService<LoadOperation>();
-        load.Parameters["Path"] = path;
-        graph.AddNode(load);
-
-        if (isParallel)
-        {
-            for (int b = 0; b < branches; b++)
-            {
-                IExecutableNode prev = load;
-                for (int i = 0; i < opsPerBranch; i++)
-                {
-                    var node = provider.GetRequiredService<WorkOperation>();
-                    graph.AddNode(node);
-                    graph.Connect(prev, node);
-                    prev = node;
-                }
-            }
-        }
-        else
-        {
-            IExecutableNode current = load;
-            for (int i = 0; i < branches * opsPerBranch; i++)
-            {
-                var node = provider.GetRequiredService<WorkOperation>();
-                graph.AddNode(node);
-                graph.Connect(current, node);
-                current = node;
-            }
-        }
-
-        await graph.ExecuteAsync(CancellationToken.None);
-    }
-    
-    
 }

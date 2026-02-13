@@ -121,7 +121,7 @@ public static class ImagingTestHelpers
         {
             Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             // ignored
         }

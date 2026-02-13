@@ -18,18 +18,18 @@
     &lt;TestId&gt;xUnit::28EE70D9-EF9B-4D11-ADEF-993BD96FA8AC::net9.0::Flowxel.Imaging.Tests.VisionPipelineIntegrationTests&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=7de32569_002Dcc1a_002D447b_002D8531_002D602d239315dd/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="ParallelVsSerial_IntuitionBuilder" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=7de32569_002Dcc1a_002D447b_002D8531_002D602d239315dd/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="ParallelVsSerial_IntuitionBuilder" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;TestAncestor&gt;
     &lt;TestId&gt;xUnit::28EE70D9-EF9B-4D11-ADEF-993BD96FA8AC::net10.0::Flowxel.Imaging.Tests.ShapeDetectionTests.ProduceSquareInMat&lt;/TestId&gt;
     &lt;TestId&gt;xUnit::28EE70D9-EF9B-4D11-ADEF-993BD96FA8AC::net10.0::Flowxel.Imaging.Tests.ShapeDetectionTests.ProduceEllipseInMat&lt;/TestId&gt;
     &lt;TestId&gt;xUnit::28EE70D9-EF9B-4D11-ADEF-993BD96FA8AC::net10.0::Flowxel.Imaging.Tests.ShapeDetectionTests.DetectCircleInMat&lt;/TestId&gt;
     &lt;TestId&gt;xUnit::28EE70D9-EF9B-4D11-ADEF-993BD96FA8AC::net10.0::Flowxel.Imaging.Tests.ShapeDetectionTests.DetectContoursInMat&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::28EE70D9-EF9B-4D11-ADEF-993BD96FA8AC::net10.0::Flowxel.Imaging.Tests.AdvancedOperationsTests.CircleWithCircleRoi_CropThenExtractCircle_ReturnsExpectedCenterAndRadius&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=c73cca0b_002D8fc4_002D4777_002D9b6a_002Da2cbe07007a8/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="ParallelDemo_ForTheBoss" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=c73cca0b_002D8fc4_002D4777_002D9b6a_002Da2cbe07007a8/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="ParallelDemo_ForTheBoss" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;TestAncestor&gt;
-    &lt;TestId&gt;xUnit::28EE70D9-EF9B-4D11-ADEF-993BD96FA8AC::net9.0::Flowxel.Imaging.Tests.VisionPipelineIntegrationTests.ParallelDemo_ForTheBoss&lt;/TestId&gt;
-    &lt;TestId&gt;xUnit::28EE70D9-EF9B-4D11-ADEF-993BD96FA8AC::net9.0::Flowxel.Imaging.Tests.VisionPipelineIntegrationTests.ParallelBlurBranches_SignificantlyFaster_ThanSerialChain&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::28EE70D9-EF9B-4D11-ADEF-993BD96FA8AC::net10.0::Flowxel.Imaging.Tests.AdvancedOperationsTests.CropImageFromRectangleRegion_CropsAroundTheRequestedRegion&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
 	
