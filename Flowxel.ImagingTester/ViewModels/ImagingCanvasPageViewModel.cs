@@ -962,6 +962,14 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
         if (SelectedProcessNode?.OperationType != "ExtractLineInRegionsOperation")
             return;
 
+        if (_extractRoiShapeIdByNodeId.TryGetValue(SelectedProcessNode.Id, out var existingShapeId))
+        {
+            var existingShape = Shapes.FirstOrDefault(shape => shape.Id == existingShapeId);
+            if (existingShape is not null)
+                Shapes.Remove(existingShape);
+            _extractRoiShapeIdByNodeId.Remove(SelectedProcessNode.Id);
+        }
+
         _pendingRoiNodeId = SelectedProcessNode.Id;
         ActiveTool = DrawingTool.Rectangle;
 
@@ -1036,13 +1044,6 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
         var rectangle = e.NewItems.OfType<FlowRectangle>().FirstOrDefault();
         if (rectangle is null)
             return;
-
-        if (_extractRoiShapeIdByNodeId.TryGetValue(_pendingRoiNodeId, out var existingShapeId))
-        {
-            var existingShape = Shapes.FirstOrDefault(shape => shape.Id == existingShapeId);
-            if (existingShape is not null)
-                Shapes.Remove(existingShape);
-        }
 
         _extractRoiShapeIdByNodeId[_pendingRoiNodeId] = rectangle.Id;
         _pendingRoiNodeId = null;

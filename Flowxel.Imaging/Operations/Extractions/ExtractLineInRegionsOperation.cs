@@ -18,7 +18,7 @@ public class ExtractLineInRegionsOperation(ResourcePool pool, Graph<IExecutableN
         var region = (Rectangle)parameters["Region"];
 
         var maskSw = Stopwatch.StartNew();
-        var (mask, roi) = RegionMasking.BuildMaskAndBoundingBox(input.Size(), region);
+        var (mask, roi) = RegionMasking.BuildRectangleMaskAndBoundingBox(input.Size(), region);
         maskSw.Stop();
 
         Console.WriteLine(
@@ -33,13 +33,8 @@ public class ExtractLineInRegionsOperation(ResourcePool pool, Graph<IExecutableN
                 return [];
             }
 
-            var bitwiseSw = Stopwatch.StartNew();
-            using var masked = new Mat();
-            Cv2.BitwiseAnd(input, input, masked, mask);
-            bitwiseSw.Stop();
-
             var roiSw = Stopwatch.StartNew();
-            using var roiMat = new Mat(masked, roi).Clone();
+            using var roiMat = new Mat(input, roi).Clone();
             roiSw.Stop();
 
             var graySw = Stopwatch.StartNew();
@@ -51,13 +46,20 @@ public class ExtractLineInRegionsOperation(ResourcePool pool, Graph<IExecutableN
             Cv2.Canny(gray, edges, 40, 120, 3, true);
             cannySw.Stop();
 
+            var maskEdgesSw = Stopwatch.StartNew();
+            using var interiorMask = mask.Clone();
+            if (roi.Width >= 3 && roi.Height >= 3)
+                Cv2.Erode(mask, interiorMask, Cv2.GetStructuringElement(MorphShapes.Rect, new OpenCvSharp.Size(3, 3)));
+            Cv2.BitwiseAnd(edges, interiorMask, edges);
+            maskEdgesSw.Stop();
+
             var houghSw = Stopwatch.StartNew();
             var minLength = Math.Max(8, Math.Min(roi.Width, roi.Height) / 4);
             var segments = Cv2.HoughLinesP(edges, 1, Math.PI / 180, 20, minLength, 10);
             houghSw.Stop();
 
             Console.WriteLine(
-                $"[ExtractLine] preprocess node={Id} bitwise={bitwiseSw.Elapsed.TotalMilliseconds:F2}ms roiClone={roiSw.Elapsed.TotalMilliseconds:F2}ms gray={graySw.Elapsed.TotalMilliseconds:F2}ms canny={cannySw.Elapsed.TotalMilliseconds:F2}ms hough={houghSw.Elapsed.TotalMilliseconds:F2}ms segments={segments.Length}");
+                $"[ExtractLine] preprocess node={Id} roiClone={roiSw.Elapsed.TotalMilliseconds:F2}ms gray={graySw.Elapsed.TotalMilliseconds:F2}ms canny={cannySw.Elapsed.TotalMilliseconds:F2}ms maskEdges={maskEdgesSw.Elapsed.TotalMilliseconds:F2}ms hough={houghSw.Elapsed.TotalMilliseconds:F2}ms segments={segments.Length}");
 
             if (segments.Length == 0)
             {

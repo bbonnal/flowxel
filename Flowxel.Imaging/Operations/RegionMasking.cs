@@ -6,6 +6,34 @@ namespace Flowxel.Imaging.Operations;
 
 internal static class RegionMasking
 {
+    public static (Mat Mask, Rect BoundingBox) BuildRectangleMaskAndBoundingBox(Size imageSize, Rectangle rectangle)
+    {
+        var corners = GetRectangleCorners(rectangle);
+        var minX = corners.Min(point => point.X);
+        var minY = corners.Min(point => point.Y);
+        var maxX = corners.Max(point => point.X);
+        var maxY = corners.Max(point => point.Y);
+
+        var roiMinX = Math.Max(0, (int)Math.Floor(minX) - 1);
+        var roiMinY = Math.Max(0, (int)Math.Floor(minY) - 1);
+        var roiMaxX = Math.Min(imageSize.Width - 1, (int)Math.Ceiling(maxX) + 1);
+        var roiMaxY = Math.Min(imageSize.Height - 1, (int)Math.Ceiling(maxY) + 1);
+
+        if (roiMinX > roiMaxX || roiMinY > roiMaxY)
+            return (new Mat(), new Rect(0, 0, 0, 0));
+
+        var roiWidth = roiMaxX - roiMinX + 1;
+        var roiHeight = roiMaxY - roiMinY + 1;
+        var localMask = new Mat(roiHeight, roiWidth, MatType.CV_8UC1, Scalar.All(0));
+
+        var polygon = corners
+            .Select(point => new OpenCvSharp.Point(point.X - roiMinX, point.Y - roiMinY))
+            .ToArray();
+
+        Cv2.FillConvexPoly(localMask, polygon, Scalar.All(255));
+        return (localMask, new Rect(roiMinX, roiMinY, roiWidth, roiHeight));
+    }
+
     public static (Mat Mask, Rect BoundingBox) BuildMaskAndBoundingBox(Size imageSize, Shape region)
     {
         var mask = new Mat(imageSize.Height, imageSize.Width, MatType.CV_8UC1, Scalar.All(0));
@@ -105,5 +133,25 @@ internal static class RegionMasking
 
         var angle = Math.Atan2(local.Y, local.X);
         return IsAngleInArc(angle, arc);
+    }
+
+    private static Vector[] GetRectangleCorners(Rectangle rectangle)
+    {
+        var center = rectangle.Pose.Position;
+        var axisX = rectangle.Pose.Orientation.Normalize();
+        var axisY = new Vector(-axisX.Y, axisX.X);
+        var halfWidth = rectangle.Width * 0.5;
+        var halfHeight = rectangle.Height * 0.5;
+
+        var xOffset = axisX.Scale(halfWidth);
+        var yOffset = axisY.Scale(halfHeight);
+
+        return
+        [
+            center - xOffset - yOffset,
+            center + xOffset - yOffset,
+            center + xOffset + yOffset,
+            center - xOffset + yOffset
+        ];
     }
 }
