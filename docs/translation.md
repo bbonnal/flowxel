@@ -1,16 +1,16 @@
 # Translation Workflow for AXML
 
-Translation is grouped in `rUI.Avalonia.Desktop/Translation`.
+Translation is grouped in `fx.Avalonia.Desktop/Translation`.
 The tester app only provides DI configuration and embedded JSON files.
 
 ## Architecture
 
 Core translation functionality (package):
-- `rUI.Avalonia.Desktop/Translation/ITranslationService.cs`
-- `rUI.Avalonia.Desktop/Translation/TranslationService.cs`
-- `rUI.Avalonia.Desktop/Translation/JsonTranslationCatalogLoader.cs`
-- `rUI.Avalonia.Desktop/Translation/TranslationBindingSource.cs`
-- `rUI.Avalonia.Desktop/Translation/TranslateExtension.cs`
+- `fx.Avalonia.Desktop/Translation/ITranslationService.cs`
+- `fx.Avalonia.Desktop/Translation/TranslationService.cs`
+- `fx.Avalonia.Desktop/Translation/JsonTranslationCatalogLoader.cs`
+- `fx.Avalonia.Desktop/Translation/TranslationBindingSource.cs`
+- `fx.Avalonia.Desktop/Translation/TranslateExtension.cs`
 
 App-side configuration:
 - `Flowxel.UITester/ServiceCollectionExtensions.cs`
@@ -41,7 +41,7 @@ Runtime loading:
 - `TranslationBindingSource.Instance.Initialize(services.GetRequiredService<ITranslationService>());`
 
 4. Use translation namespace in AXML.
-- `xmlns:tr="using:rUI.Avalonia.Desktop.Translation"`
+- `xmlns:tr="using:fx.Avalonia.Desktop.Translation"`
 
 5. Bind strings directly by key.
 - `Text="{tr:Translate settings.title}"`

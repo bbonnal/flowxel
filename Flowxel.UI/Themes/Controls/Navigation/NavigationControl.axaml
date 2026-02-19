@@ -5,8 +5,8 @@
     <ControlTheme x:Key="{x:Type controls:NavigationControl}" TargetType="controls:NavigationControl">
         <Setter Property="Template">
             <ControlTemplate>
-                <Border Background="{DynamicResource rUISurfaceBrush}"
-                       BorderBrush="{DynamicResource rUIBorderSubtleBrush}"
+                <Border Background="{DynamicResource fxSurfaceBrush}"
+                       BorderBrush="{DynamicResource fxBorderSubtleBrush}"
                        BorderThickness="0,0,1,0"
                        Width="80">
                     <DockPanel>
@@ -25,19 +25,19 @@
                                 <Style Selector="ListBoxItem">
                                     <Setter Property="HorizontalContentAlignment" Value="Center" />
                                     <Setter Property="VerticalContentAlignment" Value="Center" />
-                                    <Setter Property="Padding" Value="4,8" />
+                                    <Setter Property="Padding" Value="{DynamicResource fxPaddingNavItem}" />
                                 </Style>
                                 <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-                                    <Setter Property="Background" Value="{DynamicResource rUIHoverBrush}" />
+                                    <Setter Property="Background" Value="{DynamicResource fxHoverBrush}" />
                                 </Style>
                                 <Style Selector="ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
-                                    <Setter Property="Background" Value="{DynamicResource rUISelectionBrush}" />
+                                    <Setter Property="Background" Value="{DynamicResource fxSelectionBrush}" />
                                 </Style>
                                 <Style Selector="ListBoxItem:selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-                                    <Setter Property="Background" Value="{DynamicResource rUISelectionBrush}" />
+                                    <Setter Property="Background" Value="{DynamicResource fxSelectionBrush}" />
                                 </Style>
                                 <Style Selector="ListBoxItem:selected:pressed /template/ ContentPresenter#PART_ContentPresenter">
-                                    <Setter Property="Background" Value="{DynamicResource rUISelectionBrush}" />
+                                    <Setter Property="Background" Value="{DynamicResource fxSelectionBrush}" />
                                 </Style>
                             </ListBox.Styles>
                         </ListBox>
@@ -50,19 +50,19 @@
                                 <Style Selector="ListBoxItem">
                                     <Setter Property="HorizontalContentAlignment" Value="Center" />
                                     <Setter Property="VerticalContentAlignment" Value="Center" />
-                                    <Setter Property="Padding" Value="4,8" />
+                                    <Setter Property="Padding" Value="{DynamicResource fxPaddingNavItem}" />
                                 </Style>
                                 <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-                                    <Setter Property="Background" Value="{DynamicResource rUIHoverBrush}" />
+                                    <Setter Property="Background" Value="{DynamicResource fxHoverBrush}" />
                                 </Style>
                                 <Style Selector="ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
-                                    <Setter Property="Background" Value="{DynamicResource rUISelectionBrush}" />
+                                    <Setter Property="Background" Value="{DynamicResource fxSelectionBrush}" />
                                 </Style>
                                 <Style Selector="ListBoxItem:selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-                                    <Setter Property="Background" Value="{DynamicResource rUISelectionBrush}" />
+                                    <Setter Property="Background" Value="{DynamicResource fxSelectionBrush}" />
                                 </Style>
                                 <Style Selector="ListBoxItem:selected:pressed /template/ ContentPresenter#PART_ContentPresenter">
-                                    <Setter Property="Background" Value="{DynamicResource rUISelectionBrush}" />
+                                    <Setter Property="Background" Value="{DynamicResource fxSelectionBrush}" />
                                 </Style>
                             </ListBox.Styles>
                         </ListBox>

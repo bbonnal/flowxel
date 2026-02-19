@@ -54,16 +54,16 @@
 
         <Border Margin="16"
                 CornerRadius="10"
-                BorderBrush="{DynamicResource rUIBorderSubtleBrush}"
+                BorderBrush="{DynamicResource fxBorderSubtleBrush}"
                 BorderThickness="1"
-                Background="{DynamicResource rUISurfaceBrush}">
+                Background="{DynamicResource fxSurfaceBrush}">
             <DockPanel LastChildFill="True">
                 <Border DockPanel.Dock="Bottom"
                         Padding="10,8"
-                        BorderBrush="{DynamicResource rUIBorderSubtleBrush}"
+                        BorderBrush="{DynamicResource fxBorderSubtleBrush}"
                         BorderThickness="0,1,0,0">
                     <TextBlock Text="{Binding StatusText}"
-                               Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                               Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
                 </Border>
 
                 <ruiDock:DockingControl x:Name="DockHost"

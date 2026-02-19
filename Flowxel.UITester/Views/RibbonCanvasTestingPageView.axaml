@@ -88,7 +88,7 @@
                 <ruiRibbon:RibbonGroup Header="Usage">
                     <TextBlock Width="640"
                                TextWrapping="Wrap"
-                               Foreground="{DynamicResource rUIForegroundSecondaryBrush}"
+                               Foreground="{DynamicResource fxForegroundSecondaryBrush}"
                                Text="Select/Move: select, drag, and resize with handles. Draw tools create elements on drag. Middle mouse: pan. Wheel: zoom. Right click: context menu (shape properties, canvas settings, delete, center view). Scene can be saved/loaded as JSON and exported as SVG. Shortcuts: Ctrl+S save, Ctrl+O load, Ctrl+Shift+E export, Ctrl+R reset, Esc select, P/L/R/C/A/T/M/I tool picks." />
                 </ruiRibbon:RibbonGroup>
             </ruiRibbon:RibbonTab>
@@ -96,16 +96,16 @@
 
         <Border Margin="16"
                 CornerRadius="10"
-                BorderBrush="{DynamicResource rUIBorderSubtleBrush}"
+                BorderBrush="{DynamicResource fxBorderSubtleBrush}"
                 BorderThickness="1"
-                Background="{DynamicResource rUISurfaceBrush}">
+                Background="{DynamicResource fxSurfaceBrush}">
             <DockPanel LastChildFill="True">
                 <Border DockPanel.Dock="Bottom"
                         Padding="10,8"
-                        BorderBrush="{DynamicResource rUIBorderSubtleBrush}"
+                        BorderBrush="{DynamicResource fxBorderSubtleBrush}"
                         BorderThickness="0,1,0,0">
                     <TextBlock Text="{Binding StatusText}"
-                               Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                               Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
                 </Border>
 
                 <ruiDrawing:DrawingCanvasControl Shapes="{Binding Shapes}"

@@ -5,8 +5,8 @@
     <ControlTheme x:Key="{x:Type processing:ResourcePoolControl}" TargetType="processing:ResourcePoolControl">
         <Setter Property="Template">
             <ControlTemplate>
-                <Border Background="{DynamicResource rUISurfaceBrush}"
-                        BorderBrush="{DynamicResource rUIBorderSubtleBrush}"
+                <Border Background="{DynamicResource fxSurfaceBrush}"
+                        BorderBrush="{DynamicResource fxBorderSubtleBrush}"
                         BorderThickness="1"
                         CornerRadius="8"
                         Padding="10">
@@ -32,15 +32,15 @@
                                  SelectedItem="{TemplateBinding SelectedResource, Mode=TwoWay}">
                             <ListBox.ItemTemplate>
                                 <DataTemplate x:DataType="processing:ResourceEntryDescriptor">
-                                    <Border BorderBrush="{DynamicResource rUIBorderSubtleBrush}"
+                                    <Border BorderBrush="{DynamicResource fxBorderSubtleBrush}"
                                             BorderThickness="1"
                                             CornerRadius="6"
                                             Padding="8"
                                             Margin="0,0,0,4">
                                         <StackPanel Spacing="2">
                                             <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
-                                            <TextBlock Text="{Binding TypeName}" Foreground="{DynamicResource rUIForegroundSecondaryBrush}"/>
-                                            <TextBlock Text="{Binding Preview}" FontSize="11" Foreground="{DynamicResource rUIForegroundSecondaryBrush}"/>
+                                            <TextBlock Text="{Binding TypeName}" Foreground="{DynamicResource fxForegroundSecondaryBrush}"/>
+                                            <TextBlock Text="{Binding Preview}" FontSize="11" Foreground="{DynamicResource fxForegroundSecondaryBrush}"/>
                                         </StackPanel>
                                     </Border>
                                 </DataTemplate>

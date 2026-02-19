@@ -16,7 +16,7 @@
                        FontSize="24"
                        FontWeight="SemiBold" />
             <TextBlock Text="{tr:Translate settings.subtitle}"
-                       Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                       Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
 
             <!-- General -->
             <TextBlock Text="{tr:Translate settings.section.general}"
@@ -35,7 +35,7 @@
                                          IconData="{pia:IconGeometry Icon=translate}">
                 <StackPanel Spacing="12">
                     <TextBlock Text="{Binding CurrentLanguageDisplay}"
-                               Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                               Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <Button Content="{tr:Translate settings.language.english}"
                                 Command="{Binding SetEnglishCommand}" />
@@ -88,7 +88,7 @@
                        Margin="0,8,0,0" />
 
             <TextBlock Text="{Binding SaveStatus}"
-                       Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                       Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
         </StackPanel>
     </ScrollViewer>
 </UserControl>

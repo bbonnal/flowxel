@@ -69,16 +69,16 @@
 
         <Border Margin="16"
                 CornerRadius="10"
-                BorderBrush="{DynamicResource rUIBorderSubtleBrush}"
+                BorderBrush="{DynamicResource fxBorderSubtleBrush}"
                 BorderThickness="1"
-                Background="{DynamicResource rUISurfaceBrush}">
+                Background="{DynamicResource fxSurfaceBrush}">
             <DockPanel LastChildFill="True">
                 <Border DockPanel.Dock="Bottom"
                         Padding="10,8"
-                        BorderBrush="{DynamicResource rUIBorderSubtleBrush}"
+                        BorderBrush="{DynamicResource fxBorderSubtleBrush}"
                         BorderThickness="0,1,0,0">
                     <TextBlock Text="{Binding StatusText}"
-                               Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                               Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
                 </Border>
 
                 <Grid ColumnDefinitions="3*,2*"
@@ -93,7 +93,7 @@
                                                      CursorCanvasPosition="{Binding CursorCanvasPosition}"
                                                      DialogService="{Binding DialogService}"
                                                      InfoBarService="{Binding InfoBarService}"
-                                                     CanvasBackground="{DynamicResource rUIBackgroundBrush}" />
+                                                     CanvasBackground="{DynamicResource fxBackgroundBrush}" />
 
                     <ScrollViewer Grid.Column="1"
                                   HorizontalScrollBarVisibility="Disabled"
@@ -106,16 +106,16 @@
                             <ItemsControl ItemsSource="{Binding AvailableFlowxelOperations}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding}" Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                                        <TextBlock Text="{Binding}" Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
 
                             <TextBlock Text="{Binding PipelineSummary}"
                                        TextWrapping="Wrap"
-                                       Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                                       Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
 
-                            <Border BorderBrush="{DynamicResource rUIBorderSubtleBrush}"
+                            <Border BorderBrush="{DynamicResource fxBorderSubtleBrush}"
                                     BorderThickness="1"
                                     CornerRadius="8"
                                     Padding="10">
@@ -128,7 +128,7 @@
                                         <TextBlock Text="loadImage publishes Mat into the resource pool when executed."
                                                    TextWrapping="Wrap"
                                                    FontSize="11"
-                                                   Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                                                   Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
                                     </StackPanel>
 
                                     <StackPanel Spacing="4" IsVisible="{Binding CanEditGaussian}">
@@ -142,13 +142,13 @@
                                         <TextBlock Text="Map Gaussian input port to loadImage output in Process Control."
                                                    TextWrapping="Wrap"
                                                    FontSize="11"
-                                                   Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                                                   Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
                                     </StackPanel>
 
                                     <StackPanel Spacing="6" IsVisible="{Binding CanConfigureExtractLine}">
                                         <TextBlock Text="extractLineInRegion" />
                                         <TextBlock Text="{Binding SelectedExtractRoiStatus}"
-                                                   Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                                                   Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
                                         <StackPanel Orientation="Horizontal" Spacing="8">
                                             <Button Content="Draw ROI"
                                                     Command="{Binding DrawRoiForSelectedOperationCommand}" />
@@ -158,7 +158,7 @@
                                         <TextBlock Text="Connect extract input to either loadImage or GaussianBlur output."
                                                    TextWrapping="Wrap"
                                                    FontSize="11"
-                                                   Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                                                   Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
                                     </StackPanel>
                                 </StackPanel>
                             </Border>

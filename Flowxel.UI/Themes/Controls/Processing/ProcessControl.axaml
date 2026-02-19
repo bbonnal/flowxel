@@ -5,8 +5,8 @@
     <ControlTheme x:Key="{x:Type processing:ProcessControl}" TargetType="processing:ProcessControl">
         <Setter Property="Template">
             <ControlTemplate>
-                <Border Background="{DynamicResource rUISurfaceBrush}"
-                        BorderBrush="{DynamicResource rUIBorderSubtleBrush}"
+                <Border Background="{DynamicResource fxSurfaceBrush}"
+                        BorderBrush="{DynamicResource fxBorderSubtleBrush}"
                         BorderThickness="1"
                         CornerRadius="8"
                         Padding="10">
@@ -67,16 +67,16 @@
                                      SelectedItem="{TemplateBinding SelectedNode, Mode=TwoWay}">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate x:DataType="processing:ProcessNodeDescriptor">
-                                        <Border BorderBrush="{DynamicResource rUIBorderSubtleBrush}"
+                                        <Border BorderBrush="{DynamicResource fxBorderSubtleBrush}"
                                                 BorderThickness="1"
                                                 CornerRadius="6"
                                                 Padding="8"
                                                 Margin="0,0,0,4">
                                             <StackPanel Spacing="3">
                                                 <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
-                                                <TextBlock Text="{Binding OperationType}" Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
-                                                <TextBlock Text="{Binding Inputs.Count, StringFormat=Inputs: {0}}" FontSize="11" Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
-                                                <TextBlock Text="{Binding Outputs.Count, StringFormat=Outputs: {0}}" FontSize="11" Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                                                <TextBlock Text="{Binding OperationType}" Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
+                                                <TextBlock Text="{Binding Inputs.Count, StringFormat=Inputs: {0}}" FontSize="11" Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
+                                                <TextBlock Text="{Binding Outputs.Count, StringFormat=Outputs: {0}}" FontSize="11" Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
                                             </StackPanel>
                                         </Border>
                                     </DataTemplate>
@@ -89,7 +89,7 @@
                                      SelectedItem="{TemplateBinding SelectedLink, Mode=TwoWay}">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate x:DataType="processing:ProcessLinkDescriptor">
-                                        <Border BorderBrush="{DynamicResource rUIBorderSubtleBrush}"
+                                        <Border BorderBrush="{DynamicResource fxBorderSubtleBrush}"
                                                 BorderThickness="1"
                                                 CornerRadius="6"
                                                 Padding="8"

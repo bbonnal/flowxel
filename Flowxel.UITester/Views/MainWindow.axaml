@@ -11,7 +11,7 @@
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
         Title="Enigma"
-        Background="{DynamicResource rUIBackgroundBrush}">
+        Background="{DynamicResource fxBackgroundBrush}">
 
     <Panel>
         <DockPanel>

@@ -330,7 +330,7 @@ public class CalendarScheduleControl : TemplatedControl
                 Text = dayNames[dayIndex][..2],
                 HorizontalAlignment = HorizontalAlignment.Center,
                 FontSize = 11,
-                Foreground = GetBrush("rUIForegroundSecondaryBrush")
+                Foreground = GetBrush("fxForegroundSecondaryBrush")
             };
             Grid.SetColumn(header, i);
             Grid.SetRow(header, 0);
@@ -364,12 +364,12 @@ public class CalendarScheduleControl : TemplatedControl
                     MinWidth = 0,
                     MinHeight = 0,
                     FontSize = 11,
-                    Background = isToday ? GetBrush("rUICalendarTodayBrush")
-                               : isSelected ? GetBrush("rUICalendarSelectedBrush")
+                    Background = isToday ? GetBrush("fxCalendarTodayBrush")
+                               : isSelected ? GetBrush("fxCalendarSelectedBrush")
                                : Brushes.Transparent,
-                    Foreground = !isCurrentMonth ? GetBrush("rUICalendarOutOfMonthBrush")
-                               : isToday ? GetBrush("rUIAccentBrush")
-                               : GetBrush("rUIForegroundBrush"),
+                    Foreground = !isCurrentMonth ? GetBrush("fxCalendarOutOfMonthBrush")
+                               : isToday ? GetBrush("fxAccentBrush")
+                               : GetBrush("fxForegroundBrush"),
                     BorderThickness = new Thickness(0),
                     CornerRadius = new CornerRadius(4)
                 };
@@ -404,7 +404,7 @@ public class CalendarScheduleControl : TemplatedControl
                 HorizontalAlignment = HorizontalAlignment.Center,
                 FontSize = 12,
                 FontWeight = FontWeight.SemiBold,
-                Foreground = GetBrush("rUIForegroundSecondaryBrush"),
+                Foreground = GetBrush("fxForegroundSecondaryBrush"),
                 Margin = new Thickness(0, 0, 0, 4)
             };
             Grid.SetColumn(header, i);
@@ -439,9 +439,9 @@ public class CalendarScheduleControl : TemplatedControl
                     FontSize = 12,
                     HorizontalAlignment = HorizontalAlignment.Left,
                     Margin = new Thickness(4, 2),
-                    Foreground = !isCurrentMonth ? GetBrush("rUICalendarOutOfMonthBrush")
-                               : isToday ? GetBrush("rUIAccentBrush")
-                               : GetBrush("rUIForegroundBrush"),
+                    Foreground = !isCurrentMonth ? GetBrush("fxCalendarOutOfMonthBrush")
+                               : isToday ? GetBrush("fxAccentBrush")
+                               : GetBrush("fxForegroundBrush"),
                     FontWeight = isToday ? FontWeight.Bold : FontWeight.Normal
                 };
                 cellContent.Children.Add(dayNumber);
@@ -456,7 +456,7 @@ public class CalendarScheduleControl : TemplatedControl
                 {
                     var appointmentBorder = new Border
                     {
-                        Background = item.Color ?? GetBrush("rUICalendarAppointmentBrush"),
+                        Background = item.Color ?? GetBrush("fxCalendarAppointmentBrush"),
                         CornerRadius = new CornerRadius(2),
                         Padding = new Thickness(3, 1),
                         Margin = new Thickness(2, 0),
@@ -487,7 +487,7 @@ public class CalendarScheduleControl : TemplatedControl
                     {
                         Text = $"+{totalDayItems - 3} more",
                         FontSize = 10,
-                        Foreground = GetBrush("rUIForegroundSecondaryBrush"),
+                        Foreground = GetBrush("fxForegroundSecondaryBrush"),
                         Margin = new Thickness(4, 0)
                     };
                     cellContent.Children.Add(moreText);
@@ -495,10 +495,10 @@ public class CalendarScheduleControl : TemplatedControl
 
                 var cellBorder = new Border
                 {
-                    BorderBrush = GetBrush("rUICalendarGridLineBrush"),
+                    BorderBrush = GetBrush("fxCalendarGridLineBrush"),
                     BorderThickness = new Thickness(0, 0, col < 6 ? 1 : 0, row < 5 ? 1 : 0),
-                    Background = isToday ? GetBrush("rUICalendarTodayBrush")
-                               : isSelected ? GetBrush("rUICalendarSelectedBrush")
+                    Background = isToday ? GetBrush("fxCalendarTodayBrush")
+                               : isSelected ? GetBrush("fxCalendarSelectedBrush")
                                : Brushes.Transparent,
                     Padding = new Thickness(2),
                     Child = cellContent
@@ -549,7 +549,7 @@ public class CalendarScheduleControl : TemplatedControl
                 Text = date.ToString("ddd").ToUpperInvariant(),
                 FontSize = 11,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                Foreground = isToday ? GetBrush("rUIAccentBrush") : GetBrush("rUIForegroundSecondaryBrush")
+                Foreground = isToday ? GetBrush("fxAccentBrush") : GetBrush("fxForegroundSecondaryBrush")
             };
             headerPanel.Children.Add(dayName);
 
@@ -559,7 +559,7 @@ public class CalendarScheduleControl : TemplatedControl
                 FontSize = 18,
                 FontWeight = FontWeight.SemiBold,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                Foreground = isToday ? GetBrush("rUIAccentBrush") : GetBrush("rUIForegroundBrush")
+                Foreground = isToday ? GetBrush("fxAccentBrush") : GetBrush("fxForegroundBrush")
             };
             headerPanel.Children.Add(dayNum);
 
@@ -582,7 +582,7 @@ public class CalendarScheduleControl : TemplatedControl
             var separator = new Border
             {
                 Width = 1,
-                Background = GetBrush("rUICalendarGridLineBrush"),
+                Background = GetBrush("fxCalendarGridLineBrush"),
                 HorizontalAlignment = HorizontalAlignment.Right
             };
             Grid.SetColumn(separator, col);
@@ -599,7 +599,7 @@ public class CalendarScheduleControl : TemplatedControl
             {
                 Text = new TimeOnly(hour, 0).ToString("HH:mm"),
                 FontSize = 11,
-                Foreground = GetBrush("rUIForegroundSecondaryBrush"),
+                Foreground = GetBrush("fxForegroundSecondaryBrush"),
                 VerticalAlignment = VerticalAlignment.Top,
                 Margin = new Thickness(4, -6, 8, 0)
             };
@@ -612,7 +612,7 @@ public class CalendarScheduleControl : TemplatedControl
             {
                 var line = new Border
                 {
-                    BorderBrush = GetBrush("rUICalendarGridLineBrush"),
+                    BorderBrush = GetBrush("fxCalendarGridLineBrush"),
                     BorderThickness = new Thickness(0, 1, 0, 0),
                     VerticalAlignment = VerticalAlignment.Top
                 };
@@ -649,7 +649,7 @@ public class CalendarScheduleControl : TemplatedControl
 
                 var appointmentBorder = new Border
                 {
-                    Background = item.Color ?? GetBrush("rUICalendarAppointmentBrush"),
+                    Background = item.Color ?? GetBrush("fxCalendarAppointmentBrush"),
                     CornerRadius = new CornerRadius(4),
                     Padding = new Thickness(6, 4),
                     Margin = new Thickness(2, topOffset - (startRow * HourHeight), 2, 0),
@@ -701,7 +701,7 @@ public class CalendarScheduleControl : TemplatedControl
                 var timeLine = new Border
                 {
                     Height = 2,
-                    Background = GetBrush("rUICalendarCurrentTimeBrush"),
+                    Background = GetBrush("fxCalendarCurrentTimeBrush"),
                     VerticalAlignment = VerticalAlignment.Top,
                     Margin = new Thickness(0, nowOffset - (nowRow * HourHeight), 0, 0),
                     ZIndex = 10
@@ -722,7 +722,7 @@ public class CalendarScheduleControl : TemplatedControl
 
     private void SetupAppointmentInteraction(Border border, CalendarScheduleItem item)
     {
-        var baseBrush = border.Background ?? GetBrush("rUICalendarAppointmentBrush");
+        var baseBrush = border.Background ?? GetBrush("fxCalendarAppointmentBrush");
         bool isSelected = SelectedItem == item;
 
         if (isSelected)

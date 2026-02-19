@@ -12,7 +12,7 @@
                    FontSize="24"
                    FontWeight="SemiBold" />
         <TextBlock Text="This page is not in the navigation bar. No item should be selected."
-                   Foreground="{DynamicResource rUIForegroundSecondaryBrush}"
+                   Foreground="{DynamicResource fxForegroundSecondaryBrush}"
                    TextWrapping="Wrap" />
     </StackPanel>
 </UserControl>

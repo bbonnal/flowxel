@@ -14,7 +14,7 @@
                        FontSize="24"
                        FontWeight="SemiBold" />
             <TextBlock Text="Sample charts using LiveCharts2. Toggle theme to see charts adapt."
-                       Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                       Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
 
             <!-- Line Chart -->
             <TextBlock Text="Line Chart"

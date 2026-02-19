@@ -16,7 +16,7 @@
                        FontSize="24"
                        FontWeight="SemiBold" />
             <TextBlock Text="Test file and folder picker dialogs with various configurations."
-                       Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                       Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
 
             <rui:SettingsCardExpander Header="File Dialogs"
                                       Description="Open and save file dialogs">
@@ -34,8 +34,8 @@
                         <Button Content="Save with File Type" Command="{Binding SaveFileWithExtensionCommand}" />
                     </StackPanel>
 
-                    <Border Background="{DynamicResource rUISurfaceBrush}"
-                            BorderBrush="{DynamicResource rUIBorderSubtleBrush}"
+                    <Border Background="{DynamicResource fxSurfaceBrush}"
+                            BorderBrush="{DynamicResource fxBorderSubtleBrush}"
                             BorderThickness="1"
                             CornerRadius="4"
                             Padding="12"
@@ -56,8 +56,8 @@
                         <Button Content="Open Multiple Folders" Command="{Binding OpenMultipleFoldersCommand}" />
                     </StackPanel>
 
-                    <Border Background="{DynamicResource rUISurfaceBrush}"
-                            BorderBrush="{DynamicResource rUIBorderSubtleBrush}"
+                    <Border Background="{DynamicResource fxSurfaceBrush}"
+                            BorderBrush="{DynamicResource fxBorderSubtleBrush}"
                             BorderThickness="1"
                             CornerRadius="4"
                             Padding="12"

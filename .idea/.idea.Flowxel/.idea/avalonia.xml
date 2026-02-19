@@ -4,6 +4,7 @@
     <option name="projectPerEditor">
       <map>
         <entry key="Flowxel.UI/Themes/Controls/InfoBarControl.axaml" value="Flowxel.UITester/Flowxel.UITester.csproj" />
+        <entry key="Flowxel.UI/Themes/Tokens.axaml" value="Flowxel.UITester/Flowxel.UITester.csproj" />
         <entry key="Flowxel.UITester/Views/CanvasDocumentView.axaml" value="Flowxel.UITester/Flowxel.UITester.csproj" />
         <entry key="Flowxel.UITester/Views/ImagingCanvasPageView.axaml" value="Flowxel.UITester/Flowxel.UITester.csproj" />
         <entry key="Flowxel.UITester/Views/MainWindow.axaml" value="Flowxel.UITester/Flowxel.UITester.csproj" />

@@ -14,7 +14,7 @@
                        FontSize="24"
                        FontWeight="SemiBold" />
             <TextBlock Text="Typed editor controls with input validation, formatting, and action areas."
-                       Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                       Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
 
             <!-- TextEditor -->
             <StackPanel Spacing="8">
@@ -37,7 +37,7 @@
                 <editors:TextEditor Watermark="No title" />
                 <TextBlock Text="{Binding TextValue, StringFormat='Bound value: {0}'}"
                            FontSize="12"
-                           Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                           Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
             </StackPanel>
 
             <!-- DoubleEditor -->
@@ -58,7 +58,7 @@
                                       Unit="m/s" />
                 <TextBlock Text="{Binding DoubleValue, StringFormat='Bound value: {0}'}"
                            FontSize="12"
-                           Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                           Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
             </StackPanel>
 
             <!-- IntEditor -->
@@ -74,7 +74,7 @@
                                    Unit="px" />
                 <TextBlock Text="{Binding IntValue, StringFormat='Bound value: {0}'}"
                            FontSize="12"
-                           Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                           Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
             </StackPanel>
 
             <!-- ULongEditor -->
@@ -89,7 +89,7 @@
                                      Unit="bytes" />
                 <TextBlock Text="{Binding UlongValue, StringFormat='Bound value: {0}'}"
                            FontSize="12"
-                           Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                           Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
             </StackPanel>
 
             <!-- MultiLineTextEditor -->
@@ -112,7 +112,7 @@
                 </editors:MultiLineTextEditor>
                 <TextBlock Text="{Binding MultiLineTextValue, StringFormat='Bound value: {0}'}"
                            FontSize="12"
-                           Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                           Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
             </StackPanel>
 
             <!-- HexadecimalEditor -->
@@ -125,7 +125,7 @@
                                            Value="{Binding HexValue, Mode=TwoWay}" />
                 <TextBlock Text="{Binding HexValue.Length, StringFormat='Bound value: {0} bytes', FallbackValue='Bound value: (null)'}"
                            FontSize="12"
-                           Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                           Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
             </StackPanel>
 
             <!-- Base64Editor -->
@@ -138,7 +138,7 @@
                                       Value="{Binding Base64Value, Mode=TwoWay}" />
                 <TextBlock Text="{Binding Base64Value.Length, StringFormat='Bound value: {0} bytes', FallbackValue='Bound value: (null)'}"
                            FontSize="12"
-                           Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                           Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
             </StackPanel>
 
         </StackPanel>

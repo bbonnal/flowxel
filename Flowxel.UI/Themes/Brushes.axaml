@@ -1,36 +1,36 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <SolidColorBrush x:Key="rUIBackgroundBrush" Color="{DynamicResource rUIBackgroundColor}" />
-    <SolidColorBrush x:Key="rUISurfaceBrush" Color="{DynamicResource rUISurfaceColor}" />
-    <SolidColorBrush x:Key="rUISurfaceHighBrush" Color="{DynamicResource rUISurfaceHighColor}" />
-    <SolidColorBrush x:Key="rUIBorderBrush" Color="{DynamicResource rUIBorderColor}" />
-    <SolidColorBrush x:Key="rUIBorderSubtleBrush" Color="{DynamicResource rUIBorderSubtleColor}" />
-    <SolidColorBrush x:Key="rUIForegroundBrush" Color="{DynamicResource rUIForegroundColor}" />
-    <SolidColorBrush x:Key="rUIForegroundSecondaryBrush" Color="{DynamicResource rUIForegroundSecondaryColor}" />
-    <SolidColorBrush x:Key="rUIForegroundTertiaryBrush" Color="{DynamicResource rUIForegroundTertiaryColor}" />
-    <SolidColorBrush x:Key="rUIAccentBrush" Color="{DynamicResource rUIAccentColor}" />
-    <SolidColorBrush x:Key="rUIAccentHoverBrush" Color="{DynamicResource rUIAccentHoverColor}" />
-    <SolidColorBrush x:Key="rUISelectionBrush" Color="{DynamicResource rUISelectionColor}" />
-    <SolidColorBrush x:Key="rUIHoverBrush" Color="{DynamicResource rUIHoverColor}" />
-    <SolidColorBrush x:Key="rUIPressedBrush" Color="{DynamicResource rUIPressedColor}" />
-    <SolidColorBrush x:Key="rUIOverlayBrush" Color="{DynamicResource rUIOverlayColor}" />
-    <SolidColorBrush x:Key="rUISuccessBrush" Color="{DynamicResource rUISuccessColor}" />
-    <SolidColorBrush x:Key="rUIWarningBrush" Color="{DynamicResource rUIWarningColor}" />
-    <SolidColorBrush x:Key="rUIErrorBrush" Color="{DynamicResource rUIErrorColor}" />
-    <SolidColorBrush x:Key="rUIInfoBackgroundBrush" Color="{DynamicResource rUIInfoBackgroundColor}" />
-    <SolidColorBrush x:Key="rUIInfoBorderBrush" Color="{DynamicResource rUIInfoBorderColor}" />
-    <SolidColorBrush x:Key="rUISuccessBackgroundBrush" Color="{DynamicResource rUISuccessBackgroundColor}" />
-    <SolidColorBrush x:Key="rUISuccessBorderBrush" Color="{DynamicResource rUISuccessBorderColor}" />
-    <SolidColorBrush x:Key="rUIWarningBackgroundBrush" Color="{DynamicResource rUIWarningBackgroundColor}" />
-    <SolidColorBrush x:Key="rUIWarningBorderBrush" Color="{DynamicResource rUIWarningBorderColor}" />
-    <SolidColorBrush x:Key="rUIErrorBackgroundBrush" Color="{DynamicResource rUIErrorBackgroundColor}" />
-    <SolidColorBrush x:Key="rUIErrorBorderBrush" Color="{DynamicResource rUIErrorBorderColor}" />
-    <SolidColorBrush x:Key="rUICalendarTodayBrush" Color="{DynamicResource rUICalendarTodayColor}" />
-    <SolidColorBrush x:Key="rUICalendarSelectedBrush" Color="{DynamicResource rUICalendarSelectedColor}" />
-    <SolidColorBrush x:Key="rUICalendarOutOfMonthBrush" Color="{DynamicResource rUICalendarOutOfMonthColor}" />
-    <SolidColorBrush x:Key="rUICalendarAppointmentBrush" Color="{DynamicResource rUICalendarAppointmentColor}" />
-    <SolidColorBrush x:Key="rUICalendarGridLineBrush" Color="{DynamicResource rUICalendarGridLineColor}" />
-    <SolidColorBrush x:Key="rUICalendarCurrentTimeBrush" Color="{DynamicResource rUICalendarCurrentTimeColor}" />
+    <SolidColorBrush x:Key="fxBackgroundBrush" Color="{DynamicResource fxBackgroundColor}" />
+    <SolidColorBrush x:Key="fxSurfaceBrush" Color="{DynamicResource fxSurfaceColor}" />
+    <SolidColorBrush x:Key="fxSurfaceHighBrush" Color="{DynamicResource fxSurfaceHighColor}" />
+    <SolidColorBrush x:Key="fxBorderBrush" Color="{DynamicResource fxBorderColor}" />
+    <SolidColorBrush x:Key="fxBorderSubtleBrush" Color="{DynamicResource fxBorderSubtleColor}" />
+    <SolidColorBrush x:Key="fxForegroundBrush" Color="{DynamicResource fxForegroundColor}" />
+    <SolidColorBrush x:Key="fxForegroundSecondaryBrush" Color="{DynamicResource fxForegroundSecondaryColor}" />
+    <SolidColorBrush x:Key="fxForegroundTertiaryBrush" Color="{DynamicResource fxForegroundTertiaryColor}" />
+    <SolidColorBrush x:Key="fxAccentBrush" Color="{DynamicResource fxAccentColor}" />
+    <SolidColorBrush x:Key="fxAccentHoverBrush" Color="{DynamicResource fxAccentHoverColor}" />
+    <SolidColorBrush x:Key="fxSelectionBrush" Color="{DynamicResource fxSelectionColor}" />
+    <SolidColorBrush x:Key="fxHoverBrush" Color="{DynamicResource fxHoverColor}" />
+    <SolidColorBrush x:Key="fxPressedBrush" Color="{DynamicResource fxPressedColor}" />
+    <SolidColorBrush x:Key="fxOverlayBrush" Color="{DynamicResource fxOverlayColor}" />
+    <SolidColorBrush x:Key="fxSuccessBrush" Color="{DynamicResource fxSuccessColor}" />
+    <SolidColorBrush x:Key="fxWarningBrush" Color="{DynamicResource fxWarningColor}" />
+    <SolidColorBrush x:Key="fxErrorBrush" Color="{DynamicResource fxErrorColor}" />
+    <SolidColorBrush x:Key="fxInfoBackgroundBrush" Color="{DynamicResource fxInfoBackgroundColor}" />
+    <SolidColorBrush x:Key="fxInfoBorderBrush" Color="{DynamicResource fxInfoBorderColor}" />
+    <SolidColorBrush x:Key="fxSuccessBackgroundBrush" Color="{DynamicResource fxSuccessBackgroundColor}" />
+    <SolidColorBrush x:Key="fxSuccessBorderBrush" Color="{DynamicResource fxSuccessBorderColor}" />
+    <SolidColorBrush x:Key="fxWarningBackgroundBrush" Color="{DynamicResource fxWarningBackgroundColor}" />
+    <SolidColorBrush x:Key="fxWarningBorderBrush" Color="{DynamicResource fxWarningBorderColor}" />
+    <SolidColorBrush x:Key="fxErrorBackgroundBrush" Color="{DynamicResource fxErrorBackgroundColor}" />
+    <SolidColorBrush x:Key="fxErrorBorderBrush" Color="{DynamicResource fxErrorBorderColor}" />
+    <SolidColorBrush x:Key="fxCalendarTodayBrush" Color="{DynamicResource fxCalendarTodayColor}" />
+    <SolidColorBrush x:Key="fxCalendarSelectedBrush" Color="{DynamicResource fxCalendarSelectedColor}" />
+    <SolidColorBrush x:Key="fxCalendarOutOfMonthBrush" Color="{DynamicResource fxCalendarOutOfMonthColor}" />
+    <SolidColorBrush x:Key="fxCalendarAppointmentBrush" Color="{DynamicResource fxCalendarAppointmentColor}" />
+    <SolidColorBrush x:Key="fxCalendarGridLineBrush" Color="{DynamicResource fxCalendarGridLineColor}" />
+    <SolidColorBrush x:Key="fxCalendarCurrentTimeBrush" Color="{DynamicResource fxCalendarCurrentTimeColor}" />
 
 </ResourceDictionary>

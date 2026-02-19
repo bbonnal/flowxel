@@ -21,8 +21,8 @@
             </StackPanel>
 
             <!-- Instructions -->
-            <Border Background="{DynamicResource rUISurfaceBrush}"
-                    BorderBrush="{DynamicResource rUIBorderBrush}"
+            <Border Background="{DynamicResource fxSurfaceBrush}"
+                    BorderBrush="{DynamicResource fxBorderBrush}"
                     BorderThickness="1"
                     CornerRadius="8"
                     Padding="16">
@@ -47,8 +47,8 @@
             </Border>
 
             <!-- Unsaved Changes Indicator -->
-            <Border Background="{DynamicResource rUIWarningBrush}"
-                    BorderBrush="{DynamicResource rUIBorderBrush}"
+            <Border Background="{DynamicResource fxWarningBrush}"
+                    BorderBrush="{DynamicResource fxBorderBrush}"
                     BorderThickness="1"
                     CornerRadius="8"
                     Padding="12"
@@ -86,8 +86,8 @@
             </StackPanel>
 
             <!-- Technical Info -->
-            <Border Background="{DynamicResource rUISurfaceBrush}"
-                    BorderBrush="{DynamicResource rUIBorderBrush}"
+            <Border Background="{DynamicResource fxSurfaceBrush}"
+                    BorderBrush="{DynamicResource fxBorderBrush}"
                     BorderThickness="1"
                     CornerRadius="8"
                     Padding="16">

@@ -1,0 +1,36 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Spacing -->
+    <Thickness x:Key="fxSpace2">2</Thickness>
+    <Thickness x:Key="fxSpace4">4</Thickness>
+    <Thickness x:Key="fxSpace6">6</Thickness>
+    <Thickness x:Key="fxSpace8">8</Thickness>
+    <Thickness x:Key="fxSpace12">12</Thickness>
+    <Thickness x:Key="fxSpace16">16</Thickness>
+    <Thickness x:Key="fxSpace24">24</Thickness>
+
+    <Thickness x:Key="fxPaddingButton">6,4</Thickness>
+    <Thickness x:Key="fxPaddingCard">16</Thickness>
+    <Thickness x:Key="fxPaddingDialog">24</Thickness>
+    <Thickness x:Key="fxPaddingNavItem">4,8</Thickness>
+
+    <!-- Radius -->
+    <CornerRadius x:Key="fxCornerRadiusS">4</CornerRadius>
+    <CornerRadius x:Key="fxCornerRadiusM">8</CornerRadius>
+
+    <!-- Typography -->
+    <x:Double x:Key="fxFontSizeS">11</x:Double>
+    <x:Double x:Key="fxFontSizeM">12</x:Double>
+    <x:Double x:Key="fxFontSizeL">14</x:Double>
+    <x:Double x:Key="fxFontSizeXL">20</x:Double>
+
+    <!-- Sizing -->
+    <x:Double x:Key="fxButtonMinWidth">56</x:Double>
+    <x:Double x:Key="fxDialogMinWidth">320</x:Double>
+    <x:Double x:Key="fxDialogMaxWidth">600</x:Double>
+    <x:Double x:Key="fxOverlayMaxWidth">480</x:Double>
+    <x:Double x:Key="fxIconM">20</x:Double>
+    <x:Double x:Key="fxIconL">24</x:Double>
+
+</ResourceDictionary>

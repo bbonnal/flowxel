@@ -15,7 +15,7 @@
                        FontSize="24"
                        FontWeight="SemiBold" />
             <TextBlock Text="SettingsCardExpander controls that expand to reveal content."
-                       Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                       Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
 
             <!-- Text content -->
             <rui:SettingsCardExpander Header="About this app"
@@ -23,7 +23,7 @@
                                          IconData="{pia:IconGeometry Icon=info}">
                 <TextBlock Text="Enigma is a desktop application for encryption and key management, built with Avalonia and the Enigma.Cryptography library."
                            TextWrapping="Wrap"
-                           Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                           Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
             </rui:SettingsCardExpander>
 
             <!-- Controls content -->
@@ -42,7 +42,7 @@
                                          Description="Additional configuration options">
                 <TextBlock Text="Advanced settings will be available in a future release."
                            TextWrapping="Wrap"
-                           Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                           Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
             </rui:SettingsCardExpander>
 
         </StackPanel>

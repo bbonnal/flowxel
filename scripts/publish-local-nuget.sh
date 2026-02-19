@@ -2,15 +2,15 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-FLOWXEL_CSPROJ="${ROOT_DIR}/rUI/rUI.csproj"
+FLOWXEL_CSPROJ="${ROOT_DIR}/fx/fx.csproj"
 FEED_PATH="${HOME}/.nuget/local-feed"
 PACKAGE_OUT="${ROOT_DIR}/artifacts/packages"
 BUMP_KIND="patch"
 EXPLICIT_VERSION=""
 CONFIGURATION="Release"
 PROJECTS=(
-  "${ROOT_DIR}/rUI.Avalonia.Desktop/Flowxel.UI.csproj"
-  "${ROOT_DIR}/rUI/rUI.csproj"
+  "${ROOT_DIR}/fx.Avalonia.Desktop/Flowxel.UI.csproj"
+  "${ROOT_DIR}/fx/fx.csproj"
 )
 
 usage() {

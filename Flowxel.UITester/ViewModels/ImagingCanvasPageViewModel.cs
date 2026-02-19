@@ -616,7 +616,7 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
         if (mat.Empty())
             return;
 
-        var overlayFolder = Path.Combine(Path.GetTempPath(), "rUI-imaging-overlays");
+        var overlayFolder = Path.Combine(Path.GetTempPath(), "fx-imaging-overlays");
         Directory.CreateDirectory(overlayFolder);
 
         var overlayPath = Path.Combine(overlayFolder, $"{Guid.NewGuid():N}.png");

@@ -24,5 +24,5 @@ public partial class EditorsTestingPageViewModel : ViewModelBase
     private byte[]? _hexValue = [0x0A, 0xFF, 0x1B, 0x42, 0xDE, 0xAD, 0xBE, 0xEF];
 
     [ObservableProperty]
-    private byte[]? _base64Value = Encoding.UTF8.GetBytes("Hello, rUI!");
+    private byte[]? _base64Value = Encoding.UTF8.GetBytes("Hello, fx!");
 }

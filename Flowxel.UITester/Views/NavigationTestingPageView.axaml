@@ -15,7 +15,7 @@
                        FontSize="24"
                        FontWeight="SemiBold" />
             <TextBlock Text="Test NavigateTo(object page) with existing nav items and arbitrary pages."
-                       Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                       Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
 
             <rui:SettingsCardControl Header="Navigate to Settings"
                                         Description="Navigates to SettingsPageViewModel — should select the Settings nav item"

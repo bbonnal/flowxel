@@ -17,11 +17,11 @@
                     <PathIcon Data="{TemplateBinding IconData}"
                              Width="24"
                              Height="24"
-                             Foreground="{DynamicResource rUIForegroundBrush}" />
+                             Foreground="{DynamicResource fxForegroundBrush}" />
                     <TextBlock Text="{TemplateBinding Header}"
                               FontSize="11"
                               TextAlignment="Center"
-                              Foreground="{DynamicResource rUIForegroundBrush}" />
+                              Foreground="{DynamicResource fxForegroundBrush}" />
                 </StackPanel>
             </ControlTemplate>
         </Setter>

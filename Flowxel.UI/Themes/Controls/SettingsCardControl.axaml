@@ -6,11 +6,11 @@
         <Setter Property="Template">
             <ControlTemplate>
                 <Border x:Name="PART_Root"
-                        Background="{DynamicResource rUISurfaceBrush}"
-                        BorderBrush="{DynamicResource rUIBorderSubtleBrush}"
+                        Background="{DynamicResource fxSurfaceBrush}"
+                        BorderBrush="{DynamicResource fxBorderSubtleBrush}"
                         BorderThickness="1"
-                        CornerRadius="8"
-                        Padding="16">
+                        CornerRadius="{DynamicResource fxCornerRadiusM}"
+                        Padding="{DynamicResource fxPaddingCard}">
                     <Grid ColumnDefinitions="Auto,*,Auto">
 
                         <!-- Icon container -->
@@ -19,8 +19,8 @@
                                 VerticalAlignment="Center"
                                 IsVisible="{Binding IconData, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static ObjectConverters.IsNotNull}}">
                             <PathIcon Data="{Binding IconData, RelativeSource={RelativeSource TemplatedParent}}"
-                                      Width="20" Height="20"
-                                      Foreground="{DynamicResource rUIForegroundBrush}" />
+                                      Width="{DynamicResource fxIconM}" Height="{DynamicResource fxIconM}"
+                                      Foreground="{DynamicResource fxForegroundBrush}" />
                         </Border>
 
                         <!-- Header + Description -->
@@ -28,13 +28,13 @@
                                     VerticalAlignment="Center"
                                     Margin="12,0,12,0">
                             <TextBlock Text="{Binding Header, RelativeSource={RelativeSource TemplatedParent}}"
-                                       FontSize="14"
+                                       FontSize="{DynamicResource fxFontSizeL}"
                                        FontWeight="SemiBold"
-                                       Foreground="{DynamicResource rUIForegroundBrush}" />
+                                       Foreground="{DynamicResource fxForegroundBrush}" />
                             <TextBlock Text="{Binding Description, RelativeSource={RelativeSource TemplatedParent}}"
-                                       FontSize="12"
+                                       FontSize="{DynamicResource fxFontSizeM}"
                                        TextWrapping="Wrap"
-                                       Foreground="{DynamicResource rUIForegroundSecondaryBrush}"
+                                       Foreground="{DynamicResource fxForegroundSecondaryBrush}"
                                        IsVisible="{Binding Description, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                         </StackPanel>
 
@@ -43,7 +43,7 @@
                                   Width="12" Height="12"
                                   VerticalAlignment="Center"
                                   Data="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"
-                                  Foreground="{DynamicResource rUIForegroundBrush}" />
+                                  Foreground="{DynamicResource fxForegroundBrush}" />
 
                     </Grid>
                 </Border>
@@ -51,12 +51,12 @@
         </Setter>
 
         <Style Selector="^:pointerover /template/ Border#PART_Root">
-            <Setter Property="Background" Value="{DynamicResource rUIHoverBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource rUIBorderBrush}" />
+            <Setter Property="Background" Value="{DynamicResource fxHoverBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource fxBorderBrush}" />
         </Style>
 
         <Style Selector="^:pressed /template/ Border#PART_Root">
-            <Setter Property="Background" Value="{DynamicResource rUIPressedBrush}" />
+            <Setter Property="Background" Value="{DynamicResource fxPressedBrush}" />
         </Style>
     </ControlTheme>
 

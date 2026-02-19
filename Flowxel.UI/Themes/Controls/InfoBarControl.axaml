@@ -9,8 +9,8 @@
         <Setter Property="Template">
             <ControlTemplate>
                 <Border Name="PART_Card"
-                        Background="{DynamicResource rUIInfoBackgroundBrush}"
-                        BorderBrush="{DynamicResource rUIInfoBorderBrush}"
+                        Background="{DynamicResource fxInfoBackgroundBrush}"
+                        BorderBrush="{DynamicResource fxInfoBorderBrush}"
                         BorderThickness="1"
                         CornerRadius="8"
                         Margin="24,24,24,0"
@@ -23,7 +23,7 @@
                                   Width="24" Height="24"
                                   Margin="0,0,12,0"
                                   VerticalAlignment="Center"
-                                  Foreground="{DynamicResource rUIForegroundBrush}"
+                                  Foreground="{DynamicResource fxForegroundBrush}"
                                   Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2Zm1 15h-2v-6h2v6Zm0-8h-2V7h2v2Z" />
 
                         <!-- Text -->
@@ -35,7 +35,7 @@
                                        FontWeight="SemiBold"
                                        IsVisible="{TemplateBinding Title, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                             <TextBlock Text="{TemplateBinding Message}"
-                                       Foreground="{DynamicResource rUIForegroundSecondaryBrush}"
+                                       Foreground="{DynamicResource fxForegroundSecondaryBrush}"
                                        TextWrapping="Wrap"
                                        IsVisible="{TemplateBinding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                         </StackPanel>
@@ -61,8 +61,8 @@
 
         <!-- Severity: Info -->
         <Style Selector="^[Severity=Info] /template/ Border#PART_Card">
-            <Setter Property="Background" Value="{DynamicResource rUIInfoBackgroundBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource rUIInfoBorderBrush}" />
+            <Setter Property="Background" Value="{DynamicResource fxInfoBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource fxInfoBorderBrush}" />
         </Style>
         <Style Selector="^[Severity=Info] /template/ PathIcon#PART_Icon">
             <Setter Property="Data"
@@ -71,8 +71,8 @@
 
         <!-- Severity: Success -->
         <Style Selector="^[Severity=Success] /template/ Border#PART_Card">
-            <Setter Property="Background" Value="{DynamicResource rUISuccessBackgroundBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource rUISuccessBorderBrush}" />
+            <Setter Property="Background" Value="{DynamicResource fxSuccessBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource fxSuccessBorderBrush}" />
         </Style>
         <Style Selector="^[Severity=Success] /template/ PathIcon#PART_Icon">
             <Setter Property="Data"
@@ -81,8 +81,8 @@
 
         <!-- Severity: Warning -->
         <Style Selector="^[Severity=Warning] /template/ Border#PART_Card">
-            <Setter Property="Background" Value="{DynamicResource rUIWarningBackgroundBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource rUIWarningBorderBrush}" />
+            <Setter Property="Background" Value="{DynamicResource fxWarningBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource fxWarningBorderBrush}" />
         </Style>
         <Style Selector="^[Severity=Warning] /template/ PathIcon#PART_Icon">
             <Setter Property="Data" Value="M1 21h22L12 2 1 21Zm12-3h-2v-2h2v2Zm0-4h-2v-4h2v4Z" />
@@ -90,8 +90,8 @@
 
         <!-- Severity: Error -->
         <Style Selector="^[Severity=Error] /template/ Border#PART_Card">
-            <Setter Property="Background" Value="{DynamicResource rUIErrorBackgroundBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource rUIErrorBorderBrush}" />
+            <Setter Property="Background" Value="{DynamicResource fxErrorBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource fxErrorBorderBrush}" />
         </Style>
         <Style Selector="^[Severity=Error] /template/ PathIcon#PART_Icon">
             <Setter Property="Data"

@@ -14,13 +14,13 @@
                         <PathIcon Data="{Binding IconData, RelativeSource={RelativeSource TemplatedParent}}"
                                   Width="24" Height="24"
                                   HorizontalAlignment="Center"
-                                  Foreground="{DynamicResource rUIForegroundBrush}"
+                                  Foreground="{DynamicResource fxForegroundBrush}"
                                   IsVisible="{Binding IconData, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static ObjectConverters.IsNotNull}}" />
                         <TextBlock Text="{Binding Header, RelativeSource={RelativeSource TemplatedParent}}"
                                    FontSize="11"
                                    HorizontalAlignment="Center"
                                    TextAlignment="Center"
-                                   Foreground="{DynamicResource rUIForegroundBrush}"
+                                   Foreground="{DynamicResource fxForegroundBrush}"
                                    IsVisible="{Binding Header, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                     </StackPanel>
                 </Border>
@@ -28,21 +28,21 @@
         </Setter>
 
         <Style Selector="^:pointerover /template/ Border#PART_Root">
-            <Setter Property="Background" Value="{DynamicResource rUIHoverBrush}" />
+            <Setter Property="Background" Value="{DynamicResource fxHoverBrush}" />
         </Style>
 
         <Style Selector="^:pressed /template/ Border#PART_Root">
-            <Setter Property="Background" Value="{DynamicResource rUIPressedBrush}" />
+            <Setter Property="Background" Value="{DynamicResource fxPressedBrush}" />
         </Style>
 
         <Style Selector="^:checked /template/ Border#PART_Root">
-            <Setter Property="Background" Value="{DynamicResource rUISelectionBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource rUIAccentBrush}" />
+            <Setter Property="Background" Value="{DynamicResource fxSelectionBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource fxAccentBrush}" />
             <Setter Property="BorderThickness" Value="1" />
         </Style>
 
         <Style Selector="^:checked:pointerover /template/ Border#PART_Root">
-            <Setter Property="Background" Value="{DynamicResource rUIAccentHoverBrush}" />
+            <Setter Property="Background" Value="{DynamicResource fxAccentHoverBrush}" />
         </Style>
     </ControlTheme>
 

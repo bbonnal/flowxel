@@ -5,15 +5,15 @@
     <ControlTheme x:Key="{x:Type controls:CalendarScheduleControl}" TargetType="controls:CalendarScheduleControl">
         <Setter Property="Template">
             <ControlTemplate>
-                <Border Background="{DynamicResource rUISurfaceBrush}"
+                <Border Background="{DynamicResource fxSurfaceBrush}"
                         CornerRadius="8"
                         ClipToBounds="True">
                     <DockPanel>
 
                         <!-- Header -->
                         <Border DockPanel.Dock="Top"
-                                Background="{DynamicResource rUIBackgroundBrush}"
-                                BorderBrush="{DynamicResource rUIBorderSubtleBrush}"
+                                Background="{DynamicResource fxBackgroundBrush}"
+                                BorderBrush="{DynamicResource fxBorderSubtleBrush}"
                                 BorderThickness="0,0,0,1"
                                 Padding="12,8">
                             <Grid ColumnDefinitions="Auto,*,Auto">
@@ -25,14 +25,14 @@
                                             Background="Transparent" BorderThickness="0">
                                         <PathIcon Data="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"
                                                   Width="14" Height="14"
-                                                  Foreground="{DynamicResource rUIForegroundBrush}" />
+                                                  Foreground="{DynamicResource fxForegroundBrush}" />
                                     </Button>
                                     <Button x:Name="PART_TodayButton"
                                             Content="Today"
                                             Padding="10,4" MinWidth="0"
                                             FontSize="12"
                                             Background="Transparent"
-                                            BorderBrush="{DynamicResource rUIBorderBrush}"
+                                            BorderBrush="{DynamicResource fxBorderBrush}"
                                             BorderThickness="1"
                                             CornerRadius="4" />
                                     <Button x:Name="PART_NextButton"
@@ -40,7 +40,7 @@
                                             Background="Transparent" BorderThickness="0">
                                         <PathIcon Data="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"
                                                   Width="14" Height="14"
-                                                  Foreground="{DynamicResource rUIForegroundBrush}" />
+                                                  Foreground="{DynamicResource fxForegroundBrush}" />
                                     </Button>
                                 </StackPanel>
 
@@ -50,7 +50,7 @@
                                            FontSize="16" FontWeight="SemiBold"
                                            VerticalAlignment="Center"
                                            Margin="16,0,0,0"
-                                           Foreground="{DynamicResource rUIForegroundBrush}" />
+                                           Foreground="{DynamicResource fxForegroundBrush}" />
 
                                 <!-- View mode buttons -->
                                 <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="2"
@@ -78,7 +78,7 @@
 
                             <!-- Sidebar - Mini Calendar -->
                             <Border Grid.Column="0"
-                                    BorderBrush="{DynamicResource rUIBorderSubtleBrush}"
+                                    BorderBrush="{DynamicResource fxBorderSubtleBrush}"
                                     BorderThickness="0,0,1,0"
                                     Padding="12,8">
                                 <StackPanel>
@@ -90,21 +90,21 @@
                                                 Background="Transparent" BorderThickness="0">
                                             <PathIcon Data="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"
                                                       Width="10" Height="10"
-                                                      Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                                                      Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
                                         </Button>
                                         <TextBlock x:Name="PART_MiniCalTitle"
                                                    Grid.Column="1"
                                                    FontSize="12" FontWeight="SemiBold"
                                                    HorizontalAlignment="Center"
                                                    VerticalAlignment="Center"
-                                                   Foreground="{DynamicResource rUIForegroundBrush}" />
+                                                   Foreground="{DynamicResource fxForegroundBrush}" />
                                         <Button x:Name="PART_MiniCalNextButton"
                                                 Grid.Column="2"
                                                 Padding="4" MinWidth="0"
                                                 Background="Transparent" BorderThickness="0">
                                             <PathIcon Data="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"
                                                       Width="10" Height="10"
-                                                      Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                                                      Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
                                         </Button>
                                     </Grid>
 
@@ -167,7 +167,7 @@
             <Setter Property="IsVisible" Value="False" />
         </Style>
         <Style Selector="^:month /template/ Button#PART_MonthButton">
-            <Setter Property="Background" Value="{DynamicResource rUISelectionBrush}" />
+            <Setter Property="Background" Value="{DynamicResource fxSelectionBrush}" />
         </Style>
 
         <!-- Week mode: show week view, hide month view -->
@@ -178,7 +178,7 @@
             <Setter Property="IsVisible" Value="False" />
         </Style>
         <Style Selector="^:week /template/ Button#PART_WeekButton">
-            <Setter Property="Background" Value="{DynamicResource rUISelectionBrush}" />
+            <Setter Property="Background" Value="{DynamicResource fxSelectionBrush}" />
         </Style>
 
     </ControlTheme>

@@ -15,20 +15,20 @@
                            VerticalAlignment="Stretch" />
 
                     <!-- Card -->
-                    <Border Background="{DynamicResource rUISurfaceHighBrush}"
-                           BorderBrush="{DynamicResource rUIBorderBrush}"
+                    <Border Background="{DynamicResource fxSurfaceHighBrush}"
+                           BorderBrush="{DynamicResource fxBorderBrush}"
                            BorderThickness="1"
-                           CornerRadius="8"
-                           MinWidth="320"
-                           MaxWidth="480"
+                           CornerRadius="{DynamicResource fxCornerRadiusM}"
+                           MinWidth="{DynamicResource fxDialogMinWidth}"
+                           MaxWidth="{DynamicResource fxOverlayMaxWidth}"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"
                            BoxShadow="0 8 32 0 #66000000">
-                        <Grid RowDefinitions="Auto,Auto,Auto,Auto" Margin="24">
+                        <Grid RowDefinitions="Auto,Auto,Auto,Auto" Margin="{DynamicResource fxPaddingDialog}">
                             <!-- Title -->
                             <TextBlock Grid.Row="0"
                                      Text="{TemplateBinding Title}"
-                                     FontSize="20"
+                                     FontSize="{DynamicResource fxFontSizeXL}"
                                      FontWeight="SemiBold"
                                      Margin="0,0,0,16"
                                      IsVisible="{TemplateBinding Title, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
@@ -44,7 +44,7 @@
                             <!-- Message -->
                             <TextBlock Grid.Row="2"
                                      Text="{TemplateBinding Message}"
-                                     Foreground="{DynamicResource rUIForegroundSecondaryBrush}"
+                                     Foreground="{DynamicResource fxForegroundSecondaryBrush}"
                                      TextWrapping="Wrap"
                                      Margin="0,0,0,4"
                                      IsVisible="{TemplateBinding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />

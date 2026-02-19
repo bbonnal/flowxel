@@ -14,7 +14,7 @@
                 <StackPanel Spacing="8">
                     <TextBlock Text="Explorer" FontSize="18" FontWeight="SemiBold" />
                     <TextBlock Text="File tree would go here"
-                               Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                               Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
                 </StackPanel>
             </Border>
         </rui:DockPane>
@@ -24,7 +24,7 @@
                 <StackPanel Spacing="8">
                     <TextBlock Text="Editor" FontSize="18" FontWeight="SemiBold" />
                     <TextBlock Text="Code editor would go here"
-                               Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                               Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
                 </StackPanel>
             </Border>
         </rui:DockPane>
@@ -34,7 +34,7 @@
                 <StackPanel Spacing="8">
                     <TextBlock Text="Output" FontSize="18" FontWeight="SemiBold" />
                     <TextBlock Text="Build output would go here"
-                               Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                               Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
                 </StackPanel>
             </Border>
         </rui:DockPane>
@@ -44,7 +44,7 @@
                 <StackPanel Spacing="8">
                     <TextBlock Text="Properties" FontSize="18" FontWeight="SemiBold" />
                     <TextBlock Text="This pane cannot be closed"
-                               Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                               Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
                 </StackPanel>
             </Border>
         </rui:DockPane>
@@ -54,7 +54,7 @@
                 <StackPanel Spacing="8">
                     <TextBlock Text="Terminal" FontSize="18" FontWeight="SemiBold" />
                     <TextBlock Text="Terminal would go here"
-                               Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                               Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
                 </StackPanel>
             </Border>
         </rui:DockPane>
@@ -64,7 +64,7 @@
                 <StackPanel Spacing="8">
                     <TextBlock Text="Fixed" FontSize="18" FontWeight="SemiBold" />
                     <TextBlock Text="This pane cannot be moved or closed"
-                               Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                               Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
                 </StackPanel>
             </Border>
         </rui:DockPane>

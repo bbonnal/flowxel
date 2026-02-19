@@ -7,20 +7,20 @@
             <ControlTemplate>
                 <Border x:Name="PART_Root"
                         Background="Transparent"
-                        CornerRadius="4"
-                        Padding="6,4"
-                        MinWidth="56">
+                        CornerRadius="{DynamicResource fxCornerRadiusS}"
+                        Padding="{DynamicResource fxPaddingButton}"
+                        MinWidth="{DynamicResource fxButtonMinWidth}">
                     <StackPanel HorizontalAlignment="Center" Spacing="2">
                         <PathIcon Data="{Binding IconData, RelativeSource={RelativeSource TemplatedParent}}"
-                                  Width="24" Height="24"
+                                  Width="{DynamicResource fxIconL}" Height="{DynamicResource fxIconL}"
                                   HorizontalAlignment="Center"
-                                  Foreground="{DynamicResource rUIForegroundBrush}"
+                                  Foreground="{DynamicResource fxForegroundBrush}"
                                   IsVisible="{Binding IconData, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static ObjectConverters.IsNotNull}}" />
                         <TextBlock Text="{Binding Header, RelativeSource={RelativeSource TemplatedParent}}"
-                                   FontSize="11"
+                                   FontSize="{DynamicResource fxFontSizeS}"
                                    HorizontalAlignment="Center"
                                    TextAlignment="Center"
-                                   Foreground="{DynamicResource rUIForegroundBrush}"
+                                   Foreground="{DynamicResource fxForegroundBrush}"
                                    IsVisible="{Binding Header, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                     </StackPanel>
                 </Border>
@@ -28,11 +28,11 @@
         </Setter>
 
         <Style Selector="^:pointerover /template/ Border#PART_Root">
-            <Setter Property="Background" Value="{DynamicResource rUIHoverBrush}" />
+            <Setter Property="Background" Value="{DynamicResource fxHoverBrush}" />
         </Style>
 
         <Style Selector="^:pressed /template/ Border#PART_Root">
-            <Setter Property="Background" Value="{DynamicResource rUIPressedBrush}" />
+            <Setter Property="Background" Value="{DynamicResource fxPressedBrush}" />
         </Style>
     </ControlTheme>
 

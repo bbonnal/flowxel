@@ -11,7 +11,7 @@ This document describes the architectural decisions currently implemented in the
 
 ## Project Structure
 
-- `rUI.Avalonia.Desktop` (`Flowxel.UI` assembly/package)
+- `fx.Avalonia.Desktop` (`Flowxel.UI` assembly/package)
   - Reusable controls (`Navigation`, `Ribbon`, `Docking`, dialogs, overlays, info bar).
   - Service abstractions and implementations (`INavigationService`, `IContentDialogService`, etc.).
 - `Flowxel.UI.Controls.Drawing`
@@ -42,13 +42,13 @@ Decision:
 - `NavigationService` resolves ViewModels by type through `INavigationViewModelResolver`.
 
 Implementation:
-- `rUI.Avalonia.Desktop/Controls/Navigation/NavigationItemControl.cs`
-- `rUI.Avalonia.Desktop/INavigationService.cs`
-- `rUI.Avalonia.Desktop/Services/NavigationService.cs`
+- `fx.Avalonia.Desktop/Controls/Navigation/NavigationItemControl.cs`
+- `fx.Avalonia.Desktop/INavigationService.cs`
+- `fx.Avalonia.Desktop/Services/NavigationService.cs`
 
 Why:
 - Navigation is decoupled from concrete view construction.
-- `rUI.Avalonia.Desktop` stays DI-framework agnostic.
+- `fx.Avalonia.Desktop` stays DI-framework agnostic.
 - Page creation policy is owned by host composition and DI lifetimes, not ad-hoc lambdas.
 - Cleaner and more predictable lifecycle handling.
 
@@ -104,9 +104,9 @@ Implementation:
   - `Microsoft.Extensions.Logging.ILogger<TCategoryName>` (injected directly)
   - `Microsoft.Extensions.Logging.ILoggerFactory` (host registration)
 - Translation strategy:
-  - `rUI.Avalonia.Desktop/Translation/ITranslationService.cs`
-  - `rUI.Avalonia.Desktop/Translation/TranslationService.cs`
-  - `rUI.Avalonia.Desktop/Translation/JsonTranslationCatalogLoader.cs`
+  - `fx.Avalonia.Desktop/Translation/ITranslationService.cs`
+  - `fx.Avalonia.Desktop/Translation/TranslationService.cs`
+  - `fx.Avalonia.Desktop/Translation/JsonTranslationCatalogLoader.cs`
 
 Why:
 - Keeps reusable library code framework-focused and testable.
@@ -124,8 +124,8 @@ Why:
 
 ## Adding a New Service
 
-1. Define interface in `rUI.Avalonia.Desktop/Services`.
-2. Implement service in `rUI.Avalonia.Desktop/Services`.
+1. Define interface in `fx.Avalonia.Desktop/Services`.
+2. Implement service in `fx.Avalonia.Desktop/Services`.
 3. Register in DI in `ServiceCollectionExtensions.cs`.
 4. Inject interface into consumers.
 5. Keep behavior policy at host level (for example log providers, localization catalogs, culture defaults).
@@ -145,7 +145,7 @@ Why:
 
 - ViewModels can be tested by injecting fake/mock interfaces.
 - Navigation behavior can be tested at service level by substituting DI registrations.
-- Architecture guards can enforce boundary rules and mapping completeness (`rUI.ArchitectureTests`).
+- Architecture guards can enforce boundary rules and mapping completeness (`fx.ArchitectureTests`).
 
 ## Constraints and Gotchas
 

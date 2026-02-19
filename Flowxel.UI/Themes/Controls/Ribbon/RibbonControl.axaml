@@ -5,7 +5,7 @@
     <ControlTheme x:Key="{x:Type controls:RibbonControl}" TargetType="controls:RibbonControl">
         <Setter Property="Template">
             <ControlTemplate>
-                <Border BorderBrush="{DynamicResource rUIBorderSubtleBrush}"
+                <Border BorderBrush="{DynamicResource fxBorderSubtleBrush}"
                         BorderThickness="0,0,0,1">
                     <DockPanel>
                         <!-- Tab strip -->
@@ -13,7 +13,7 @@
                                  DockPanel.Dock="Top"
                                  ItemsSource="{Binding Tabs, RelativeSource={RelativeSource TemplatedParent}}"
                                  SelectedItem="{Binding SelectedTab, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                                 Background="{DynamicResource rUISurfaceBrush}"
+                                 Background="{DynamicResource fxSurfaceBrush}"
                                  BorderThickness="0"
                                  Padding="4,0">
                             <ListBox.ItemsPanel>
@@ -34,19 +34,19 @@
                                     <Setter Property="MinHeight" Value="0" />
                                 </Style>
                                 <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-                                    <Setter Property="Background" Value="{DynamicResource rUIHoverBrush}" />
+                                    <Setter Property="Background" Value="{DynamicResource fxHoverBrush}" />
                                 </Style>
                                 <Style Selector="ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
-                                    <Setter Property="Background" Value="{DynamicResource rUIBackgroundBrush}" />
+                                    <Setter Property="Background" Value="{DynamicResource fxBackgroundBrush}" />
                                 </Style>
                                 <Style Selector="ListBoxItem:selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-                                    <Setter Property="Background" Value="{DynamicResource rUIBackgroundBrush}" />
+                                    <Setter Property="Background" Value="{DynamicResource fxBackgroundBrush}" />
                                 </Style>
                             </ListBox.Styles>
                         </ListBox>
 
                         <!-- Content area -->
-                        <Border Background="{DynamicResource rUIBackgroundBrush}"
+                        <Border Background="{DynamicResource fxBackgroundBrush}"
                                 Padding="4,2">
                             <ContentControl Content="{Binding SelectedTab, RelativeSource={RelativeSource TemplatedParent}}" />
                         </Border>

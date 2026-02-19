@@ -3,11 +3,11 @@
                     xmlns:editors="using:Flowxel.UI.Controls.Editors">
 
     <ControlTheme x:Key="{x:Type editors:BaseEditor}" TargetType="editors:BaseEditor">
-        <Setter Property="Background" Value="{DynamicResource rUISurfaceBrush}" />
-        <Setter Property="Foreground" Value="{DynamicResource rUIForegroundBrush}" />
-        <Setter Property="CaretBrush" Value="{DynamicResource rUIForegroundBrush}" />
-        <Setter Property="SelectionBrush" Value="{DynamicResource rUISelectionBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource rUIBorderSubtleBrush}" />
+        <Setter Property="Background" Value="{DynamicResource fxSurfaceBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource fxForegroundBrush}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource fxForegroundBrush}" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource fxSelectionBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource fxBorderSubtleBrush}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="6" />
         <Setter Property="Padding" Value="10,6" />
@@ -20,7 +20,7 @@
                     <!-- Title above the border -->
                     <TextBlock x:Name="PART_Title"
                                Text="{Binding Title, RelativeSource={RelativeSource TemplatedParent}}"
-                               Foreground="{DynamicResource rUIForegroundSecondaryBrush}"
+                               Foreground="{DynamicResource fxForegroundSecondaryBrush}"
                                FontSize="12"
                                Margin="0,0,0,4"
                                IsVisible="{Binding Title, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
@@ -39,7 +39,7 @@
                                 <Panel Margin="{TemplateBinding Padding}">
                                     <TextBlock x:Name="PART_Watermark"
                                                Text="{TemplateBinding Watermark}"
-                                               Foreground="{DynamicResource rUIForegroundTertiaryBrush}"
+                                               Foreground="{DynamicResource fxForegroundTertiaryBrush}"
                                                IsVisible="False"
                                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                                IsHitTestVisible="False" />
@@ -65,7 +65,7 @@
                             <TextBlock Grid.Column="1"
                                        x:Name="PART_UnitLabel"
                                        Text="{Binding Unit, RelativeSource={RelativeSource TemplatedParent}}"
-                                       Foreground="{DynamicResource rUIForegroundTertiaryBrush}"
+                                       Foreground="{DynamicResource fxForegroundTertiaryBrush}"
                                        FontSize="12"
                                        VerticalAlignment="Center"
                                        Margin="4,0,8,0"
@@ -92,20 +92,20 @@
 
         <!-- Pointer over -->
         <Style Selector="^:pointerover /template/ Border#PART_Border">
-            <Setter Property="BorderBrush" Value="{DynamicResource rUIBorderBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource fxBorderBrush}" />
         </Style>
 
         <!-- Focus state (after pointerover so it wins) -->
         <Style Selector="^:focus /template/ Border#PART_Border">
-            <Setter Property="BorderBrush" Value="{DynamicResource rUIAccentBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource fxAccentBrush}" />
         </Style>
         <Style Selector="^:focus-within /template/ Border#PART_Border">
-            <Setter Property="BorderBrush" Value="{DynamicResource rUIAccentBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource fxAccentBrush}" />
         </Style>
 
         <!-- Error state -->
         <Style Selector="^:error /template/ Border#PART_Border">
-            <Setter Property="BorderBrush" Value="{DynamicResource rUIErrorBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource fxErrorBrush}" />
         </Style>
 
         <!-- Disabled state -->

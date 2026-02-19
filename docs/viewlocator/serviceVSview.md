@@ -21,7 +21,7 @@ This approach treats Views just like any other service in your container.
 This is the standard pattern for Avalonia.
 
 **Pros:**
-*   **Clean Architecture:** Your `rUI.Avalonia.Desktop` assembly remains "pure." It doesn't need to know which DI container (Autofac, Microsoft DI, DryIoc) you are using.
+*   **Clean Architecture:** Your `fx.Avalonia.Desktop` assembly remains "pure." It doesn't need to know which DI container (Autofac, Microsoft DI, DryIoc) you are using.
 *   **Loose Coupling:** The `ViewLocator` acts as a bridge. The ViewModels don't know the Views exist, and the Views only know they need a specific `DataContext`.
 *   **Avalonia Native:** It plays perfectly with Avalonia's `DataTemplate` system. When you do `<ContentControl Content="{Binding CurrentPage}" />`, the `ViewLocator` handles the magic automatically.
 
