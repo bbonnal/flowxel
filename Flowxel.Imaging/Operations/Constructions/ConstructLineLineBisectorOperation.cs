@@ -6,6 +6,8 @@ namespace Flowxel.Imaging.Operations.Constructions;
 
 public class ConstructLineLineBisectorOperation(ResourcePool pool, Graph<IExecutableNode> graph) : Node<Line, Line>(pool, graph)
 {
+    protected override IReadOnlyList<string> InputPorts => ["first", "second"];
+
     protected override Line ExecuteInternal(
         IReadOnlyList<Line> inputs,
         IReadOnlyDictionary<string, object> parameters,

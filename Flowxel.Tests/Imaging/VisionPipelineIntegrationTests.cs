@@ -70,8 +70,8 @@ public class VisionPipelineIntegrationTests
 
         graph.Connect(load, blurSmall);
         graph.Connect(load, blurLarge);
-        graph.Connect(blurSmall, subtract);
-        graph.Connect(blurLarge, subtract);
+        graph.Connect(blurSmall, subtract, GraphPorts.DefaultOutput, "left");
+        graph.Connect(blurLarge, subtract, GraphPorts.DefaultOutput, "right");
         graph.Connect(subtract, save);
 
         // Act

@@ -44,7 +44,6 @@ public static class ServiceCollectionExtensions
         _ = services.AddTransient<ExpanderTestingPageView>();
         _ = services.AddTransient<SchedulePageView>();
         _ = services.AddTransient<RibbonCanvasTestingPageView>();
-        _ = services.AddTransient<ImagingCanvasPageView>();
         _ = services.AddTransient<DockingTestingPageView>();
         _ = services.AddTransient<DockingCanvasTestingPageView>();
         _ = services.AddTransient<NavigationTestingPageView>();
@@ -61,7 +60,6 @@ public static class ServiceCollectionExtensions
         _ = services.AddSingleton<ExpanderTestingPageViewModel>();
         _ = services.AddSingleton<SchedulePageViewModel>();
         _ = services.AddSingleton<RibbonCanvasTestingPageViewModel>();
-        _ = services.AddSingleton<ImagingCanvasPageViewModel>();
         _ = services.AddSingleton<DockingTestingPageViewModel>();
         _ = services.AddSingleton<DockingCanvasTestingPageViewModel>();
         _ = services.AddSingleton<NavigationTestingPageViewModel>();

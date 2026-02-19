@@ -6,6 +6,8 @@ namespace Flowxel.Imaging.Operations.Constructions;
 
 public class ConstructLineLineIntersectionOperation(ResourcePool pool, Graph<IExecutableNode> graph) : Node<Line, Point>(pool, graph)
 {
+    protected override IReadOnlyList<string> InputPorts => ["first", "second"];
+
     protected override Point ExecuteInternal(
         IReadOnlyList<Line> inputs,
         IReadOnlyDictionary<string, object> parameters,

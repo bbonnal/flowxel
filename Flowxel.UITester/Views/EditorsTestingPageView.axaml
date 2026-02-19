@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:Flowxel.UITester.ViewModels"
              xmlns:editors="using:Flowxel.UI.Controls.Editors"
+             xmlns:ruiRibbon="using:Flowxel.UI.Controls.Ribbon"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="700"
@@ -29,9 +30,7 @@
                                     Watermark="Type something..."
                                     Text="{Binding TextValue, Mode=TwoWay}">
                     <editors:TextEditor.ActionContent>
-                        <Button Content="Go"
-                                Padding="6,2"
-                                FontSize="12" />
+                        <ruiRibbon:RibbonButton Header="Go" />
                     </editors:TextEditor.ActionContent>
                 </editors:TextEditor>
                 <editors:TextEditor Watermark="No title" />
@@ -105,9 +104,7 @@
                                              Text="{Binding MultiLineTextValue, Mode=TwoWay}"
                                              Unit="md">
                     <editors:MultiLineTextEditor.ActionContent>
-                        <Button Content="Format"
-                                Padding="6,2"
-                                FontSize="12" />
+                        <ruiRibbon:RibbonButton Header="Format" />
                     </editors:MultiLineTextEditor.ActionContent>
                 </editors:MultiLineTextEditor>
                 <TextBlock Text="{Binding MultiLineTextValue, StringFormat='Bound value: {0}'}"

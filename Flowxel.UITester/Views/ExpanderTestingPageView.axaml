@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:Flowxel.UITester.ViewModels"
              xmlns:rui="using:Flowxel.UI.Controls"
+             xmlns:editors="using:Flowxel.UI.Controls.Editors"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:pia="using:PhosphorIconsAvalonia.Markup"
@@ -31,9 +32,11 @@
                                          Description="Configure display and behavior options"
                                          IconData="{pia:IconGeometry Icon=gear}">
                 <StackPanel Spacing="12">
-                    <TextBox Watermark="Display name" />
-                    <CheckBox Content="Enable notifications" />
-                    <CheckBox Content="Use dark theme" />
+                    <editors:TextEditor Watermark="Display name" />
+                    <TextBlock Text="Notifications: enabled"
+                               Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
+                    <TextBlock Text="Theme preference: dark"
+                               Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
                 </StackPanel>
             </rui:SettingsCardExpander>
 

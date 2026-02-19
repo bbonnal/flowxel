@@ -3,6 +3,7 @@
              xmlns:vm="using:Flowxel.UITester.ViewModels"
              xmlns:tr="using:Flowxel.UI.Translation"
              xmlns:rui="using:Flowxel.UI.Controls"
+             xmlns:ruiRibbon="using:Flowxel.UI.Controls.Ribbon"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:pia="using:PhosphorIconsAvalonia.Markup"
@@ -37,10 +38,10 @@
                     <TextBlock Text="{Binding CurrentLanguageDisplay}"
                                Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
                     <StackPanel Orientation="Horizontal" Spacing="8">
-                        <Button Content="{tr:Translate settings.language.english}"
-                                Command="{Binding SetEnglishCommand}" />
-                        <Button Content="{tr:Translate settings.language.french}"
-                                Command="{Binding SetFrenchCommand}" />
+                        <ruiRibbon:RibbonButton Header="{tr:Translate settings.language.english}"
+                                                Command="{Binding SetEnglishCommand}" />
+                        <ruiRibbon:RibbonButton Header="{tr:Translate settings.language.french}"
+                                                Command="{Binding SetFrenchCommand}" />
                     </StackPanel>
                 </StackPanel>
             </rui:SettingsCardExpander>

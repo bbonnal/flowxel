@@ -3,6 +3,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:Flowxel.UITester.ViewModels"
+             xmlns:ruiRibbon="using:Flowxel.UI.Controls.Ribbon"
+             xmlns:editors="using:Flowxel.UI.Controls.Editors"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
              x:Class="Flowxel.UITester.Views.NavigationCancellationDemoPageView"
              x:DataType="vm:NavigationCancellationDemoPageViewModel">
@@ -67,21 +69,19 @@
                           FontSize="18"
                           FontWeight="SemiBold" />
 
-                <TextBox Text="{Binding DocumentText, Mode=TwoWay}"
-                         AcceptsReturn="True"
-                         TextWrapping="Wrap"
-                         MinHeight="200"
-                         Watermark="Start typing here to create unsaved changes..." />
+                <editors:MultiLineTextEditor Text="{Binding DocumentText, Mode=TwoWay}"
+                                             MinHeight="200"
+                                             Watermark="Start typing here to create unsaved changes..." />
 
                 <!-- Action Buttons -->
                 <StackPanel Orientation="Horizontal" Spacing="12">
-                    <Button Content="💾 Save"
-                            Command="{Binding SaveCommand}"
-                            IsEnabled="{Binding HasUnsavedChanges}" />
+                    <ruiRibbon:RibbonButton Header="Save"
+                                            Command="{Binding SaveCommand}"
+                                            IsEnabled="{Binding HasUnsavedChanges}" />
 
-                    <Button Content="🔄 Discard"
-                            Command="{Binding DiscardCommand}"
-                            IsEnabled="{Binding HasUnsavedChanges}" />
+                    <ruiRibbon:RibbonButton Header="Discard"
+                                            Command="{Binding DiscardCommand}"
+                                            IsEnabled="{Binding HasUnsavedChanges}" />
                 </StackPanel>
             </StackPanel>
 

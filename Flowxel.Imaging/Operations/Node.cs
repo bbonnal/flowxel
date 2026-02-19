@@ -21,22 +21,57 @@ public abstract class Node<TIn, TOut> : IExecutableNode where TOut : notnull
 
     public Dictionary<string, object> Parameters { get; } = new();
 
+    protected virtual IReadOnlyList<string> InputPorts =>
+        typeof(TIn) == typeof(Empty)
+            ? []
+            : [GraphPorts.DefaultInput];
+
+    protected virtual string OutputPort => GraphPorts.DefaultOutput;
+
     public Task Execute(CancellationToken ct)
     {
-        // Returns an uncompleted Task to the DAG scheduler for true parallel execution in WhenAll
         return Task.Run(() =>
         {
             ct.ThrowIfCancellationRequested();
-        
-            // Look in the pool for resources provided by predecessors
-            var inputs = typeof(TIn) == typeof(Empty) ? [] : _graph.GetPredecessorIds(Id).Select(_pool.Get<TIn>).ToArray();
 
-            // Execute operation
+            var inputs = ResolveInputs();
+
             var output = ExecuteInternal(inputs, Parameters, ct);
-
-            // Publish the result to the pool 
-            _pool.Set(Id, output);
+            _pool.Set(Id, OutputPort, output);
         }, ct);
+    }
+
+    private IReadOnlyList<TIn> ResolveInputs()
+    {
+        if (typeof(TIn) == typeof(Empty))
+            return [];
+
+        var incomingByPort = _graph
+            .GetIncomingEdges(Id)
+            .GroupBy(edge => edge.ToPortKey, StringComparer.Ordinal)
+            .ToDictionary(group => group.Key, group => group.ToArray(), StringComparer.Ordinal);
+
+        var inputPorts = InputPorts;
+        if (inputPorts.Count == 0)
+            return [];
+
+        var inputs = new List<TIn>(inputPorts.Count);
+        foreach (var inputPort in inputPorts)
+        {
+            if (!incomingByPort.TryGetValue(inputPort, out var edges))
+                throw new InvalidOperationException($"Missing connection for input port '{inputPort}' on node {Id}.");
+
+            if (edges.Length != 1)
+            {
+                throw new InvalidOperationException(
+                    $"Input port '{inputPort}' on node {Id} expects exactly one source but received {edges.Length}.");
+            }
+
+            var edge = edges[0];
+            inputs.Add(_pool.Get<TIn>(edge.FromNodeId, edge.FromPortKey));
+        }
+
+        return inputs;
     }
 
     protected abstract TOut ExecuteInternal(

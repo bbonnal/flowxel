@@ -124,8 +124,8 @@ public class AdvancedOperationsTests
         graph.AddNode(lineA);
         graph.AddNode(lineB);
         graph.AddNode(intersection);
-        graph.Connect(lineA, intersection);
-        graph.Connect(lineB, intersection);
+        graph.Connect(lineA, intersection, GraphPorts.DefaultOutput, "first");
+        graph.Connect(lineB, intersection, GraphPorts.DefaultOutput, "second");
 
         await graph.ExecuteAsync(TestContext.Current.CancellationToken);
 
@@ -151,8 +151,8 @@ public class AdvancedOperationsTests
         graph.AddNode(lineA);
         graph.AddNode(lineB);
         graph.AddNode(intersection);
-        graph.Connect(lineA, intersection);
-        graph.Connect(lineB, intersection);
+        graph.Connect(lineA, intersection, GraphPorts.DefaultOutput, "first");
+        graph.Connect(lineB, intersection, GraphPorts.DefaultOutput, "second");
 
         await graph.ExecuteAsync(TestContext.Current.CancellationToken);
 
@@ -174,8 +174,8 @@ public class AdvancedOperationsTests
         graph.AddNode(lineA);
         graph.AddNode(lineB);
         graph.AddNode(bisector);
-        graph.Connect(lineA, bisector);
-        graph.Connect(lineB, bisector);
+        graph.Connect(lineA, bisector, GraphPorts.DefaultOutput, "first");
+        graph.Connect(lineB, bisector, GraphPorts.DefaultOutput, "second");
 
         await graph.ExecuteAsync(TestContext.Current.CancellationToken);
 

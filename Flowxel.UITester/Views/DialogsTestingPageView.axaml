@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:Flowxel.UITester.ViewModels"
              xmlns:rui="using:Flowxel.UI.Controls"
+             xmlns:ruiRibbon="using:Flowxel.UI.Controls.Ribbon"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
@@ -23,15 +24,15 @@
                 <StackPanel Spacing="12">
                     <TextBlock Text="Open Files" FontWeight="SemiBold" />
                     <StackPanel Orientation="Horizontal" Spacing="8">
-                        <Button Content="Open Single File" Command="{Binding OpenSingleFileCommand}" />
-                        <Button Content="Open Multiple Files" Command="{Binding OpenMultipleFilesCommand}" />
-                        <Button Content="Open Text Files" Command="{Binding OpenTextFilesCommand}" />
+                        <ruiRibbon:RibbonButton Header="Open Single File" Command="{Binding OpenSingleFileCommand}" />
+                        <ruiRibbon:RibbonButton Header="Open Multiple Files" Command="{Binding OpenMultipleFilesCommand}" />
+                        <ruiRibbon:RibbonButton Header="Open Text Files" Command="{Binding OpenTextFilesCommand}" />
                     </StackPanel>
 
                     <TextBlock Text="Save Files" FontWeight="SemiBold" Margin="0,8,0,0" />
                     <StackPanel Orientation="Horizontal" Spacing="8">
-                        <Button Content="Save File" Command="{Binding SaveFileCommand}" />
-                        <Button Content="Save with File Type" Command="{Binding SaveFileWithExtensionCommand}" />
+                        <ruiRibbon:RibbonButton Header="Save File" Command="{Binding SaveFileCommand}" />
+                        <ruiRibbon:RibbonButton Header="Save with File Type" Command="{Binding SaveFileWithExtensionCommand}" />
                     </StackPanel>
 
                     <Border Background="{DynamicResource fxSurfaceBrush}"
@@ -52,8 +53,8 @@
                                       Description="Select folders for various operations">
                 <StackPanel Spacing="12">
                     <StackPanel Orientation="Horizontal" Spacing="8">
-                        <Button Content="Open Single Folder" Command="{Binding OpenSingleFolderCommand}" />
-                        <Button Content="Open Multiple Folders" Command="{Binding OpenMultipleFoldersCommand}" />
+                        <ruiRibbon:RibbonButton Header="Open Single Folder" Command="{Binding OpenSingleFolderCommand}" />
+                        <ruiRibbon:RibbonButton Header="Open Multiple Folders" Command="{Binding OpenMultipleFoldersCommand}" />
                     </StackPanel>
 
                     <Border Background="{DynamicResource fxSurfaceBrush}"

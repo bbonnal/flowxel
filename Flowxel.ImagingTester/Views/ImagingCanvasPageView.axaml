@@ -1,16 +1,17 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="using:Flowxel.UITester.ViewModels"
+             xmlns:vm="using:Flowxel.ImagingTester.ViewModels"
              xmlns:ruiRibbon="using:Flowxel.UI.Controls.Ribbon"
              xmlns:ruiDrawing="using:Flowxel.UI.Controls.Drawing"
              xmlns:ruiProcessing="using:Flowxel.UI.Controls.Processing"
+             xmlns:editors="using:Flowxel.UI.Controls.Editors"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:pia="using:PhosphorIconsAvalonia.Markup"
              mc:Ignorable="d"
              d:DesignWidth="1400"
              d:DesignHeight="860"
-             x:Class="Flowxel.UITester.Views.ImagingCanvasPageView"
+             x:Class="Flowxel.ImagingTester.Views.ImagingCanvasPageView"
              x:DataType="vm:ImagingCanvasPageViewModel">
 
     <DockPanel>
@@ -124,7 +125,7 @@
 
                                     <StackPanel Spacing="4" IsVisible="{Binding CanEditLoadPath}">
                                         <TextBlock Text="loadImage.Path" />
-                                        <TextBox Text="{Binding SelectedLoadPath, Mode=TwoWay}" Watermark="Absolute image path" />
+                                        <editors:TextEditor Text="{Binding SelectedLoadPath, Mode=TwoWay}" Watermark="Absolute image path" />
                                         <TextBlock Text="loadImage publishes Mat into the resource pool when executed."
                                                    TextWrapping="Wrap"
                                                    FontSize="11"
@@ -135,9 +136,9 @@
                                         <TextBlock Text="GaussianBlur Parameters" />
                                         <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="6">
                                             <TextBlock Grid.Row="0" Grid.Column="0" Text="KernelSize" VerticalAlignment="Center" />
-                                            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding SelectedGaussianKernelSize, Mode=TwoWay}" />
+                                            <editors:TextEditor Grid.Row="0" Grid.Column="1" Text="{Binding SelectedGaussianKernelSize, Mode=TwoWay}" />
                                             <TextBlock Grid.Row="1" Grid.Column="0" Text="Sigma" VerticalAlignment="Center" />
-                                            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding SelectedGaussianSigma, Mode=TwoWay}" />
+                                            <editors:TextEditor Grid.Row="1" Grid.Column="1" Text="{Binding SelectedGaussianSigma, Mode=TwoWay}" />
                                         </Grid>
                                         <TextBlock Text="Map Gaussian input port to loadImage output in Process Control."
                                                    TextWrapping="Wrap"
@@ -150,10 +151,10 @@
                                         <TextBlock Text="{Binding SelectedExtractRoiStatus}"
                                                    Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
                                         <StackPanel Orientation="Horizontal" Spacing="8">
-                                            <Button Content="Draw ROI"
-                                                    Command="{Binding DrawRoiForSelectedOperationCommand}" />
-                                            <Button Content="Remove ROI"
-                                                    Command="{Binding RemoveRoiForSelectedOperationCommand}" />
+                                            <ruiRibbon:RibbonButton Header="Draw ROI"
+                                                                    Command="{Binding DrawRoiForSelectedOperationCommand}" />
+                                            <ruiRibbon:RibbonButton Header="Remove ROI"
+                                                                    Command="{Binding RemoveRoiForSelectedOperationCommand}" />
                                         </StackPanel>
                                         <TextBlock Text="Connect extract input to either loadImage or GaussianBlur output."
                                                    TextWrapping="Wrap"

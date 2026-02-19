@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flowxel.Imaging", "Flowxel.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flowxel.Tests", "Flowxel.Tests\Flowxel.Tests.csproj", "{1B0A3739-D011-48D0-A78C-F1FE2BE10D08}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flowxel.ImagingTester", "Flowxel.ImagingTester\Flowxel.ImagingTester.csproj", "{1E06CD1E-FB05-40A4-ABF2-4A8073787361}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -97,6 +99,18 @@ Global
 		{1B0A3739-D011-48D0-A78C-F1FE2BE10D08}.Release|x64.Build.0 = Release|Any CPU
 		{1B0A3739-D011-48D0-A78C-F1FE2BE10D08}.Release|x86.ActiveCfg = Release|Any CPU
 		{1B0A3739-D011-48D0-A78C-F1FE2BE10D08}.Release|x86.Build.0 = Release|Any CPU
+		{1E06CD1E-FB05-40A4-ABF2-4A8073787361}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E06CD1E-FB05-40A4-ABF2-4A8073787361}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E06CD1E-FB05-40A4-ABF2-4A8073787361}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1E06CD1E-FB05-40A4-ABF2-4A8073787361}.Debug|x64.Build.0 = Debug|Any CPU
+		{1E06CD1E-FB05-40A4-ABF2-4A8073787361}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1E06CD1E-FB05-40A4-ABF2-4A8073787361}.Debug|x86.Build.0 = Debug|Any CPU
+		{1E06CD1E-FB05-40A4-ABF2-4A8073787361}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E06CD1E-FB05-40A4-ABF2-4A8073787361}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E06CD1E-FB05-40A4-ABF2-4A8073787361}.Release|x64.ActiveCfg = Release|Any CPU
+		{1E06CD1E-FB05-40A4-ABF2-4A8073787361}.Release|x64.Build.0 = Release|Any CPU
+		{1E06CD1E-FB05-40A4-ABF2-4A8073787361}.Release|x86.ActiveCfg = Release|Any CPU
+		{1E06CD1E-FB05-40A4-ABF2-4A8073787361}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

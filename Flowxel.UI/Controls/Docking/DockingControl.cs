@@ -6,6 +6,7 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Metadata;
+using Avalonia.VisualTree;
 using Avalonia;
 using System.Collections.Specialized;
 
@@ -76,6 +77,7 @@ public class DockingControl : TemplatedControl
 
         if (_rootPanel is not null)
         {
+            _rootPanel.RemoveHandler(PointerPressedEvent, OnRootPointerPressed);
             _rootPanel.RemoveHandler(PointerMovedEvent, OnRootPointerMoved);
             _rootPanel.RemoveHandler(PointerReleasedEvent, OnRootPointerReleased);
         }
@@ -86,6 +88,7 @@ public class DockingControl : TemplatedControl
 
         if (_rootPanel is not null)
         {
+            _rootPanel.AddHandler(PointerPressedEvent, OnRootPointerPressed, RoutingStrategies.Bubble, true);
             _rootPanel.AddHandler(PointerMovedEvent, OnRootPointerMoved, RoutingStrategies.Bubble, true);
             _rootPanel.AddHandler(PointerReleasedEvent, OnRootPointerReleased, RoutingStrategies.Bubble, true);
         }
@@ -354,6 +357,23 @@ public class DockingControl : TemplatedControl
 
         // Position and show overlay
         ShowDropOverlay(groupTopLeft.Value, groupBounds.Width, groupBounds.Height, zone);
+    }
+
+    private void OnRootPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (!EnablePaneFocusTracking || _rootPanel is null || _dragSession is not null)
+            return;
+
+        var position = e.GetPosition(_rootPanel);
+        var hitVisual = _rootPanel.InputHitTest(position) as Visual;
+        if (hitVisual is null)
+            return;
+
+        var group = hitVisual.GetSelfAndVisualAncestors().OfType<DockTabGroup>().FirstOrDefault();
+        if (group is null)
+            return;
+
+        SetFocusedPane(group.SelectedPane);
     }
 
     private void OnRootPointerReleased(object? sender, PointerReleasedEventArgs e)

@@ -1,14 +1,16 @@
 namespace Flowxel.Graph;
 
+public readonly record struct GraphEdge(Guid FromNodeId, string FromPortKey, Guid ToNodeId, string ToPortKey);
+
 /// <summary>
 /// Represents a directed acyclic graph (DAG) with support for topological sorting and parallel execution.
 /// </summary>
 /// <typeparam name="TNode">The type of node data stored in the graph.</typeparam>
 public class Graph<TNode> where TNode : class, IExecutableNode
 {
-    private readonly Dictionary<Guid, HashSet<Guid>> _incoming = new();
+    private readonly Dictionary<Guid, HashSet<GraphEdge>> _incoming = new();
     private readonly Dictionary<Guid, TNode> _nodes = new();
-    private readonly Dictionary<Guid, HashSet<Guid>> _outgoing = new();
+    private readonly Dictionary<Guid, HashSet<GraphEdge>> _outgoing = new();
 
     /// <summary>
     /// Gets all nodes in the graph.
@@ -52,9 +54,9 @@ public class Graph<TNode> where TNode : class, IExecutableNode
 
         // Remove all edges connected to this node
         foreach (var predecessor in _incoming[id].ToList())
-            _outgoing[predecessor].Remove(id);
+            _outgoing[predecessor.FromNodeId].Remove(predecessor);
         foreach (var successor in _outgoing[id].ToList())
-            _incoming[successor].Remove(id);
+            _incoming[successor.ToNodeId].Remove(successor);
 
         _incoming.Remove(id);
         _outgoing.Remove(id);
@@ -90,7 +92,12 @@ public class Graph<TNode> where TNode : class, IExecutableNode
     /// <exception cref="InvalidOperationException">Thrown when adding the edge would create a cycle.</exception>
     public void Connect(TNode from, TNode to)
     {
-        AddEdge(from.Id, to.Id);
+        AddEdge(from.Id, to.Id, GraphPorts.DefaultOutput, GraphPorts.DefaultInput);
+    }
+
+    public void Connect(TNode from, TNode to, string fromPortKey, string toPortKey)
+    {
+        AddEdge(from.Id, to.Id, fromPortKey, toPortKey);
     }
 
     /// <summary>
@@ -102,20 +109,30 @@ public class Graph<TNode> where TNode : class, IExecutableNode
     /// <exception cref="InvalidOperationException">Thrown when adding the edge would create a cycle.</exception>
     public void AddEdge(Guid from, Guid to)
     {
+        AddEdge(from, to, GraphPorts.DefaultOutput, GraphPorts.DefaultInput);
+    }
+
+    public void AddEdge(Guid from, Guid to, string fromPortKey, string toPortKey)
+    {
         if (from == to)
             throw new ArgumentException("Self-loops are not allowed in a DAG.");
+        if (string.IsNullOrWhiteSpace(fromPortKey))
+            throw new ArgumentException("Source port key cannot be empty.", nameof(fromPortKey));
+        if (string.IsNullOrWhiteSpace(toPortKey))
+            throw new ArgumentException("Destination port key cannot be empty.", nameof(toPortKey));
         if (!_nodes.ContainsKey(from))
             throw new ArgumentException($"Source node {from} does not exist in the graph.", nameof(from));
         if (!_nodes.ContainsKey(to))
             throw new ArgumentException($"Destination node {to} does not exist in the graph.", nameof(to));
-        if (_outgoing[from].Contains(to))
+        var edge = new GraphEdge(from, fromPortKey, to, toPortKey);
+        if (_outgoing[from].Contains(edge))
             return; // Edge already exists
 
         if (PathExists(to, from))
             throw new InvalidOperationException($"Adding edge from {from} to {to} would create a cycle.");
 
-        _outgoing[from].Add(to);
-        _incoming[to].Add(from);
+        _outgoing[from].Add(edge);
+        _incoming[to].Add(edge);
     }
 
     /// <summary>
@@ -126,15 +143,24 @@ public class Graph<TNode> where TNode : class, IExecutableNode
     /// <returns>True if the edge was added; false if it would create a cycle or already exists.</returns>
     public bool TryAddEdge(Guid from, Guid to)
     {
+        return TryAddEdge(from, to, GraphPorts.DefaultOutput, GraphPorts.DefaultInput);
+    }
+
+    public bool TryAddEdge(Guid from, Guid to, string fromPortKey, string toPortKey)
+    {
         if (from == to || !_nodes.ContainsKey(from) || !_nodes.ContainsKey(to))
             return false;
-        if (_outgoing[from].Contains(to))
+        if (string.IsNullOrWhiteSpace(fromPortKey) || string.IsNullOrWhiteSpace(toPortKey))
+            return false;
+
+        var edge = new GraphEdge(from, fromPortKey, to, toPortKey);
+        if (_outgoing[from].Contains(edge))
             return false;
         if (PathExists(to, from))
             return false;
 
-        _outgoing[from].Add(to);
-        _incoming[to].Add(from);
+        _outgoing[from].Add(edge);
+        _incoming[to].Add(edge);
         return true;
     }
 
@@ -146,12 +172,18 @@ public class Graph<TNode> where TNode : class, IExecutableNode
     /// <returns>True if the edge was removed; false if the edge doesn't exist.</returns>
     public bool RemoveEdge(Guid from, Guid to)
     {
+        return RemoveEdge(from, to, GraphPorts.DefaultOutput, GraphPorts.DefaultInput);
+    }
+
+    public bool RemoveEdge(Guid from, Guid to, string fromPortKey, string toPortKey)
+    {
         if (!_nodes.ContainsKey(from) || !_nodes.ContainsKey(to))
             return false;
 
-        var removed = _outgoing[from].Remove(to);
+        var edge = new GraphEdge(from, fromPortKey, to, toPortKey);
+        var removed = _outgoing[from].Remove(edge);
         if (removed)
-            _incoming[to].Remove(from);
+            _incoming[to].Remove(edge);
         return removed;
     }
 
@@ -163,7 +195,15 @@ public class Graph<TNode> where TNode : class, IExecutableNode
     /// <returns>True if the edge exists; otherwise false.</returns>
     public bool HasEdge(Guid from, Guid to)
     {
-        return _nodes.ContainsKey(from) && _outgoing[from].Contains(to);
+        return _nodes.ContainsKey(from) &&
+               _outgoing[from].Any(edge => edge.ToNodeId == to);
+    }
+
+    public bool HasEdge(Guid from, Guid to, string fromPortKey, string toPortKey)
+    {
+        if (!_nodes.ContainsKey(from))
+            return false;
+        return _outgoing[from].Contains(new GraphEdge(from, fromPortKey, to, toPortKey));
     }
 
     /// <summary>
@@ -176,7 +216,7 @@ public class Graph<TNode> where TNode : class, IExecutableNode
         if (!_nodes.ContainsKey(id))
             yield break;
 
-        foreach (var successorId in _outgoing[id])
+        foreach (var successorId in _outgoing[id].Select(edge => edge.ToNodeId).Distinct())
             yield return _nodes[successorId];
     }
 
@@ -190,7 +230,7 @@ public class Graph<TNode> where TNode : class, IExecutableNode
         if (!_nodes.ContainsKey(id))
             yield break;
 
-        foreach (var predecessorId in _incoming[id])
+        foreach (var predecessorId in _incoming[id].Select(edge => edge.FromNodeId).Distinct())
             yield return _nodes[predecessorId];
     }
 
@@ -201,8 +241,8 @@ public class Graph<TNode> where TNode : class, IExecutableNode
     /// <returns>An enumerable of successor node IDs.</returns>
     public IEnumerable<Guid> GetSuccessorIds(Guid id)
     {
-        return _outgoing.TryGetValue(id, out var successors) 
-            ? successors 
+        return _outgoing.TryGetValue(id, out var successors)
+            ? successors.Select(edge => edge.ToNodeId).Distinct()
             : Enumerable.Empty<Guid>();
     }
 
@@ -213,9 +253,23 @@ public class Graph<TNode> where TNode : class, IExecutableNode
     /// <returns>An enumerable of predecessor node IDs.</returns>
     public IEnumerable<Guid> GetPredecessorIds(Guid id)
     {
-        return _incoming.TryGetValue(id, out var predecessors) 
-            ? predecessors 
+        return _incoming.TryGetValue(id, out var predecessors)
+            ? predecessors.Select(edge => edge.FromNodeId).Distinct()
             : Enumerable.Empty<Guid>();
+    }
+
+    public IEnumerable<GraphEdge> GetOutgoingEdges(Guid id)
+    {
+        return _outgoing.TryGetValue(id, out var edges)
+            ? edges
+            : Enumerable.Empty<GraphEdge>();
+    }
+
+    public IEnumerable<GraphEdge> GetIncomingEdges(Guid id)
+    {
+        return _incoming.TryGetValue(id, out var edges)
+            ? edges
+            : Enumerable.Empty<GraphEdge>();
     }
 
     /// <summary>
@@ -225,7 +279,9 @@ public class Graph<TNode> where TNode : class, IExecutableNode
     /// <returns>The number of incoming edges.</returns>
     public int GetInDegree(Guid id)
     {
-        return _incoming.TryGetValue(id, out var predecessors) ? predecessors.Count : 0;
+        return _incoming.TryGetValue(id, out var predecessors)
+            ? predecessors.Select(edge => edge.FromNodeId).Distinct().Count()
+            : 0;
     }
 
     /// <summary>
@@ -235,7 +291,9 @@ public class Graph<TNode> where TNode : class, IExecutableNode
     /// <returns>The number of outgoing edges.</returns>
     public int GetOutDegree(Guid id)
     {
-        return _outgoing.TryGetValue(id, out var successors) ? successors.Count : 0;
+        return _outgoing.TryGetValue(id, out var successors)
+            ? successors.Select(edge => edge.ToNodeId).Distinct().Count()
+            : 0;
     }
 
     /// <summary>
@@ -263,7 +321,7 @@ public class Graph<TNode> where TNode : class, IExecutableNode
             if (!_outgoing.TryGetValue(current, out var successors))
                 continue;
 
-            foreach (var successor in successors)
+            foreach (var successor in successors.Select(edge => edge.ToNodeId).Distinct())
             {
                 if (visited.Add(successor))
                     stack.Push(successor);
@@ -280,7 +338,7 @@ public class Graph<TNode> where TNode : class, IExecutableNode
     /// <exception cref="InvalidOperationException">Thrown when the graph contains cycles.</exception>
     public IReadOnlyList<Guid> TopologicalSort()
     {
-        var inDegree = _nodes.Keys.ToDictionary(k => k, k => _incoming[k].Count);
+        var inDegree = _nodes.Keys.ToDictionary(k => k, GetInDegree);
         var queue = new Queue<Guid>(inDegree.Where(kv => kv.Value == 0).Select(kv => kv.Key));
         var result = new List<Guid>();
 
@@ -289,7 +347,7 @@ public class Graph<TNode> where TNode : class, IExecutableNode
             var id = queue.Dequeue();
             result.Add(id);
 
-            foreach (var successor in _outgoing[id])
+            foreach (var successor in _outgoing[id].Select(edge => edge.ToNodeId).Distinct())
             {
                 inDegree[successor]--;
                 if (inDegree[successor] == 0)

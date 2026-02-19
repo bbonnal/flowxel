@@ -1,13 +1,9 @@
 using System.Threading.Tasks;
-using Avalonia;
 using Avalonia.Media;
-using Avalonia.Styling;
-using CommunityToolkit.Mvvm.Input;
 using PhosphorIconsAvalonia;
 using Flowxel.UI;
 using Flowxel.UI.Controls.Navigation;
 using Flowxel.UI.Services;
-using Flowxel.UITester.Services;
 using Flowxel.UITester.Views;
 
 namespace Flowxel.UITester.ViewModels;
@@ -15,27 +11,22 @@ namespace Flowxel.UITester.ViewModels;
 public class MainWindowViewModel : ViewModelBase
 {
     private bool _isInitialized;
-    private readonly IAppSettingsStore _settings;
-
     public MainWindowViewModel(
         INavigationService navigation,
         IContentDialogService dialogService,
         IOverlayService overlayService,
-        IInfoBarService infoBarService,
-        IAppSettingsStore settings)
+        IInfoBarService infoBarService)
     {
         Navigation = navigation;
         DialogService = dialogService;
         OverlayService = overlayService;
         InfoBarService = infoBarService;
-        _settings = settings;
-        ToggleThemeCommand = new RelayCommand(ToggleTheme);
 
         var items = new[]
         {
             new NavigationItemControl
             {
-                Header = "Dialogs",
+                Header = "Content Dialog",
                 IconData = IconService.CreateGeometry(Icon.chat_circle_text, IconType.regular),
                 PageType = typeof(ContentDialogTestingPageView),
                 PageViewModelType = typeof(ContentDialogTestingPageViewModel)
@@ -88,13 +79,6 @@ public class MainWindowViewModel : ViewModelBase
                 IconData = IconService.CreateGeometry(Icon.app_window, IconType.regular),
                 PageType = typeof(RibbonCanvasTestingPageView),
                 PageViewModelType = typeof(RibbonCanvasTestingPageViewModel)
-            },
-            new NavigationItemControl
-            {
-                Header = "Imaging Canvas",
-                IconData = IconService.CreateGeometry(Icon.app_window, IconType.regular),
-                PageType = typeof(ImagingCanvasPageView),
-                PageViewModelType = typeof(ImagingCanvasPageViewModel)
             },
             new NavigationItemControl
             {
@@ -161,8 +145,6 @@ public class MainWindowViewModel : ViewModelBase
     public IInfoBarService InfoBarService { get; }
     public object Logo { get; }
 
-    public IRelayCommand ToggleThemeCommand { get; }
-
     public async Task InitializeAsync()
     {
         if (_isInitialized)
@@ -170,17 +152,5 @@ public class MainWindowViewModel : ViewModelBase
 
         _isInitialized = true;
         await Navigation.NavigateToAsync<ContentDialogTestingPageViewModel>();
-    }
-
-    private void ToggleTheme()
-    {
-        var app = Application.Current;
-        if (app != null)
-        {
-            app.RequestedThemeVariant = app.ActualThemeVariant == ThemeVariant.Dark
-                ? ThemeVariant.Light
-                : ThemeVariant.Dark;
-            _settings.SetTheme(app.RequestedThemeVariant);
-        }
     }
 }

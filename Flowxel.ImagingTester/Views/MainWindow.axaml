@@ -1,0 +1,26 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Flowxel.ImagingTester.ViewModels"
+        xmlns:views="using:Flowxel.ImagingTester.Views"
+        xmlns:controls="using:Flowxel.UI.Controls"
+        xmlns:ruiDrawing="using:Flowxel.UI.Controls.Drawing"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        x:Class="Flowxel.ImagingTester.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="Flowxel.ImagingTester"
+        Width="1600"
+        Height="980"
+        Background="{DynamicResource fxBackgroundBrush}">
+
+    <Panel>
+        <DockPanel>
+            <views:ImagingCanvasPageView DataContext="{Binding Imaging}" />
+        </DockPanel>
+
+        <ruiDrawing:PropertiesDialog x:Name="HostDialog" />
+        <controls:InfoBarControl x:Name="HostInfoBar" />
+    </Panel>
+</Window>

@@ -15,15 +15,6 @@
 
     <Panel>
         <DockPanel>
-            <!-- Add button at top -->
-            <StackPanel DockPanel.Dock="Top"
-                        Orientation="Horizontal"
-                        HorizontalAlignment="Right"
-                        Margin="8">
-                <Button Content="Toggle Theme"
-                        Command="{Binding ToggleThemeCommand}" />
-            </StackPanel>
-
             <!-- Existing navigation and content -->
             <nav:NavigationControl DockPanel.Dock="Left"
                                    Items="{Binding Navigation.Items}"

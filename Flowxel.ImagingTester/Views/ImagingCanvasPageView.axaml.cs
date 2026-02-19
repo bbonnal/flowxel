@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace Flowxel.UITester.Views;
+namespace Flowxel.ImagingTester.Views;
 
 public partial class ImagingCanvasPageView : UserControl
 {

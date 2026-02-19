@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -27,7 +28,7 @@ using Shape = Flowxel.Core.Geometry.Shapes.Shape;
 using FlowLine = Flowxel.Core.Geometry.Shapes.Line;
 using FlowRectangle = Flowxel.Core.Geometry.Shapes.Rectangle;
 
-namespace Flowxel.UITester.ViewModels;
+namespace Flowxel.ImagingTester.ViewModels;
 
 public partial class ImagingCanvasPageViewModel : ViewModelBase
 {
@@ -80,6 +81,7 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
         ProcessNodes.CollectionChanged += OnProcessNodesCollectionChanged;
 
         DiscoverAvailableOperations();
+        InitializeDefaultPipelinePreset();
         RefreshSelectedNodeProperties();
     }
 
@@ -339,6 +341,79 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
         return $"{prefix}-{_nodeCounter}";
     }
 
+    private void InitializeDefaultPipelinePreset()
+    {
+        if (ProcessNodes.Count > 0)
+            return;
+
+        const string defaultPath = "/home/benou/Downloads/test.tiff";
+        const int fallbackWidth = 1920;
+        const int fallbackHeight = 1080;
+
+        var loadDescriptor = CreateLoadDescriptor();
+        var extractDescriptor = CreateExtractLineDescriptor();
+
+        ProcessNodes.Add(loadDescriptor);
+        ProcessNodes.Add(extractDescriptor);
+
+        _loadPathByNodeId[loadDescriptor.Id] = defaultPath;
+
+        ProcessLinks.Add(new ProcessLinkDescriptor
+        {
+            FromNodeId = loadDescriptor.Id,
+            FromPortKey = "out",
+            ToNodeId = extractDescriptor.Id,
+            ToPortKey = "in"
+        });
+
+        var (width, height, source) = TryReadImageDimensions(defaultPath)
+            ? (_lastReadWidth, _lastReadHeight, defaultPath)
+            : (fallbackWidth, fallbackHeight, "fallback");
+
+        var roi = new FlowRectangle
+        {
+            Pose = new Pose(new Vector(width * 0.5, height * 0.5), new Vector(1, 0)),
+            Width = width,
+            Height = height
+        };
+
+        Shapes.Add(roi);
+        _extractRoiShapeIdByNodeId[extractDescriptor.Id] = roi.Id;
+
+        SelectedFromOperation = loadDescriptor;
+        SelectedToOperation = extractDescriptor;
+        SelectedFromPort = loadDescriptor.Outputs.FirstOrDefault(port => port.Key == "out");
+        SelectedToPort = extractDescriptor.Inputs.FirstOrDefault(port => port.Key == "in");
+        SelectedProcessNode = extractDescriptor;
+
+        Console.WriteLine(
+            $"[Preset] loadImage->extractLineInRegion path='{defaultPath}' roi={width}x{height} source={source}");
+    }
+
+    private int _lastReadWidth;
+    private int _lastReadHeight;
+
+    private bool TryReadImageDimensions(string path)
+    {
+        try
+        {
+            if (!File.Exists(path))
+                return false;
+
+            using var mat = Cv2.ImRead(path, ImreadModes.Grayscale);
+            if (mat.Empty())
+                return false;
+
+            _lastReadWidth = mat.Width;
+            _lastReadHeight = mat.Height;
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     private void RemoveSelectedOperation()
     {
         if (SelectedProcessNode is null)
@@ -414,16 +489,27 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
 
         try
         {
+            var totalSw = Stopwatch.StartNew();
+            var setupSw = Stopwatch.StartNew();
             var pool = new ResourcePool();
             var graph = new Graph<IExecutableNode>();
             var nodeInstances = CreateExecutableNodes(pool, graph);
 
             ApplyOperationParameters(nodeInstances);
             ValidateAndConnectGraph(graph, nodeInstances);
+            setupSw.Stop();
 
+            var execSw = Stopwatch.StartNew();
             await graph.ExecuteAsync();
+            execSw.Stop();
 
+            var collectSw = Stopwatch.StartNew();
             CollectNodeResourcesAndOverlays(nodeInstances, pool);
+            collectSw.Stop();
+            totalSw.Stop();
+
+            Console.WriteLine(
+                $"[Pipeline] nodes={ProcessNodes.Count} setup={setupSw.Elapsed.TotalMilliseconds:F2}ms execute={execSw.Elapsed.TotalMilliseconds:F2}ms collect={collectSw.Elapsed.TotalMilliseconds:F2}ms total={totalSw.Elapsed.TotalMilliseconds:F2}ms");
 
             await _infoBarService.ShowAsync(infoBar =>
             {
@@ -537,7 +623,7 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
                     $"Type mismatch on connection {link.DisplayLabel}: {from.OutputType.Name} -> {to.InputType.Name}");
             }
 
-            graph.Connect(from, to);
+            graph.Connect(from, to, link.FromPortKey, link.ToPortKey);
             incomingCounts[link.ToNodeId]++;
         }
 
