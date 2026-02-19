@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace Flowxel.UI.Drawing.Scene;
+namespace Flowxel.UI.Controls.Drawing.Scene;
 
 public sealed class JsonSceneSerializer : ISceneSerializer
 {

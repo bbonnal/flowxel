@@ -12,8 +12,8 @@ using Flowxel.Core.Geometry.Shapes;
 using Flowxel.UI.Controls;
 using Flowxel.UI.Services;
 using Flowxel.UI.Services.Shortcuts;
-using Flowxel.UI.Drawing;
-using Flowxel.UI.Drawing.Scene;
+using Flowxel.UI.Controls.Drawing;
+using Flowxel.UI.Controls.Drawing.Scene;
 
 namespace Flowxel.UITester.ViewModels;
 

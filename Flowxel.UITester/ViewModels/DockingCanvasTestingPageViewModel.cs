@@ -6,7 +6,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Flowxel.Core.Geometry.Shapes;
 using Flowxel.UI.Services;
-using Flowxel.UI.Drawing;
+using Flowxel.UI.Controls.Drawing;
 
 namespace Flowxel.UITester.ViewModels;
 
@@ -62,7 +62,10 @@ public partial class DockingCanvasTestingPageViewModel : ViewModelBase
 
     public CanvasDocumentViewModel AddCanvas()
     {
-        var canvas = new CanvasDocumentViewModel($"Canvas {_nextCanvasNumber++}");
+        var canvas = new CanvasDocumentViewModel(
+            $"Canvas {_nextCanvasNumber++}",
+            DialogService,
+            InfoBarService);
         canvas.Shapes.CollectionChanged += (_, _) => OnPropertyChanged(nameof(StatusText));
         canvas.PropertyChanged += OnCanvasPropertyChanged;
         Canvases.Add(canvas);
@@ -140,14 +143,20 @@ public partial class DockingCanvasTestingPageViewModel : ViewModelBase
 
 public partial class CanvasDocumentViewModel : ObservableObject
 {
-    public CanvasDocumentViewModel(string title)
+    public CanvasDocumentViewModel(string title, IContentDialogService dialogService, IInfoBarService infoBarService)
     {
         Title = title;
+        DialogService = dialogService;
+        InfoBarService = infoBarService;
     }
 
     public Guid Id { get; } = Guid.NewGuid();
 
     public string Title { get; }
+
+    public IContentDialogService DialogService { get; }
+
+    public IInfoBarService InfoBarService { get; }
 
     public ObservableCollection<Shape> Shapes { get; } = [];
 

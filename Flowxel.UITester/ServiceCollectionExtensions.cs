@@ -28,6 +28,8 @@ public static class ServiceCollectionExtensions
         _ = services.AddSingleton<IContentDialogService, ContentDialogService>();
         _ = services.AddSingleton<IInfoBarService, InfoBarService>();
         _ = services.AddSingleton<IOverlayService, OverlayService>();
+        _ = services.AddSingleton<IFileDialogService, FileDialogService>();
+        _ = services.AddSingleton<IFolderDialogService, FolderDialogService>();
         _ = services.AddSingleton<IShortcutService, ShortcutService>();
         _ = services.AddSingleton<IAppSettingsStore, JsonAppSettingsStore>();
 
@@ -35,6 +37,7 @@ public static class ServiceCollectionExtensions
         _ = services.AddSingleton<MainWindowViewModel>();
 
         _ = services.AddTransient<ContentDialogTestingPageView>();
+        _ = services.AddTransient<DialogsTestingPageView>();
         _ = services.AddTransient<OverlayTestingPageView>();
         _ = services.AddTransient<InfoBarTestingPageView>();
         _ = services.AddTransient<ChartsPageView>();
@@ -51,6 +54,7 @@ public static class ServiceCollectionExtensions
         _ = services.AddTransient<SettingsPageView>();
 
         _ = services.AddSingleton<ContentDialogTestingPageViewModel>();
+        _ = services.AddSingleton<DialogsTestingPageViewModel>();
         _ = services.AddSingleton<OverlayTestingPageViewModel>();
         _ = services.AddSingleton<InfoBarTestingPageViewModel>();
         _ = services.AddSingleton<ChartsPageViewModel>();

@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using Avalonia.Controls;
-using Avalonia.Data;
 using Flowxel.UI.Controls.Docking;
-using Flowxel.UI.Controls.Drawing;
 using Flowxel.UITester.ViewModels;
 
 namespace Flowxel.UITester.Views;
@@ -39,13 +37,13 @@ public partial class DockingCanvasTestingPageView : UserControl
 
     private void OnCanvasCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        if (DataContext is not DockingCanvasTestingPageViewModel vm)
+        if (DataContext is not DockingCanvasTestingPageViewModel)
             return;
 
         if (e.NewItems is not null)
         {
             foreach (var item in e.NewItems.OfType<CanvasDocumentViewModel>())
-                AddPaneForCanvas(vm, item);
+                AddPaneForCanvas(item);
         }
 
         if (e.OldItems is not null)
@@ -61,19 +59,21 @@ public partial class DockingCanvasTestingPageView : UserControl
         DockHost.Panes.Clear();
 
         foreach (var canvas in vm.Canvases)
-            AddPaneForCanvas(vm, canvas);
+            AddPaneForCanvas(canvas);
     }
 
-    private void AddPaneForCanvas(DockingCanvasTestingPageViewModel vm, CanvasDocumentViewModel canvas)
+    private void AddPaneForCanvas(CanvasDocumentViewModel canvas)
     {
         if (_paneByCanvasId.ContainsKey(canvas.Id))
             return;
 
-        var drawingCanvas = BuildDrawingCanvas(vm, canvas);
         var pane = new DockPane
         {
             Header = canvas.Title,
-            PaneContent = drawingCanvas,
+            PaneContent = new CanvasDocumentView
+            {
+                DataContext = canvas
+            },
             Tag = canvas.Id
         };
 
@@ -88,28 +88,6 @@ public partial class DockingCanvasTestingPageView : UserControl
 
         _paneByCanvasId.Remove(canvasId);
         DockHost.ClosePane(pane);
-    }
-
-    private DrawingCanvasControl BuildDrawingCanvas(DockingCanvasTestingPageViewModel vm, CanvasDocumentViewModel canvas)
-    {
-        var control = new DrawingCanvasControl();
-        control.Bind(DrawingCanvasControl.ShapesProperty, new Binding(nameof(CanvasDocumentViewModel.Shapes)) { Source = canvas });
-        control.Bind(DrawingCanvasControl.ActiveToolProperty, new Binding(nameof(CanvasDocumentViewModel.ActiveTool)) { Source = canvas, Mode = BindingMode.TwoWay });
-        control.Bind(DrawingCanvasControl.ZoomProperty, new Binding(nameof(CanvasDocumentViewModel.Zoom)) { Source = canvas, Mode = BindingMode.TwoWay });
-        control.Bind(DrawingCanvasControl.PanProperty, new Binding(nameof(CanvasDocumentViewModel.Pan)) { Source = canvas, Mode = BindingMode.TwoWay });
-        control.Bind(DrawingCanvasControl.CursorAvaloniaPositionProperty, new Binding(nameof(CanvasDocumentViewModel.CursorAvaloniaPosition)) { Source = canvas, Mode = BindingMode.TwoWay });
-        control.Bind(DrawingCanvasControl.CursorCanvasPositionProperty, new Binding(nameof(CanvasDocumentViewModel.CursorCanvasPosition)) { Source = canvas, Mode = BindingMode.TwoWay });
-        control.Bind(DrawingCanvasControl.ComputedShapeIdsProperty, new Binding(nameof(CanvasDocumentViewModel.ComputedShapeIds)) { Source = canvas });
-        control.Bind(DrawingCanvasControl.CanvasBackgroundProperty, new Binding(nameof(CanvasDocumentViewModel.CanvasBackgroundBrush)) { Source = canvas, Mode = BindingMode.TwoWay });
-        control.Bind(DrawingCanvasControl.ShowCanvasBoundaryProperty, new Binding(nameof(CanvasDocumentViewModel.ShowCanvasBoundary)) { Source = canvas, Mode = BindingMode.TwoWay });
-        control.Bind(DrawingCanvasControl.CanvasBoundaryWidthProperty, new Binding(nameof(CanvasDocumentViewModel.CanvasBoundaryWidth)) { Source = canvas, Mode = BindingMode.TwoWay });
-        control.Bind(DrawingCanvasControl.CanvasBoundaryHeightProperty, new Binding(nameof(CanvasDocumentViewModel.CanvasBoundaryHeight)) { Source = canvas, Mode = BindingMode.TwoWay });
-        control.Bind(DrawingCanvasControl.DialogServiceProperty, new Binding(nameof(DockingCanvasTestingPageViewModel.DialogService)) { Source = vm });
-        control.Bind(DrawingCanvasControl.InfoBarServiceProperty, new Binding(nameof(DockingCanvasTestingPageViewModel.InfoBarService)) { Source = vm });
-        control.ShapeStroke = (Avalonia.Media.IBrush?)this.FindResource("rUIAccentBrush") ?? Avalonia.Media.Brushes.DeepSkyBlue;
-        control.PreviewStroke = (Avalonia.Media.IBrush?)this.FindResource("rUIWarningBrush") ?? Avalonia.Media.Brushes.Orange;
-        control.HoverStroke = (Avalonia.Media.IBrush?)this.FindResource("rUIWarningBrush") ?? Avalonia.Media.Brushes.Gold;
-        return control;
     }
 
     private void OnDockHostFocusedPaneChanged(object? sender, DockPane? pane)

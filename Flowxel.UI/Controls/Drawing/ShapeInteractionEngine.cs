@@ -1,11 +1,11 @@
 using Flowxel.Core.Geometry.Primitives;
 using Flowxel.Core.Geometry.Shapes;
-using Flowxel.UI.Drawing.Shapes;
+using Flowxel.UI.Controls.Drawing.Shapes;
 using FlowPoint = Flowxel.Core.Geometry.Shapes.Point;
 using FlowRectangle = Flowxel.Core.Geometry.Shapes.Rectangle;
 using Line = Flowxel.Core.Geometry.Shapes.Line;
 
-namespace Flowxel.UI.Drawing;
+namespace Flowxel.UI.Controls.Drawing;
 
 public static class ShapeInteractionEngine
 {
@@ -808,7 +808,9 @@ public static class ShapeInteractionEngine
     }
 
     private static Pose CreatePose(double x, double y, Vector? orientation = null)
-        => new(new Vector(x, y), orientation ?? new Vector(1, 0));
+        => orientation is null
+            ? Pose.At(x, y)
+            : Pose.At(new Vector(x, y), orientation.Value);
 
     private static bool IsRectanglePerimeterHit(Vector topLeft, Vector topRight, Vector bottomRight, Vector bottomLeft, Vector point, double tolerance)
     {

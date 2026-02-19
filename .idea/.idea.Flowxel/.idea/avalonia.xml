@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AvaloniaProject">
+    <option name="projectPerEditor">
+      <map>
+        <entry key="Flowxel.UITester/Views/CanvasDocumentView.axaml" value="Flowxel.UITester/Flowxel.UITester.csproj" />
+        <entry key="Flowxel.UITester/Views/ImagingCanvasPageView.axaml" value="Flowxel.UITester/Flowxel.UITester.csproj" />
+        <entry key="Flowxel.UITester/Views/MainWindow.axaml" value="Flowxel.UITester/Flowxel.UITester.csproj" />
+        <entry key="Flowxel.UITester/Views/RibbonCanvasTestingPageView.axaml" value="Flowxel.UITester/Flowxel.UITester.csproj" />
+      </map>
+    </option>
+  </component>
+</project>

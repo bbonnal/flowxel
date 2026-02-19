@@ -120,10 +120,7 @@
                                                 CanvasBackground="{Binding CanvasBackgroundBrush, Mode=TwoWay}"
                                                 ShowCanvasBoundary="{Binding ShowCanvasBoundary, Mode=TwoWay}"
                                                 CanvasBoundaryWidth="{Binding CanvasBoundaryWidth, Mode=TwoWay}"
-                                                CanvasBoundaryHeight="{Binding CanvasBoundaryHeight, Mode=TwoWay}"
-                                                ShapeStroke="{DynamicResource rUIAccentBrush}"
-                                                PreviewStroke="{DynamicResource rUIWarningBrush}"
-                                                HoverStroke="{DynamicResource rUIWarningBrush}" />
+                                                CanvasBoundaryHeight="{Binding CanvasBoundaryHeight, Mode=TwoWay}" />
             </DockPanel>
         </Border>
     </DockPanel>

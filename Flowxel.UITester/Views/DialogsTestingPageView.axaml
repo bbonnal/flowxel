@@ -1,0 +1,74 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Flowxel.UITester.ViewModels"
+             xmlns:rui="using:Flowxel.UI.Controls"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="800"
+             d:DesignHeight="700"
+             x:Class="Flowxel.UITester.Views.DialogsTestingPageView"
+             x:DataType="vm:DialogsTestingPageViewModel">
+
+    <ScrollViewer>
+        <StackPanel Margin="24" Spacing="16">
+            <TextBlock Text="File and Folder Dialogs"
+                       FontSize="24"
+                       FontWeight="SemiBold" />
+            <TextBlock Text="Test file and folder picker dialogs with various configurations."
+                       Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+
+            <rui:SettingsCardExpander Header="File Dialogs"
+                                      Description="Open and save file dialogs">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Open Files" FontWeight="SemiBold" />
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Content="Open Single File" Command="{Binding OpenSingleFileCommand}" />
+                        <Button Content="Open Multiple Files" Command="{Binding OpenMultipleFilesCommand}" />
+                        <Button Content="Open Text Files" Command="{Binding OpenTextFilesCommand}" />
+                    </StackPanel>
+
+                    <TextBlock Text="Save Files" FontWeight="SemiBold" Margin="0,8,0,0" />
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Content="Save File" Command="{Binding SaveFileCommand}" />
+                        <Button Content="Save with File Type" Command="{Binding SaveFileWithExtensionCommand}" />
+                    </StackPanel>
+
+                    <Border Background="{DynamicResource rUISurfaceBrush}"
+                            BorderBrush="{DynamicResource rUIBorderSubtleBrush}"
+                            BorderThickness="1"
+                            CornerRadius="4"
+                            Padding="12"
+                            Margin="0,8,0,0">
+                        <TextBlock Text="{Binding FileDialogResult}"
+                                   TextWrapping="Wrap"
+                                   FontFamily="monospace"
+                                   FontSize="12" />
+                    </Border>
+                </StackPanel>
+            </rui:SettingsCardExpander>
+
+            <rui:SettingsCardExpander Header="Folder Dialogs"
+                                      Description="Select folders for various operations">
+                <StackPanel Spacing="12">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Content="Open Single Folder" Command="{Binding OpenSingleFolderCommand}" />
+                        <Button Content="Open Multiple Folders" Command="{Binding OpenMultipleFoldersCommand}" />
+                    </StackPanel>
+
+                    <Border Background="{DynamicResource rUISurfaceBrush}"
+                            BorderBrush="{DynamicResource rUIBorderSubtleBrush}"
+                            BorderThickness="1"
+                            CornerRadius="4"
+                            Padding="12"
+                            Margin="0,8,0,0">
+                        <TextBlock Text="{Binding FolderDialogResult}"
+                                   TextWrapping="Wrap"
+                                   FontFamily="monospace"
+                                   FontSize="12" />
+                    </Border>
+                </StackPanel>
+            </rui:SettingsCardExpander>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

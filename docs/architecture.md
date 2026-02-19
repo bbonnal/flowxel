@@ -14,7 +14,7 @@ This document describes the architectural decisions currently implemented in the
 - `rUI.Avalonia.Desktop` (`Flowxel.UI` assembly/package)
   - Reusable controls (`Navigation`, `Ribbon`, `Docking`, dialogs, overlays, info bar).
   - Service abstractions and implementations (`INavigationService`, `IContentDialogService`, etc.).
-- `Flowxel.UI.Drawing`
+- `Flowxel.UI.Controls.Drawing`
   - Shape/domain models, interaction engine, scene serialization/export contracts.
 - `Flowxel.UITester`
   - App composition root, DI registrations, page ViewModels/Views.

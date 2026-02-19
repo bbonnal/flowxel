@@ -1,0 +1,20 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="using:Flowxel.UI.Controls.Drawing">
+
+    <ControlTheme x:Key="{x:Type controls:DrawingCanvasControl}"
+                  TargetType="controls:DrawingCanvasControl">
+        <Setter Property="Focusable" Value="True" />
+        <Setter Property="ClipToBounds" Value="True" />
+        <Setter Property="CanvasBackground" Value="{DynamicResource rUIBackgroundBrush}" />
+        <Setter Property="ShapeStroke" Value="{DynamicResource rUIAccentBrush}" />
+        <Setter Property="SelectedStroke" Value="{DynamicResource rUIAccentBrush}" />
+        <Setter Property="PreviewStroke" Value="{DynamicResource rUIWarningBrush}" />
+        <Setter Property="HoverStroke" Value="{DynamicResource rUIWarningBrush}" />
+        <Setter Property="ComputedStroke" Value="{DynamicResource rUISuccessBrush}" />
+        <Setter Property="CanvasBoundaryStroke" Value="{DynamicResource rUIBorderSubtleBrush}" />
+        <Setter Property="HandleStroke" Value="{DynamicResource rUIAccentBrush}" />
+        <Setter Property="HandleFill" Value="{DynamicResource rUISurfaceBrush}" />
+    </ControlTheme>
+
+</ResourceDictionary>

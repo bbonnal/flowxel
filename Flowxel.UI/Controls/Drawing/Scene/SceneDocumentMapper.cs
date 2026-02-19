@@ -1,12 +1,12 @@
 using Flowxel.Core.Geometry.Primitives;
 using Flowxel.Core.Geometry.Shapes;
-using Flowxel.UI.Drawing.Shapes;
+using Flowxel.UI.Controls.Drawing.Shapes;
 using Shape = Flowxel.Core.Geometry.Shapes.Shape;
 using FlowPoint = Flowxel.Core.Geometry.Shapes.Point;
 using FlowLine = Flowxel.Core.Geometry.Shapes.Line;
 using FlowRectangle = Flowxel.Core.Geometry.Shapes.Rectangle;
 
-namespace Flowxel.UI.Drawing.Scene;
+namespace Flowxel.UI.Controls.Drawing.Scene;
 
 public static class SceneDocumentMapper
 {
@@ -122,7 +122,7 @@ public static class SceneDocumentMapper
 
     private static Shape? FromDto(SceneShapeDto dto)
     {
-        var pose = new Pose(new Vector(dto.PositionX, dto.PositionY), new Vector(dto.OrientationX, dto.OrientationY));
+        var pose = Pose.At(new Vector(dto.PositionX, dto.PositionY), new Vector(dto.OrientationX, dto.OrientationY));
 
         Shape? shape = dto.Kind switch
         {

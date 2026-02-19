@@ -42,6 +42,13 @@ public class MainWindowViewModel : ViewModelBase
             },
             new NavigationItemControl
             {
+                Header = "File Dialogs",
+                IconData = IconService.CreateGeometry(Icon.folder_open, IconType.regular),
+                PageType = typeof(DialogsTestingPageView),
+                PageViewModelType = typeof(DialogsTestingPageViewModel)
+            },
+            new NavigationItemControl
+            {
                 Header = "Overlay",
                 IconData = IconService.CreateGeometry(Icon.check_circle, IconType.regular),
                 PageType = typeof(OverlayTestingPageView),

@@ -1,6 +1,6 @@
 using Flowxel.Core.Geometry.Shapes;
 
-namespace Flowxel.UI.Drawing.Shapes;
+namespace Flowxel.UI.Controls.Drawing.Shapes;
 
 public sealed class TextShape : Shape
 {

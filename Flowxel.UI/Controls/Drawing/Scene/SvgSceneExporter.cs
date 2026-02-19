@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Text;
 
-namespace Flowxel.UI.Drawing.Scene;
+namespace Flowxel.UI.Controls.Drawing.Scene;
 
 public sealed class SvgSceneExporter : ISvgSceneExporter
 {

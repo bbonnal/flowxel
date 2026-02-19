@@ -26,6 +26,7 @@
         <ResourceInclude Source="avares://Flowxel.UI/Themes/Controls/Editors/MultiLineTextEditor.axaml" />
         <ResourceInclude Source="avares://Flowxel.UI/Themes/Controls/Processing/ProcessControl.axaml" />
         <ResourceInclude Source="avares://Flowxel.UI/Themes/Controls/Processing/ResourcePoolControl.axaml" />
+        <ResourceInclude Source="avares://Flowxel.UI/Themes/Controls/Drawing/DrawingCanvasControl.axaml" />
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

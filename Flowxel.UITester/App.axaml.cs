@@ -73,6 +73,8 @@ public partial class App : Application
             services.GetRequiredService<IContentDialogService>().RegisterHost(mainWindow.HostDialog);
             services.GetRequiredService<IOverlayService>().RegisterHost(mainWindow.HostOverlay);
             services.GetRequiredService<IInfoBarService>().RegisterHost(mainWindow.HostInfoBar);
+            services.GetRequiredService<IFileDialogService>().SetStorageProvider(mainWindow.StorageProvider);
+            services.GetRequiredService<IFolderDialogService>().SetStorageProvider(mainWindow.StorageProvider);
 
             desktop.MainWindow = mainWindow;
 

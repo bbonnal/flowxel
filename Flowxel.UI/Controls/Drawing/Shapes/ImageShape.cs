@@ -1,13 +1,11 @@
 using Flowxel.Core.Geometry.Primitives;
 using Flowxel.Core.Geometry.Shapes;
 
-namespace Flowxel.UI.Drawing.Shapes;
+namespace Flowxel.UI.Controls.Drawing.Shapes;
 
-public sealed class TextBoxShape : Shape
+public sealed class ImageShape : Shape
 {
-    public string Text { get; set; } = "Text";
-
-    public double FontSize { get; set; } = 14;
+    public string SourcePath { get; set; } = string.Empty;
 
     public double Width { get; set; }
 

@@ -1,4 +1,4 @@
-namespace Flowxel.UI.Drawing;
+namespace Flowxel.UI.Controls.Drawing;
 
 public enum ShapeHandleKind
 {

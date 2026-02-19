@@ -1,4 +1,4 @@
-namespace Flowxel.UI.Drawing.Scene;
+namespace Flowxel.UI.Controls.Drawing.Scene;
 
 public interface ISvgSceneExporter
 {

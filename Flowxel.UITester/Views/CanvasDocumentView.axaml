@@ -1,0 +1,21 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Flowxel.UITester.ViewModels"
+             xmlns:ruiDrawing="using:Flowxel.UI.Controls.Drawing"
+             x:Class="Flowxel.UITester.Views.CanvasDocumentView"
+             x:DataType="vm:CanvasDocumentViewModel">
+
+    <ruiDrawing:DrawingCanvasControl Shapes="{Binding Shapes}"
+                                    ActiveTool="{Binding ActiveTool, Mode=TwoWay}"
+                                    Zoom="{Binding Zoom, Mode=TwoWay}"
+                                    Pan="{Binding Pan, Mode=TwoWay}"
+                                    CursorAvaloniaPosition="{Binding CursorAvaloniaPosition, Mode=TwoWay}"
+                                    CursorCanvasPosition="{Binding CursorCanvasPosition, Mode=TwoWay}"
+                                    ComputedShapeIds="{Binding ComputedShapeIds}"
+                                    CanvasBackground="{Binding CanvasBackgroundBrush, Mode=TwoWay}"
+                                    ShowCanvasBoundary="{Binding ShowCanvasBoundary, Mode=TwoWay}"
+                                    CanvasBoundaryWidth="{Binding CanvasBoundaryWidth, Mode=TwoWay}"
+                                    CanvasBoundaryHeight="{Binding CanvasBoundaryHeight, Mode=TwoWay}"
+                                    DialogService="{Binding DialogService}"
+                                    InfoBarService="{Binding InfoBarService}" />
+</UserControl>

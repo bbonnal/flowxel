@@ -11,6 +11,15 @@ namespace Flowxel.Core.Geometry.Primitives;
 /// </remarks>
 public readonly struct Pose
 {
+    public static Pose At(double x, double y)
+        => new(new Vector(x, y), new Vector(1, 0));
+
+    public static Pose At(Vector position)
+        => new(position, new Vector(1, 0));
+
+    public static Pose At(Vector position, Vector orientation)
+        => new(position, orientation);
+
     /// <summary>
     /// Gets the referential associated with the <see cref="Pose"/>.
     /// The referential defines the parent coordinate system to which
