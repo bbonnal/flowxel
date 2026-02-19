@@ -37,6 +37,12 @@ public class DockingControl : TemplatedControl
     public static readonly StyledProperty<bool> HighlightFocusedPaneProperty =
         AvaloniaProperty.Register<DockingControl, bool>(nameof(HighlightFocusedPane), false);
 
+    public static readonly StyledProperty<DockInitialLayoutMode> InitialLayoutModeProperty =
+        AvaloniaProperty.Register<DockingControl, DockInitialLayoutMode>(nameof(InitialLayoutMode), DockInitialLayoutMode.Tabs);
+
+    public static readonly StyledProperty<Orientation> InitialSplitOrientationProperty =
+        AvaloniaProperty.Register<DockingControl, Orientation>(nameof(InitialSplitOrientation), Orientation.Horizontal);
+
     public DockLayoutNode? LayoutRoot
     {
         get => GetValue(LayoutRootProperty);
@@ -53,6 +59,18 @@ public class DockingControl : TemplatedControl
     {
         get => GetValue(HighlightFocusedPaneProperty);
         set => SetValue(HighlightFocusedPaneProperty, value);
+    }
+
+    public DockInitialLayoutMode InitialLayoutMode
+    {
+        get => GetValue(InitialLayoutModeProperty);
+        set => SetValue(InitialLayoutModeProperty, value);
+    }
+
+    public Orientation InitialSplitOrientation
+    {
+        get => GetValue(InitialSplitOrientationProperty);
+        set => SetValue(InitialSplitOrientationProperty, value);
     }
 
     public event EventHandler<DockPane?>? FocusedPaneChanged;
@@ -113,6 +131,7 @@ public class DockingControl : TemplatedControl
 
         _rootHost.Content = root;
         WireAllGroups(root);
+        RefreshSplitResizability(root);
     }
 
     private void BuildLayoutFromModel()
@@ -125,6 +144,7 @@ public class DockingControl : TemplatedControl
         {
             _rootHost.Content = visualRoot;
             WireAllGroups(visualRoot);
+            RefreshSplitResizability(visualRoot);
         }
     }
 
@@ -146,7 +166,11 @@ public class DockingControl : TemplatedControl
             Header = model.Header,
             PaneContent = model.Content,
             CanClose = model.CanClose,
-            CanMove = model.CanMove
+            CanMove = model.CanMove,
+            HorizontalSizeMode = model.HorizontalSizeMode,
+            VerticalSizeMode = model.VerticalSizeMode,
+            PreferredWidth = model.PreferredWidth,
+            PreferredHeight = model.PreferredHeight
         };
     }
 
@@ -172,7 +196,9 @@ public class DockingControl : TemplatedControl
         {
             Orientation = model.Orientation,
             FirstSize = model.FirstSize,
-            SecondSize = model.SecondSize
+            SecondSize = model.SecondSize,
+            FirstResizable = model.FirstResizable,
+            SecondResizable = model.SecondResizable
         };
 
         if (model.First != null)
@@ -204,16 +230,48 @@ public class DockingControl : TemplatedControl
         if (_rootHost.Content != null)
         {
             WireAllGroups(_rootHost.Content as Control);
+            RefreshSplitResizability(_rootHost.Content as Control);
             return;
         }
 
         // Default: single group with all panes
+        if (InitialLayoutMode == DockInitialLayoutMode.SideBySide && Panes.Count >= 2)
+        {
+            var firstGroup = new DockTabGroup();
+            firstGroup.Panes.Add(Panes[0]);
+            firstGroup.SelectedPane = Panes[0];
+            WireGroup(firstGroup);
+
+            var secondGroup = new DockTabGroup();
+            for (var i = 1; i < Panes.Count; i++)
+                secondGroup.Panes.Add(Panes[i]);
+            secondGroup.SelectedPane = secondGroup.Panes.FirstOrDefault();
+            WireGroup(secondGroup);
+
+            var split = new DockSplitContainer
+            {
+                Orientation = InitialSplitOrientation,
+                First = firstGroup,
+                Second = secondGroup,
+                FirstSize = ResolveInitialSize(Panes[0], InitialSplitOrientation),
+                SecondSize = ResolveInitialSize(Panes[1], InitialSplitOrientation),
+                FirstResizable = IsPaneResizable(Panes[0], InitialSplitOrientation),
+                SecondResizable = IsPaneResizable(Panes[1], InitialSplitOrientation)
+            };
+
+            _rootHost.Content = split;
+            SetFocusedPane(firstGroup.SelectedPane);
+            RefreshSplitResizability(split);
+            return;
+        }
+
         var group = new DockTabGroup();
         foreach (var pane in Panes)
             group.Panes.Add(pane);
 
         WireGroup(group);
         _rootHost.Content = group;
+        RefreshSplitResizability(group);
     }
 
     private void WireAllGroups(Control? control)
@@ -247,10 +305,13 @@ public class DockingControl : TemplatedControl
 
     private void OnGroupPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
     {
-        if (!EnablePaneFocusTracking || e.Property != DockTabGroup.SelectedPaneProperty || sender is not DockTabGroup group)
+        if (e.Property != DockTabGroup.SelectedPaneProperty || sender is not DockTabGroup group)
             return;
 
-        SetFocusedPane(group.SelectedPane);
+        if (EnablePaneFocusTracking)
+            SetFocusedPane(group.SelectedPane);
+
+        UpdateAncestorSplitResizability(group);
     }
 
     private void SetFocusedPane(DockPane? pane)
@@ -510,6 +571,10 @@ public class DockingControl : TemplatedControl
             : Orientation.Vertical;
 
         var split = new DockSplitContainer { Orientation = orientation };
+        var paneSize = ResolveInitialSize(pane, orientation);
+        var targetSize = new GridLength(1, GridUnitType.Star);
+        var paneResizable = IsPaneResizable(pane, orientation);
+        var targetResizable = IsGroupResizable(targetGroup, orientation);
 
         bool newIsFirst = position is DockPosition.Left or DockPosition.Top;
 
@@ -517,14 +582,80 @@ public class DockingControl : TemplatedControl
         {
             split.First = newGroup;
             split.Second = targetGroup;
+            split.FirstSize = paneSize;
+            split.SecondSize = targetSize;
+            split.FirstResizable = paneResizable;
+            split.SecondResizable = targetResizable;
         }
         else
         {
             split.First = targetGroup;
             split.Second = newGroup;
+            split.FirstSize = targetSize;
+            split.SecondSize = paneSize;
+            split.FirstResizable = targetResizable;
+            split.SecondResizable = paneResizable;
         }
 
         ReplaceInParent(targetGroup, split);
+    }
+
+    private static GridLength ResolveInitialSize(DockPane pane, Orientation orientation)
+    {
+        if (orientation == Orientation.Horizontal)
+        {
+            if (!double.IsNaN(pane.PreferredWidth) && pane.PreferredWidth > 0)
+                return new GridLength(pane.PreferredWidth, GridUnitType.Pixel);
+
+            return pane.HorizontalSizeMode == DockPaneSizeMode.Content
+                ? GridLength.Auto
+                : new GridLength(1, GridUnitType.Star);
+        }
+
+        if (!double.IsNaN(pane.PreferredHeight) && pane.PreferredHeight > 0)
+            return new GridLength(pane.PreferredHeight, GridUnitType.Pixel);
+
+        return pane.VerticalSizeMode == DockPaneSizeMode.Content
+            ? GridLength.Auto
+            : new GridLength(1, GridUnitType.Star);
+    }
+
+    private static bool IsPaneResizable(DockPane pane, Orientation orientation)
+    {
+        return orientation == Orientation.Horizontal
+            ? pane.HorizontalSizeMode == DockPaneSizeMode.Stretch
+            : pane.VerticalSizeMode == DockPaneSizeMode.Stretch;
+    }
+
+    private static bool IsGroupResizable(DockTabGroup group, Orientation orientation)
+    {
+        var pane = group.SelectedPane ?? group.Panes.FirstOrDefault();
+        return pane is null || IsPaneResizable(pane, orientation);
+    }
+
+    private static bool IsControlResizable(Control? control, Orientation orientation)
+    {
+        return control switch
+        {
+            DockTabGroup group => IsGroupResizable(group, orientation),
+            DockPane pane => IsPaneResizable(pane, orientation),
+            _ => true
+        };
+    }
+
+    private void UpdateAncestorSplitResizability(Control child)
+    {
+        var current = child;
+        while (true)
+        {
+            var parent = FindParentSplit(current);
+            if (parent is null)
+                return;
+
+            parent.FirstResizable = IsControlResizable(parent.First, parent.Orientation);
+            parent.SecondResizable = IsControlResizable(parent.Second, parent.Orientation);
+            current = parent;
+        }
     }
 
     private void CollapseEmptyGroup(DockTabGroup emptyGroup)
@@ -572,6 +703,7 @@ public class DockingControl : TemplatedControl
         if (_rootHost.Content == target)
         {
             _rootHost.Content = replacement;
+            RefreshSplitResizability(replacement);
             return;
         }
 
@@ -583,6 +715,8 @@ public class DockingControl : TemplatedControl
             parent.First = replacement;
         else if (parent.Second == target)
             parent.Second = replacement;
+
+        UpdateAncestorSplitResizability(parent);
     }
 
     private DockSplitContainer? FindParentSplit(Control child)
@@ -650,6 +784,17 @@ public class DockingControl : TemplatedControl
             if (split.First != null) CollectTabGroups(split.First, groups);
             if (split.Second != null) CollectTabGroups(split.Second, groups);
         }
+    }
+
+    private void RefreshSplitResizability(Control? root)
+    {
+        if (root is not DockSplitContainer split)
+            return;
+
+        RefreshSplitResizability(split.First);
+        RefreshSplitResizability(split.Second);
+        split.FirstResizable = IsControlResizable(split.First, split.Orientation);
+        split.SecondResizable = IsControlResizable(split.Second, split.Orientation);
     }
 
     public void ClosePane(DockPane pane)

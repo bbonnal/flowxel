@@ -1,5 +1,6 @@
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia;
 
@@ -26,6 +27,12 @@ public class DockSplitContainer : TemplatedControl
 
     public static readonly StyledProperty<GridLength> SecondSizeProperty =
         AvaloniaProperty.Register<DockSplitContainer, GridLength>(nameof(SecondSize), new GridLength(1, GridUnitType.Star));
+
+    public static readonly StyledProperty<bool> FirstResizableProperty =
+        AvaloniaProperty.Register<DockSplitContainer, bool>(nameof(FirstResizable), true);
+
+    public static readonly StyledProperty<bool> SecondResizableProperty =
+        AvaloniaProperty.Register<DockSplitContainer, bool>(nameof(SecondResizable), true);
 
     public Control? First
     {
@@ -57,6 +64,18 @@ public class DockSplitContainer : TemplatedControl
         set => SetValue(SecondSizeProperty, value);
     }
 
+    public bool FirstResizable
+    {
+        get => GetValue(FirstResizableProperty);
+        set => SetValue(FirstResizableProperty, value);
+    }
+
+    public bool SecondResizable
+    {
+        get => GetValue(SecondResizableProperty);
+        set => SetValue(SecondResizableProperty, value);
+    }
+
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
@@ -79,9 +98,13 @@ public class DockSplitContainer : TemplatedControl
             ConfigureLayout();
             UpdatePseudoClasses();
         }
-        else if (change.Property == FirstSizeProperty || change.Property == SecondSizeProperty)
+        else if (change.Property == FirstSizeProperty
+                 || change.Property == SecondSizeProperty
+                 || change.Property == FirstResizableProperty
+                 || change.Property == SecondResizableProperty)
         {
             ConfigureLayout();
+            UpdatePseudoClasses();
         }
     }
 
@@ -90,20 +113,34 @@ public class DockSplitContainer : TemplatedControl
         if (_grid == null || _first == null || _splitter == null || _second == null)
             return;
 
+        var showSplitter = FirstResizable && SecondResizable;
+
         _grid.ColumnDefinitions.Clear();
         _grid.RowDefinitions.Clear();
 
         if (Orientation == Orientation.Horizontal)
         {
-            _grid.ColumnDefinitions.Add(new ColumnDefinition(FirstSize));
-            _grid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
-            _grid.ColumnDefinitions.Add(new ColumnDefinition(SecondSize));
+            if (showSplitter)
+            {
+                _grid.ColumnDefinitions.Add(new ColumnDefinition(FirstSize));
+                _grid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
+                _grid.ColumnDefinitions.Add(new ColumnDefinition(SecondSize));
 
-            Grid.SetColumn(_first, 0);
+                Grid.SetColumn(_first, 0);
+                Grid.SetColumn(_splitter, 1);
+                Grid.SetColumn(_second, 2);
+            }
+            else
+            {
+                _grid.ColumnDefinitions.Add(new ColumnDefinition(FirstSize));
+                _grid.ColumnDefinitions.Add(new ColumnDefinition(SecondSize));
+
+                Grid.SetColumn(_first, 0);
+                Grid.SetColumn(_second, 1);
+            }
+
             Grid.SetRow(_first, 0);
-            Grid.SetColumn(_splitter, 1);
             Grid.SetRow(_splitter, 0);
-            Grid.SetColumn(_second, 2);
             Grid.SetRow(_second, 0);
 
             // Reset rows
@@ -115,18 +152,35 @@ public class DockSplitContainer : TemplatedControl
             Grid.SetColumnSpan(_second, 1);
 
             _splitter.ResizeDirection = GridResizeDirection.Columns;
+            _splitter.Cursor = new Cursor(StandardCursorType.SizeWestEast);
+            _splitter.Width = 5;
+            _splitter.Height = double.NaN;
+            _splitter.HorizontalAlignment = HorizontalAlignment.Stretch;
+            _splitter.VerticalAlignment = VerticalAlignment.Stretch;
         }
         else
         {
-            _grid.RowDefinitions.Add(new RowDefinition(FirstSize));
-            _grid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
-            _grid.RowDefinitions.Add(new RowDefinition(SecondSize));
+            if (showSplitter)
+            {
+                _grid.RowDefinitions.Add(new RowDefinition(FirstSize));
+                _grid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+                _grid.RowDefinitions.Add(new RowDefinition(SecondSize));
 
-            Grid.SetRow(_first, 0);
+                Grid.SetRow(_first, 0);
+                Grid.SetRow(_splitter, 1);
+                Grid.SetRow(_second, 2);
+            }
+            else
+            {
+                _grid.RowDefinitions.Add(new RowDefinition(FirstSize));
+                _grid.RowDefinitions.Add(new RowDefinition(SecondSize));
+
+                Grid.SetRow(_first, 0);
+                Grid.SetRow(_second, 1);
+            }
+
             Grid.SetColumn(_first, 0);
-            Grid.SetRow(_splitter, 1);
             Grid.SetColumn(_splitter, 0);
-            Grid.SetRow(_second, 2);
             Grid.SetColumn(_second, 0);
 
             // Reset spans
@@ -138,12 +192,21 @@ public class DockSplitContainer : TemplatedControl
             Grid.SetColumnSpan(_second, 1);
 
             _splitter.ResizeDirection = GridResizeDirection.Rows;
+            _splitter.Cursor = new Cursor(StandardCursorType.SizeNorthSouth);
+            _splitter.Width = double.NaN;
+            _splitter.Height = 5;
+            _splitter.HorizontalAlignment = HorizontalAlignment.Stretch;
+            _splitter.VerticalAlignment = VerticalAlignment.Stretch;
         }
+
+        _splitter.IsVisible = showSplitter;
+        _splitter.IsEnabled = showSplitter;
     }
 
     private void UpdatePseudoClasses()
     {
         PseudoClasses.Set(":horizontal", Orientation == Orientation.Horizontal);
         PseudoClasses.Set(":vertical", Orientation == Orientation.Vertical);
+        PseudoClasses.Set(":resizable", FirstResizable && SecondResizable);
     }
 }

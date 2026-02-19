@@ -50,13 +50,13 @@ public class AdvancedOperationsTests
             Height = 30
         };
 
-        var lines = await ExecuteMatOperationAsync(source, (pool, graph) => new ExtractLineInRegionsOperation(pool, graph), operation =>
+        var line = await ExecuteMatOperationAsync(source, (pool, graph) => new ExtractLineInRegionsOperation(pool, graph), operation =>
         {
             operation.Parameters["Region"] = region;
         });
 
-        Assert.NotEmpty(lines);
-        Assert.Contains(lines, line => Math.Abs(line.Pose.Position.Y - 60) <= 3);
+        Assert.True(line.Length > 0);
+        Assert.InRange(line.Pose.Position.Y, 57, 63);
     }
 
     [Fact]
@@ -229,13 +229,13 @@ public class AdvancedOperationsTests
             Height = 20
         };
 
-        var lines = await ExecuteMatOperationAsync(
+        var line = await ExecuteMatOperationAsync(
             source,
             (pool, graph) => new ExtractLineInRegionsOperation(pool, graph),
             operation => { operation.Parameters["Region"] = roi; });
 
-        Assert.NotEmpty(lines);
-        Assert.Contains(lines, line =>
+        Assert.True(line.Length > 0);
+        Assert.True(
             Math.Abs(line.Pose.Position.Y - 40) <= 3 &&
             Math.Abs(line.Pose.Orientation.Y) <= 0.2);
     }
@@ -297,14 +297,13 @@ public class AdvancedOperationsTests
             Height = 120
         };
 
-        var lines = await ExecuteMatOperationAsync(
+        var line = await ExecuteMatOperationAsync(
             source,
             (pool, graph) => new ExtractLineInRegionsOperation(pool, graph),
             operation => { operation.Parameters["Region"] = roi; });
 
-        Assert.NotEmpty(lines);
-
-        var best = lines.OrderByDescending(line => line.Length).First();
+        Assert.True(line.Length > 0);
+        var best = line;
         var expectedDirection = new Vector(150, 90).Normalize();
         var angleError = best.Pose.Orientation.AngleBetween(expectedDirection);
 
@@ -331,17 +330,13 @@ public class AdvancedOperationsTests
             Height = 28
         };
 
-        var lines = await ExecuteMatOperationAsync(
+        var line = await ExecuteMatOperationAsync(
             source,
             (pool, graph) => new ExtractLineInRegionsOperation(pool, graph),
             operation => { operation.Parameters["Region"] = roi; });
 
-        Assert.NotEmpty(lines);
-
-        var topEdge = lines
-            .Where(line => Math.Abs(line.Pose.Orientation.Y) <= 0.2)
-            .OrderByDescending(line => line.Length)
-            .First();
+        Assert.True(line.Length > 0);
+        var topEdge = line;
 
         // // Quantitative alignment checks in global image coordinates.
         // Assert.InRange(topEdge.Pose.Position.Y, 58.0, 63.0);

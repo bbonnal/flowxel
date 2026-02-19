@@ -16,6 +16,7 @@ public static class ServiceCollectionExtensions
         _ = services.AddSingleton(typeof(ILogger<>), typeof(NullLogger<>));
 
         _ = services.AddSingleton<IContentDialogService, ContentDialogService>();
+        _ = services.AddSingleton<IFileDialogService, FileDialogService>();
         _ = services.AddSingleton<IInfoBarService, InfoBarService>();
 
         _ = services.AddSingleton<MainWindow>();

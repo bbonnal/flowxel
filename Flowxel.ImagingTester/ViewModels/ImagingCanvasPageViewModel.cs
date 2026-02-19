@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Data;
 using Avalonia.Media.Imaging;
+using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Flowxel.Core.Geometry.Primitives;
@@ -35,6 +36,7 @@ namespace Flowxel.ImagingTester.ViewModels;
 public partial class ImagingCanvasPageViewModel : ViewModelBase
 {
     private readonly IContentDialogService _dialogService;
+    private readonly IFileDialogService _fileDialogService;
     private readonly IInfoBarService _infoBarService;
     private readonly ISceneSerializer _sceneSerializer = new JsonSceneSerializer();
 
@@ -42,17 +44,35 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
     private readonly Dictionary<string, int> _gaussianKernelSizeByNodeId = new(StringComparer.Ordinal);
     private readonly Dictionary<string, double> _gaussianSigmaByNodeId = new(StringComparer.Ordinal);
     private readonly Dictionary<string, string> _extractRoiShapeIdByNodeId = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, ShapeOutputProvenance> _shapeProvenanceByShapeId = new(StringComparer.Ordinal);
+    private readonly HashSet<string> _bindingSelectedShapeIds = new(StringComparer.Ordinal);
+    private readonly List<ProcessPortDescriptor> _pendingBindPorts = [];
 
     private int _nodeCounter;
     private string? _pendingRoiNodeId;
+    private string? _pendingBindNodeId;
+    private int _pendingBindPortIndex;
 
-    public ImagingCanvasPageViewModel(IContentDialogService dialogService, IInfoBarService infoBarService)
+    public ImagingCanvasPageViewModel(
+        IContentDialogService dialogService,
+        IFileDialogService fileDialogService,
+        IInfoBarService infoBarService)
     {
         _dialogService = dialogService;
+        _fileDialogService = fileDialogService;
         _infoBarService = infoBarService;
 
-        SelectToolCommand = new RelayCommand(() => ActiveTool = DrawingTool.Select);
-        SelectRectangleToolCommand = new RelayCommand(() => ActiveTool = DrawingTool.CenterlineRectangle);
+        SelectToolCommand = new RelayCommand(() =>
+        {
+            ActiveTool = DrawingTool.Select;
+            if (InteractionMode != DrawingInteractionMode.Bind)
+                InteractionMode = DrawingInteractionMode.Standard;
+        });
+        SelectRectangleToolCommand = new RelayCommand(() =>
+        {
+            ActiveTool = DrawingTool.CenterlineRectangle;
+            InteractionMode = DrawingInteractionMode.Draw;
+        });
 
         AddLoadImageOperationCommand = new RelayCommand(AddLoadImageOperation);
         AddGaussianBlurOperationCommand = new RelayCommand(AddGaussianBlurOperation);
@@ -66,11 +86,15 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
 
         ConnectPortsCommand = new RelayCommand(ConnectPorts);
         RemoveConnectionCommand = new RelayCommand(RemoveSelectedConnection);
+        BeginBindSelectedOperationCommand = new RelayCommand(BeginBindSelectedOperation);
+        BindFromCanvasShapeCommand = new RelayCommand<string?>(BindFromCanvasShape);
         ViewResourceCommand = new AsyncRelayCommand(ViewSelectedResourceAsync);
         ClearResourcesCommand = new RelayCommand(ClearResources);
 
         DrawRoiForSelectedOperationCommand = new RelayCommand(BeginRoiDrawingForSelectedOperation);
         RemoveRoiForSelectedOperationCommand = new RelayCommand(RemoveRoiForSelectedOperation);
+        BrowseLoadPathForSelectedOperationCommand = new AsyncRelayCommand(BrowseLoadPathForSelectedOperationAsync);
+        OpenResourceInspectorCommand = new AsyncRelayCommand(OpenResourceInspectorAsync);
 
         SaveSceneCommand = new AsyncRelayCommand(SaveSceneAsync);
         LoadSceneCommand = new AsyncRelayCommand(LoadSceneAsync);
@@ -81,6 +105,7 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
         Shapes.CollectionChanged += OnShapesCollectionChanged;
         ComputedShapeIds.CollectionChanged += OnComputedShapeIdsCollectionChanged;
         Resources.CollectionChanged += OnResourcesCollectionChanged;
+        BindingCandidateShapeIds.CollectionChanged += OnBindingCandidateShapeIdsCollectionChanged;
         ProcessNodes.CollectionChanged += OnProcessNodesCollectionChanged;
 
         DiscoverAvailableOperations();
@@ -168,6 +193,9 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
     [ObservableProperty]
     private bool canRemoveSelectedOperation;
 
+    [ObservableProperty]
+    private DrawingInteractionMode interactionMode = DrawingInteractionMode.Standard;
+
     public IRelayCommand SelectToolCommand { get; }
     public IRelayCommand SelectRectangleToolCommand { get; }
 
@@ -183,11 +211,15 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
 
     public IRelayCommand ConnectPortsCommand { get; }
     public IRelayCommand RemoveConnectionCommand { get; }
+    public IRelayCommand BeginBindSelectedOperationCommand { get; }
+    public IRelayCommand<string?> BindFromCanvasShapeCommand { get; }
     public IAsyncRelayCommand ViewResourceCommand { get; }
     public IRelayCommand ClearResourcesCommand { get; }
 
     public IRelayCommand DrawRoiForSelectedOperationCommand { get; }
     public IRelayCommand RemoveRoiForSelectedOperationCommand { get; }
+    public IAsyncRelayCommand BrowseLoadPathForSelectedOperationCommand { get; }
+    public IAsyncRelayCommand OpenResourceInspectorCommand { get; }
 
     public IAsyncRelayCommand SaveSceneCommand { get; }
     public IAsyncRelayCommand LoadSceneCommand { get; }
@@ -195,23 +227,51 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
     public IRelayCommand ClearCanvasCommand { get; }
     public IRelayCommand ResetViewCommand { get; }
 
-    public string StatusText =>
-        $"Tool: {ActiveTool} | Shapes: {Shapes.Count} (Computed: {ComputedShapeIds.Count}) | Ops: {ProcessNodes.Count} | Links: {ProcessLinks.Count} | Resources: {Resources.Count}";
+    public ObservableCollection<string> BindingCandidateShapeIds { get; } = [];
+
+    public string StatusText
+    {
+        get
+        {
+            var baseStatus =
+                $"Tool: {ActiveTool} | Shapes: {Shapes.Count} (Computed: {ComputedShapeIds.Count}) | Ops: {ProcessNodes.Count} | Links: {ProcessLinks.Count} | Resources: {Resources.Count}";
+
+            if (_pendingBindNodeId is null || _pendingBindPortIndex < 0 || _pendingBindPortIndex >= _pendingBindPorts.Count)
+                return baseStatus;
+
+            var port = _pendingBindPorts[_pendingBindPortIndex];
+            return $"{baseStatus} | Bind: {port.Name} ({port.TypeName}) [{BindingCandidateShapeIds.Count} candidate(s)]";
+        }
+    }
 
     public string PipelineSummary => ProcessNodes.Count == 0
         ? "No operation in pipeline"
         : string.Join(" -> ", ProcessNodes.Select(p => p.Name));
 
     partial void OnActiveToolChanged(DrawingTool value) => OnPropertyChanged(nameof(StatusText));
+    partial void OnInteractionModeChanged(DrawingInteractionMode value) => OnPropertyChanged(nameof(StatusText));
     partial void OnZoomChanged(double value) => OnPropertyChanged(nameof(StatusText));
     partial void OnPanChanged(global::Avalonia.Vector value) => OnPropertyChanged(nameof(StatusText));
     partial void OnCursorCanvasPositionChanged(global::Avalonia.Point value) => OnPropertyChanged(nameof(StatusText));
 
     partial void OnSelectedProcessNodeChanged(ProcessNodeDescriptor? value)
     {
+        if (_pendingBindNodeId is not null && !string.Equals(_pendingBindNodeId, value?.Id, StringComparison.Ordinal))
+            CancelBindingSession();
+        if (_pendingRoiNodeId is not null && !string.Equals(_pendingRoiNodeId, value?.Id, StringComparison.Ordinal))
+        {
+            _pendingRoiNodeId = null;
+            ActiveTool = DrawingTool.Select;
+            if (InteractionMode != DrawingInteractionMode.Bind)
+                InteractionMode = DrawingInteractionMode.Standard;
+        }
+
         RefreshSelectedNodeProperties();
         if (value is not null)
+        {
             SelectedToOperation ??= value;
+            TryAutoSetupSelectedExtractOperation(value);
+        }
     }
 
     partial void OnSelectedFromOperationChanged(ProcessNodeDescriptor? value) => RefreshOutputPorts();
@@ -393,9 +453,9 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
             ToPortKey = "in"
         });
 
-        var (width, height, source) = TryReadImageDimensions(defaultPath)
-            ? (_lastReadWidth, _lastReadHeight, defaultPath)
-            : (fallbackWidth, fallbackHeight, "fallback");
+        var (width, height) = TryReadImageDimensions(defaultPath)
+            ? (_lastReadWidth, _lastReadHeight)
+            : (fallbackWidth, fallbackHeight);
 
         var roi = new CenterlineRectangleShape
         {
@@ -413,8 +473,6 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
         SelectedToPort = extractDescriptor.Inputs.FirstOrDefault(port => port.Key == "in");
         SelectedProcessNode = extractDescriptor;
 
-        Console.WriteLine(
-            $"[Preset] loadImage->extractLineInRegion path='{defaultPath}' roi={width}x{height} source={source}");
     }
 
     private int _lastReadWidth;
@@ -446,6 +504,9 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
         if (SelectedProcessNode is null)
             return;
 
+        if (string.Equals(_pendingBindNodeId, SelectedProcessNode.Id, StringComparison.Ordinal))
+            CancelBindingSession();
+
         if (_extractRoiShapeIdByNodeId.TryGetValue(SelectedProcessNode.Id, out var roiShapeId))
         {
             var roiShape = Shapes.FirstOrDefault(shape => shape.Id == roiShapeId);
@@ -471,6 +532,8 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
 
     private void ClearPipeline()
     {
+        CancelBindingSession();
+
         foreach (var roiShapeId in _extractRoiShapeIdByNodeId.Values.ToArray())
         {
             var roiShape = Shapes.FirstOrDefault(shape => shape.Id == roiShapeId);
@@ -508,28 +571,27 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
 
         try
         {
-            var totalSw = Stopwatch.StartNew();
-            var setupSw = Stopwatch.StartNew();
             var pool = new ResourcePool();
             var graph = new Graph<IExecutableNode>();
             var nodeInstances = CreateExecutableNodes(pool, graph);
 
-            ApplyOperationParameters(nodeInstances);
-            ValidateAndConnectGraph(graph, nodeInstances);
-            setupSw.Stop();
+            var setupErrors = ConnectGraph(graph, nodeInstances);
 
-            var execSw = Stopwatch.StartNew();
-            await graph.ExecuteAsync();
-            execSw.Stop();
-
-            var collectSw = Stopwatch.StartNew();
-            CollectNodeResourcesAndOverlays(nodeInstances, pool);
-            collectSw.Stop();
-            totalSw.Stop();
-
-            Console.WriteLine(
-                $"[Pipeline] nodes={ProcessNodes.Count} setup={setupSw.Elapsed.TotalMilliseconds:F2}ms execute={execSw.Elapsed.TotalMilliseconds:F2}ms collect={collectSw.Elapsed.TotalMilliseconds:F2}ms total={totalSw.Elapsed.TotalMilliseconds:F2}ms");
-
+            var executionErrors = await ExecuteGraphWithBranchIsolationAsync(graph, nodeInstances, pool);
+            executionErrors.InsertRange(0, setupErrors);
+            if (executionErrors.Count > 0)
+            {
+                var first = executionErrors[0];
+                var message = executionErrors.Count == 1
+                    ? first
+                    : $"{first} (+{executionErrors.Count - 1} other error(s))";
+                await _infoBarService.ShowAsync(infoBar =>
+                {
+                    infoBar.Severity = InfoBarSeverity.Error;
+                    infoBar.Title = "Pipeline partially failed";
+                    infoBar.Message = message;
+                });
+            }
         }
         catch (Exception ex)
         {
@@ -540,6 +602,82 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
                 infoBar.Message = ex.Message;
             });
         }
+    }
+
+    private async Task<List<string>> ExecuteGraphWithBranchIsolationAsync(
+        Graph<IExecutableNode> graph,
+        IReadOnlyDictionary<string, IExecutableNode> nodes,
+        ResourcePool pool)
+    {
+        var errors = new List<string>();
+        var descriptorByRuntimeId = nodes.ToDictionary(
+            pair => pair.Value.Id,
+            pair => ProcessNodes.First(node => node.Id == pair.Key));
+        var runtimeNodeById = nodes.Values.ToDictionary(node => node.Id);
+
+        var remainingIncoming = runtimeNodeById.Keys.ToDictionary(
+            id => id,
+            id => graph.GetIncomingEdges(id).Count());
+        var blockedByFailure = runtimeNodeById.Keys.ToDictionary(id => id, _ => false);
+        var ready = new Queue<Guid>(remainingIncoming.Where(pair => pair.Value == 0).Select(pair => pair.Key));
+
+        while (ready.Count > 0)
+        {
+            var batch = new List<Guid>();
+            while (ready.Count > 0)
+                batch.Add(ready.Dequeue());
+
+            var batchResults = await Task.WhenAll(batch.Select(async runtimeId =>
+            {
+                if (blockedByFailure[runtimeId])
+                    return (RuntimeId: runtimeId, Success: false, Error: (string?)null);
+
+                var node = runtimeNodeById[runtimeId];
+                var descriptor = descriptorByRuntimeId[runtimeId];
+                if (!TryApplyOperationParameters(descriptor, node, out var parameterError))
+                    return (RuntimeId: runtimeId, Success: false, Error: parameterError);
+
+                try
+                {
+                    await node.Execute();
+                    CollectNodeOutput(descriptor, node, pool);
+                    return (RuntimeId: runtimeId, Success: true, Error: (string?)null);
+                }
+                catch (Exception ex)
+                {
+                    return (RuntimeId: runtimeId, Success: false, Error: $"{descriptor.Name}: {ex.Message}");
+                }
+            }));
+
+            var failedThisBatch = new HashSet<Guid>();
+            foreach (var result in batchResults)
+            {
+                if (result.Success)
+                    continue;
+
+                failedThisBatch.Add(result.RuntimeId);
+                if (!string.IsNullOrWhiteSpace(result.Error))
+                    errors.Add(result.Error);
+            }
+
+            foreach (var runtimeId in batch)
+            {
+                foreach (var edge in graph.GetOutgoingEdges(runtimeId))
+                {
+                    if (!remainingIncoming.ContainsKey(edge.ToNodeId))
+                        continue;
+
+                    if (failedThisBatch.Contains(runtimeId) || blockedByFailure[runtimeId])
+                        blockedByFailure[edge.ToNodeId] = true;
+
+                    remainingIncoming[edge.ToNodeId]--;
+                    if (remainingIncoming[edge.ToNodeId] == 0)
+                        ready.Enqueue(edge.ToNodeId);
+                }
+            }
+        }
+
+        return errors;
     }
 
     private Dictionary<string, IExecutableNode> CreateExecutableNodes(ResourcePool pool, Graph<IExecutableNode> graph)
@@ -564,186 +702,175 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
         return map;
     }
 
-    private void ApplyOperationParameters(IReadOnlyDictionary<string, IExecutableNode> nodes)
+    private bool TryApplyOperationParameters(ProcessNodeDescriptor descriptor, IExecutableNode node, out string? error)
     {
-        foreach (var descriptor in ProcessNodes)
+        error = null;
+
+        switch (descriptor.OperationType)
         {
-            var node = nodes[descriptor.Id];
-
-            switch (descriptor.OperationType)
+            case "LoadOperation":
             {
-                case "LoadOperation":
+                var path = _loadPathByNodeId.GetValueOrDefault(descriptor.Id)?.Trim() ?? string.Empty;
+                if (string.IsNullOrWhiteSpace(path))
                 {
-                    var path = _loadPathByNodeId.GetValueOrDefault(descriptor.Id)?.Trim() ?? string.Empty;
-                    if (string.IsNullOrWhiteSpace(path))
-                        throw new InvalidOperationException($"Operation '{descriptor.Name}' requires a path in Load.Path.");
-                    if (!File.Exists(path))
-                        throw new InvalidOperationException($"Operation '{descriptor.Name}' path does not exist: {path}");
-
-                    node.Parameters["Path"] = path;
-                    break;
+                    error = $"{descriptor.Name}: missing Load.Path.";
+                    return false;
                 }
-                case "GaussianBlurOperation":
+
+                if (!File.Exists(path))
                 {
-                    var kernelSize = _gaussianKernelSizeByNodeId.GetValueOrDefault(descriptor.Id, 5);
-                    if (kernelSize <= 0)
-                        kernelSize = 5;
-                    if (kernelSize % 2 == 0)
-                        kernelSize++;
-
-                    var sigma = _gaussianSigmaByNodeId.GetValueOrDefault(descriptor.Id, 1.0);
-                    if (sigma <= 0)
-                        sigma = 1.0;
-
-                    node.Parameters["KernelSize"] = kernelSize;
-                    node.Parameters["Sigma"] = sigma;
-                    break;
+                    error = $"{descriptor.Name}: path does not exist ({path}).";
+                    return false;
                 }
-                case "ExtractLineInRegionsOperation":
+
+                node.Parameters["Path"] = path;
+                return true;
+            }
+            case "GaussianBlurOperation":
+            {
+                var kernelSize = _gaussianKernelSizeByNodeId.GetValueOrDefault(descriptor.Id, 5);
+                if (kernelSize <= 0)
+                    kernelSize = 5;
+                if (kernelSize % 2 == 0)
+                    kernelSize++;
+
+                var sigma = _gaussianSigmaByNodeId.GetValueOrDefault(descriptor.Id, 1.0);
+                if (sigma <= 0)
+                    sigma = 1.0;
+
+                node.Parameters["KernelSize"] = kernelSize;
+                node.Parameters["Sigma"] = sigma;
+                return true;
+            }
+            case "ExtractLineInRegionsOperation":
+            {
+                if (!_extractRoiShapeIdByNodeId.TryGetValue(descriptor.Id, out var roiShapeId))
                 {
-                    if (!_extractRoiShapeIdByNodeId.TryGetValue(descriptor.Id, out var roiShapeId))
-                    {
-                        throw new InvalidOperationException(
-                            $"Operation '{descriptor.Name}' requires an ROI. Select the operation and click 'Draw ROI'.");
-                    }
-
-                    var roiShape = Shapes.FirstOrDefault(shape => shape.Id == roiShapeId);
-                    if (!TryMapRoiShapeToRectangle(roiShape, out var rectangle))
-                    {
-                        throw new InvalidOperationException(
-                            $"Operation '{descriptor.Name}' has an invalid ROI binding. Draw ROI again.");
-                    }
-
-                    node.Parameters["Region"] = rectangle;
-                    break;
+                    error = $"{descriptor.Name}: missing ROI.";
+                    return false;
                 }
+
+                var roiShape = Shapes.FirstOrDefault(shape => shape.Id == roiShapeId);
+                if (!TryMapRoiShapeToRectangle(roiShape, out var rectangle))
+                {
+                    error = $"{descriptor.Name}: invalid ROI binding.";
+                    return false;
+                }
+
+                node.Parameters["Region"] = rectangle;
+                return true;
             }
         }
+
+        return true;
     }
 
-    private void ValidateAndConnectGraph(Graph<IExecutableNode> graph, IReadOnlyDictionary<string, IExecutableNode> nodes)
+    private List<string> ConnectGraph(Graph<IExecutableNode> graph, IReadOnlyDictionary<string, IExecutableNode> nodes)
     {
-        var incomingCounts = nodes.Keys.ToDictionary(key => key, _ => 0);
+        var errors = new List<string>();
 
         foreach (var link in ProcessLinks)
         {
             if (!nodes.TryGetValue(link.FromNodeId, out var from) || !nodes.TryGetValue(link.ToNodeId, out var to))
-                throw new InvalidOperationException($"Invalid connection: {link.DisplayLabel}");
-
-            if (from.OutputType != to.InputType)
             {
-                throw new InvalidOperationException(
-                    $"Type mismatch on connection {link.DisplayLabel}: {from.OutputType.Name} -> {to.InputType.Name}");
+                errors.Add($"Invalid connection ignored: {link.DisplayLabel}");
+                continue;
             }
 
-            graph.Connect(from, to, link.FromPortKey, link.ToPortKey);
-            incomingCounts[link.ToNodeId]++;
-        }
-
-        foreach (var descriptor in ProcessNodes)
-        {
-            var expectedIncoming = descriptor.OperationType switch
+            try
             {
-                "LoadOperation" => 0,
-                "GaussianBlurOperation" => 1,
-                "ExtractLineInRegionsOperation" => 1,
-                "ConstructLineLineIntersectionOperation" => 2,
-                _ => descriptor.Inputs.Count
-            };
-
-            if (incomingCounts.TryGetValue(descriptor.Id, out var count) && count == expectedIncoming)
-                continue;
-
-            throw new InvalidOperationException(
-                $"Operation '{descriptor.Name}' must have exactly {expectedIncoming} incoming connection(s).");
+                graph.Connect(from, to, link.FromPortKey, link.ToPortKey);
+            }
+            catch (Exception ex)
+            {
+                errors.Add($"Connection ignored ({link.DisplayLabel}): {ex.Message}");
+            }
         }
+
+        return errors;
     }
 
-    private void CollectNodeResourcesAndOverlays(IReadOnlyDictionary<string, IExecutableNode> nodes, ResourcePool pool)
+    private void CollectNodeOutput(ProcessNodeDescriptor descriptor, IExecutableNode node, ResourcePool pool)
     {
-        foreach (var descriptor in ProcessNodes)
+        if (node.OutputType == typeof(Mat))
         {
-            if (!nodes.TryGetValue(descriptor.Id, out var node))
-                continue;
-
-            if (node.OutputType == typeof(Mat))
+            var mat = pool.Get<Mat>(node.Id);
+            var bitmap = CreateBitmapFromMat(mat);
+            if (bitmap is not null)
             {
-                var mat = pool.Get<Mat>(node.Id);
-                var bitmap = CreateBitmapFromMat(mat);
-                if (bitmap is not null)
-                {
-                    AddResourceFromNodeOutput(
-                        descriptor.Id,
-                        $"{descriptor.Name} Image",
-                        "Mat",
-                        new ImageResourceViewData { Bitmap = bitmap, Path = $"Output of {descriptor.Name}" },
-                        ResourceValueKind.Image,
-                        $"{mat.Width}x{mat.Height}");
-                }
-
-                AddMatOverlayShape(mat);
-                continue;
-            }
-
-            if (node.OutputType == typeof(FlowLine))
-            {
-                var line = pool.Get<FlowLine>(node.Id);
-                var lines = line.Length > 0 ? new[] { line } : [];
-
                 AddResourceFromNodeOutput(
                     descriptor.Id,
-                    $"{descriptor.Name} Line",
-                    "Line",
-                    new LineCoordinatesResourceViewData
-                    {
-                        Lines = lines.Select(line => new LineCoordinateEntry
-                        {
-                            StartX = line.StartPoint.Position.X,
-                            StartY = line.StartPoint.Position.Y,
-                            EndX = line.EndPoint.Position.X,
-                            EndY = line.EndPoint.Position.Y,
-                            Length = line.Length
-                        }).ToArray()
-                    },
-                    ResourceValueKind.LineCoordinates,
-                    $"{lines.Length} line(s)");
+                    $"{descriptor.Name} Image",
+                    "Mat",
+                    new ImageResourceViewData { Bitmap = bitmap, Path = $"Output of {descriptor.Name}" },
+                    ResourceValueKind.Image,
+                    $"{mat.Width}x{mat.Height}");
+            }
 
-                if (line.Length > 0)
+            AddMatOverlayShape(mat, descriptor.Id, "out");
+            return;
+        }
+
+        if (node.OutputType == typeof(FlowLine))
+        {
+            var line = pool.Get<FlowLine>(node.Id);
+            var lines = line.Length > 0 ? new[] { line } : [];
+
+            AddResourceFromNodeOutput(
+                descriptor.Id,
+                $"{descriptor.Name} Line",
+                "Line",
+                new LineCoordinatesResourceViewData
                 {
-                    Shapes.Add(line);
-                    ComputedShapeIds.Add(line.Id);
-                }
-
-                continue;
-            }
-
-            if (node.OutputType == typeof(FlowPoint))
-            {
-                var point = pool.Get<FlowPoint>(node.Id);
-
-                AddResourceFromNodeOutput(
-                    descriptor.Id,
-                    $"{descriptor.Name} Point",
-                    "Point",
-                    new ShapePropertyResourceViewData
+                    Lines = lines.Select(line => new LineCoordinateEntry
                     {
-                        ShapeType = "Point",
-                        Properties =
-                        [
-                            new KeyValuePair<string, string>("X", point.Pose.Position.X.ToString("0.###")),
-                            new KeyValuePair<string, string>("Y", point.Pose.Position.Y.ToString("0.###"))
-                        ]
-                    },
-                    ResourceValueKind.ShapeProperties,
-                    $"({point.Pose.Position.X:0.###}, {point.Pose.Position.Y:0.###})");
+                        StartX = line.StartPoint.Position.X,
+                        StartY = line.StartPoint.Position.Y,
+                        EndX = line.EndPoint.Position.X,
+                        EndY = line.EndPoint.Position.Y,
+                        Length = line.Length
+                    }).ToArray()
+                },
+                ResourceValueKind.LineCoordinates,
+                $"{lines.Length} line(s)");
 
-                Shapes.Add(point);
-                ComputedShapeIds.Add(point.Id);
+            if (line.Length > 0)
+            {
+                Shapes.Add(line);
+                ComputedShapeIds.Add(line.Id);
+                RegisterShapeProvenance(line, descriptor.Id, "out", "Line");
             }
+
+            return;
+        }
+
+        if (node.OutputType == typeof(FlowPoint))
+        {
+            var point = pool.Get<FlowPoint>(node.Id);
+
+            AddResourceFromNodeOutput(
+                descriptor.Id,
+                $"{descriptor.Name} Point",
+                "Point",
+                new ShapePropertyResourceViewData
+                {
+                    ShapeType = "Point",
+                    Properties =
+                    [
+                        new KeyValuePair<string, string>("X", point.Pose.Position.X.ToString("0.###")),
+                        new KeyValuePair<string, string>("Y", point.Pose.Position.Y.ToString("0.###"))
+                    ]
+                },
+                ResourceValueKind.ShapeProperties,
+                $"({point.Pose.Position.X:0.###}, {point.Pose.Position.Y:0.###})");
+
+            Shapes.Add(point);
+            ComputedShapeIds.Add(point.Id);
+            RegisterShapeProvenance(point, descriptor.Id, "out", "Point");
         }
     }
 
-    private void AddMatOverlayShape(Mat mat)
+    private void AddMatOverlayShape(Mat mat, string producerNodeId, string producerPortKey)
     {
         if (mat.Empty())
             return;
@@ -764,6 +891,12 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
 
         Shapes.Add(imageShape);
         ComputedShapeIds.Add(imageShape.Id);
+        RegisterShapeProvenance(imageShape, producerNodeId, producerPortKey, "Mat");
+    }
+
+    private void RegisterShapeProvenance(Shape shape, string producerNodeId, string producerPortKey, string typeName)
+    {
+        _shapeProvenanceByShapeId[shape.Id] = new ShapeOutputProvenance(producerNodeId, producerPortKey, typeName);
     }
 
     private static Bitmap? CreateBitmapFromMat(Mat mat)
@@ -823,6 +956,74 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
         OnPropertyChanged(nameof(StatusText));
     }
 
+    private void BeginBindSelectedOperation()
+    {
+        if (SelectedProcessNode is null)
+            return;
+
+        var ports = GetBindableInputPorts(SelectedProcessNode).ToList();
+        if (ports.Count == 0)
+            return;
+
+        _pendingBindNodeId = SelectedProcessNode.Id;
+        _pendingBindPorts.Clear();
+        _pendingBindPorts.AddRange(ports);
+        _pendingBindPortIndex = 0;
+        _bindingSelectedShapeIds.Clear();
+        InteractionMode = DrawingInteractionMode.Bind;
+        ActiveTool = DrawingTool.Select;
+        RefreshBindingCandidates();
+        TryAutoBindSingleCandidates();
+    }
+
+    private void BindFromCanvasShape(string? shapeId)
+    {
+        if (_pendingBindNodeId is null || string.IsNullOrWhiteSpace(shapeId))
+            return;
+
+        if (_pendingBindPortIndex < 0 || _pendingBindPortIndex >= _pendingBindPorts.Count)
+            return;
+
+        if (!_shapeProvenanceByShapeId.TryGetValue(shapeId, out var source))
+            return;
+
+        var targetPort = _pendingBindPorts[_pendingBindPortIndex];
+        if (!string.Equals(source.TypeName, targetPort.TypeName, StringComparison.Ordinal))
+            return;
+
+        if (source.ProducerNodeId == _pendingBindNodeId)
+            return;
+
+        if (!_bindingSelectedShapeIds.Add(shapeId))
+            return;
+
+        for (var i = ProcessLinks.Count - 1; i >= 0; i--)
+        {
+            var existing = ProcessLinks[i];
+            if (existing.ToNodeId == _pendingBindNodeId && existing.ToPortKey == targetPort.Key)
+                ProcessLinks.RemoveAt(i);
+        }
+
+        ProcessLinks.Add(new ProcessLinkDescriptor
+        {
+            FromNodeId = source.ProducerNodeId,
+            FromPortKey = source.ProducerPortKey,
+            ToNodeId = _pendingBindNodeId,
+            ToPortKey = targetPort.Key
+        });
+
+        _pendingBindPortIndex++;
+        if (_pendingBindPortIndex >= _pendingBindPorts.Count)
+        {
+            CancelBindingSession();
+            return;
+        }
+
+        RefreshBindingCandidates();
+        TryAutoBindSingleCandidates();
+        OnPropertyChanged(nameof(StatusText));
+    }
+
     private void RemoveSelectedConnection()
     {
         if (SelectedProcessLink is null)
@@ -830,6 +1031,117 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
 
         ProcessLinks.Remove(SelectedProcessLink);
         SelectedProcessLink = null;
+        OnPropertyChanged(nameof(StatusText));
+    }
+
+    private IEnumerable<ProcessPortDescriptor> GetBindableInputPorts(ProcessNodeDescriptor descriptor)
+    {
+        return descriptor.OperationType switch
+        {
+            "GaussianBlurOperation" => descriptor.Inputs.Where(port => port.Key == "in"),
+            "ExtractLineInRegionsOperation" => descriptor.Inputs.Where(port => port.Key == "in"),
+            "ConstructLineLineIntersectionOperation" => descriptor.Inputs.Where(port => port.Key is "first" or "second"),
+            _ => []
+        };
+    }
+
+    private void RefreshBindingCandidates()
+    {
+        BindingCandidateShapeIds.Clear();
+
+        if (_pendingBindNodeId is null)
+            return;
+
+        if (_pendingBindPortIndex < 0 || _pendingBindPortIndex >= _pendingBindPorts.Count)
+            return;
+
+        var targetPort = _pendingBindPorts[_pendingBindPortIndex];
+        foreach (var (shapeId, source) in _shapeProvenanceByShapeId)
+        {
+            if (!string.Equals(source.TypeName, targetPort.TypeName, StringComparison.Ordinal))
+                continue;
+
+            if (source.ProducerNodeId == _pendingBindNodeId)
+                continue;
+
+            if (_bindingSelectedShapeIds.Contains(shapeId))
+                continue;
+
+            BindingCandidateShapeIds.Add(shapeId);
+        }
+    }
+
+    private void TryAutoBindSingleCandidates()
+    {
+        while (_pendingBindNodeId is not null &&
+               _pendingBindPortIndex >= 0 &&
+               _pendingBindPortIndex < _pendingBindPorts.Count &&
+               BindingCandidateShapeIds.Count == 1)
+        {
+            BindFromCanvasShape(BindingCandidateShapeIds[0]);
+        }
+    }
+
+    private void TryAutoSetupSelectedExtractOperation(ProcessNodeDescriptor descriptor)
+    {
+        if (descriptor.OperationType != "ExtractLineInRegionsOperation")
+            return;
+
+        if (!HasIncomingLink(descriptor.Id, "in"))
+            TryAutoBindSingleInputPort(descriptor, "in", "Mat");
+
+        if (!_extractRoiShapeIdByNodeId.ContainsKey(descriptor.Id))
+            BeginRoiDrawingForSelectedOperation();
+    }
+
+    private bool HasIncomingLink(string toNodeId, string toPortKey)
+    {
+        return ProcessLinks.Any(link =>
+            string.Equals(link.ToNodeId, toNodeId, StringComparison.Ordinal) &&
+            string.Equals(link.ToPortKey, toPortKey, StringComparison.Ordinal));
+    }
+
+    private void TryAutoBindSingleInputPort(ProcessNodeDescriptor target, string toPortKey, string requiredType)
+    {
+        var candidateSources = _shapeProvenanceByShapeId.Values
+            .Where(source => string.Equals(source.TypeName, requiredType, StringComparison.Ordinal))
+            .Distinct()
+            .ToArray();
+
+        if (candidateSources.Length != 1)
+            return;
+
+        var source = candidateSources[0];
+        if (string.Equals(source.ProducerNodeId, target.Id, StringComparison.Ordinal))
+            return;
+
+        for (var i = ProcessLinks.Count - 1; i >= 0; i--)
+        {
+            var existing = ProcessLinks[i];
+            if (string.Equals(existing.ToNodeId, target.Id, StringComparison.Ordinal) &&
+                string.Equals(existing.ToPortKey, toPortKey, StringComparison.Ordinal))
+            {
+                ProcessLinks.RemoveAt(i);
+            }
+        }
+
+        ProcessLinks.Add(new ProcessLinkDescriptor
+        {
+            FromNodeId = source.ProducerNodeId,
+            FromPortKey = source.ProducerPortKey,
+            ToNodeId = target.Id,
+            ToPortKey = toPortKey
+        });
+    }
+
+    private void CancelBindingSession()
+    {
+        _pendingBindNodeId = null;
+        _pendingBindPorts.Clear();
+        _pendingBindPortIndex = 0;
+        _bindingSelectedShapeIds.Clear();
+        BindingCandidateShapeIds.Clear();
+        InteractionMode = DrawingInteractionMode.Standard;
         OnPropertyChanged(nameof(StatusText));
     }
 
@@ -898,8 +1210,10 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
             var scene = _sceneSerializer.Deserialize(json);
             var loaded = SceneDocumentMapper.FromDocument(scene);
 
+            CancelBindingSession();
             Shapes.Clear();
             ComputedShapeIds.Clear();
+            _shapeProvenanceByShapeId.Clear();
 
             foreach (var shape in loaded.Shapes)
                 Shapes.Add(shape);
@@ -996,6 +1310,8 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
         if (SelectedProcessNode?.OperationType != "ExtractLineInRegionsOperation")
             return;
 
+        CancelBindingSession();
+
         if (_extractRoiShapeIdByNodeId.TryGetValue(SelectedProcessNode.Id, out var existingShapeId))
         {
             var existingShape = Shapes.FirstOrDefault(shape => shape.Id == existingShapeId);
@@ -1006,6 +1322,7 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
 
         _pendingRoiNodeId = SelectedProcessNode.Id;
         ActiveTool = DrawingTool.CenterlineRectangle;
+        InteractionMode = DrawingInteractionMode.Draw;
     }
 
     private void RemoveRoiForSelectedOperation()
@@ -1024,8 +1341,51 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
         RefreshSelectedNodeProperties();
     }
 
+    private async Task BrowseLoadPathForSelectedOperationAsync()
+    {
+        if (SelectedProcessNode?.OperationType != "LoadOperation")
+            return;
+
+        var imageFiles = new FilePickerFileType("Image Files")
+        {
+            Patterns = ["*.png", "*.jpg", "*.jpeg", "*.bmp", "*.tif", "*.tiff"],
+            MimeTypes = ["image/*"]
+        };
+
+        var selectedPath = (await _fileDialogService.ShowOpenFileDialogAsync(
+            title: "Select image",
+            allowMultiple: false,
+            fileTypeFilter: [imageFiles, FilePickerFileTypes.All])).FirstOrDefault();
+
+        if (string.IsNullOrWhiteSpace(selectedPath))
+            return;
+
+        SelectedLoadPath = selectedPath;
+    }
+
+    private async Task OpenResourceInspectorAsync()
+    {
+        var inspector = new ResourcePoolControl
+        {
+            DataContext = this
+        };
+        inspector.Bind(ResourcePoolControl.ResourceItemsProperty, new Binding(nameof(Resources)));
+        inspector.Bind(ResourcePoolControl.SelectedResourceProperty, new Binding(nameof(SelectedResource)) { Mode = BindingMode.TwoWay });
+        inspector.Bind(ResourcePoolControl.ViewResourceCommandProperty, new Binding(nameof(ViewResourceCommand)));
+        inspector.Bind(ResourcePoolControl.ClearResourcesCommandProperty, new Binding(nameof(ClearResourcesCommand)));
+
+        await _dialogService.ShowAsync(dialog =>
+        {
+            dialog.Title = "Resource Pool";
+            dialog.Content = inspector;
+            dialog.CloseButtonText = "Close";
+        });
+    }
+
     private void ClearComputedResults()
     {
+        CancelBindingSession();
+
         for (var i = Shapes.Count - 1; i >= 0; i--)
         {
             if (ComputedShapeIds.Contains(Shapes[i].Id))
@@ -1033,13 +1393,16 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
         }
 
         ComputedShapeIds.Clear();
+        _shapeProvenanceByShapeId.Clear();
     }
 
     private void ClearCanvas()
     {
+        CancelBindingSession();
         Shapes.Clear();
         ComputedShapeIds.Clear();
         Resources.Clear();
+        _shapeProvenanceByShapeId.Clear();
 
         ClearPipeline();
 
@@ -1057,6 +1420,9 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
     {
         TryBindPendingRoi(e);
         RemoveDeletedRoiBindings(e);
+        RemoveDeletedShapeProvenance();
+        if (InteractionMode == DrawingInteractionMode.Bind)
+            RefreshBindingCandidates();
         OnPropertyChanged(nameof(StatusText));
     }
 
@@ -1075,6 +1441,7 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
         _extractRoiShapeIdByNodeId[_pendingRoiNodeId] = centerlineRectangle.Id;
         _pendingRoiNodeId = null;
         ActiveTool = DrawingTool.Select;
+        InteractionMode = DrawingInteractionMode.Standard;
 
         RefreshSelectedNodeProperties();
     }
@@ -1127,10 +1494,24 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
             RefreshSelectedNodeProperties();
     }
 
+    private void RemoveDeletedShapeProvenance()
+    {
+        var existingShapeIds = Shapes.Select(shape => shape.Id).ToHashSet(StringComparer.Ordinal);
+        var orphanShapeIds = _shapeProvenanceByShapeId.Keys
+            .Where(shapeId => !existingShapeIds.Contains(shapeId))
+            .ToArray();
+
+        foreach (var orphanShapeId in orphanShapeIds)
+            _shapeProvenanceByShapeId.Remove(orphanShapeId);
+    }
+
     private void OnComputedShapeIdsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         => OnPropertyChanged(nameof(StatusText));
 
     private void OnResourcesCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        => OnPropertyChanged(nameof(StatusText));
+
+    private void OnBindingCandidateShapeIdsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         => OnPropertyChanged(nameof(StatusText));
 
     private void OnProcessNodesCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -1139,6 +1520,8 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
         RefreshOutputPorts();
         RefreshInputPorts();
         RefreshSelectedNodeProperties();
+        if (InteractionMode == DrawingInteractionMode.Bind)
+            RefreshBindingCandidates();
 
         OnPropertyChanged(nameof(StatusText));
         OnPropertyChanged(nameof(PipelineSummary));
@@ -1227,4 +1610,9 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
 
         SelectedToPort = AvailableInputPorts.FirstOrDefault();
     }
+
+    private readonly record struct ShapeOutputProvenance(
+        string ProducerNodeId,
+        string ProducerPortKey,
+        string TypeName);
 }

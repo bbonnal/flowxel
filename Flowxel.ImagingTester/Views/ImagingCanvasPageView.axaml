@@ -3,7 +3,7 @@
              xmlns:vm="using:Flowxel.ImagingTester.ViewModels"
              xmlns:ruiRibbon="using:Flowxel.UI.Controls.Ribbon"
              xmlns:ruiDrawing="using:Flowxel.UI.Controls.Drawing"
-             xmlns:ruiProcessing="using:Flowxel.UI.Controls.Processing"
+             xmlns:ruiDock="using:Flowxel.UI.Controls.Docking"
              xmlns:editors="using:Flowxel.UI.Controls.Editors"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -51,6 +51,9 @@
                     <ruiRibbon:RibbonButton Header="Clear Resources"
                                             IconData="{pia:IconGeometry Icon=database}"
                                             Command="{Binding ClearResourcesCommand}" />
+                    <ruiRibbon:RibbonButton Header="Resources"
+                                            IconData="{pia:IconGeometry Icon=stack}"
+                                            Command="{Binding OpenResourceInspectorCommand}" />
                 </ruiRibbon:RibbonGroup>
 
                 <ruiRibbon:RibbonGroup Header="Canvas">
@@ -84,109 +87,89 @@
                                Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
                 </Border>
 
-                <Grid ColumnDefinitions="3*,2*"
-                      ColumnSpacing="10">
-                    <ruiDrawing:DrawingCanvasControl Grid.Column="0"
-                                                     Shapes="{Binding Shapes}"
-                                                     ComputedShapeIds="{Binding ComputedShapeIds}"
-                                                     ActiveTool="{Binding ActiveTool}"
-                                                     Zoom="{Binding Zoom}"
-                                                     Pan="{Binding Pan}"
-                                                     CursorAvaloniaPosition="{Binding CursorAvaloniaPosition}"
-                                                     CursorCanvasPosition="{Binding CursorCanvasPosition}"
-                                                     DialogService="{Binding DialogService}"
-                                                     InfoBarService="{Binding InfoBarService}"
-                                                     CanvasBackground="{DynamicResource fxBackgroundBrush}" />
+                <ruiDock:DockingControl HighlightFocusedPane="True"
+                                        InitialLayoutMode="SideBySide"
+                                        InitialSplitOrientation="Horizontal">
+                    <ruiDock:DockPane Header="Canvas"
+                                      CanClose="False"
+                                      HorizontalSizeMode="Stretch">
+                        <ruiDrawing:DrawingCanvasControl Shapes="{Binding Shapes}"
+                                                         ComputedShapeIds="{Binding ComputedShapeIds}"
+                                                         InteractionMode="{Binding InteractionMode}"
+                                                         BindingCandidateShapeIds="{Binding BindingCandidateShapeIds}"
+                                                         ShapeInvokedCommand="{Binding BindFromCanvasShapeCommand}"
+                                                         ActiveTool="{Binding ActiveTool}"
+                                                         Zoom="{Binding Zoom}"
+                                                         Pan="{Binding Pan}"
+                                                         CursorAvaloniaPosition="{Binding CursorAvaloniaPosition}"
+                                                         CursorCanvasPosition="{Binding CursorCanvasPosition}"
+                                                         DialogService="{Binding DialogService}"
+                                                         InfoBarService="{Binding InfoBarService}"
+                                                         CanvasBackground="{DynamicResource fxBackgroundBrush}" />
+                    </ruiDock:DockPane>
 
-                    <ScrollViewer Grid.Column="1"
-                                  HorizontalScrollBarVisibility="Disabled"
-                                  VerticalScrollBarVisibility="Auto">
-                        <StackPanel Spacing="10"
-                                    Margin="0,0,4,0">
-                            <TextBlock Text="Flowxel Operations"
-                                       FontWeight="SemiBold"
-                                       FontSize="16" />
-                            <ItemsControl ItemsSource="{Binding AvailableFlowxelOperations}">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding}" Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-
-                            <TextBlock Text="{Binding PipelineSummary}"
-                                       TextWrapping="Wrap"
-                                       Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
-
-                            <Border BorderBrush="{DynamicResource fxBorderSubtleBrush}"
-                                    BorderThickness="1"
-                                    CornerRadius="8"
-                                    Padding="10">
-                                <StackPanel Spacing="8">
-                                    <TextBlock Text="Selected Operation Properties" FontWeight="SemiBold" />
-
-                                    <StackPanel Spacing="4" IsVisible="{Binding CanEditLoadPath}">
-                                        <TextBlock Text="loadImage.Path" />
-                                        <editors:TextEditor Text="{Binding SelectedLoadPath, Mode=TwoWay}" Watermark="Absolute image path" />
-                                        <TextBlock Text="loadImage publishes Mat into the resource pool when executed."
-                                                   TextWrapping="Wrap"
-                                                   FontSize="11"
-                                                   Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
-                                    </StackPanel>
-
-                                    <StackPanel Spacing="4" IsVisible="{Binding CanEditGaussian}">
-                                        <TextBlock Text="GaussianBlur Parameters" />
-                                        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="6">
-                                            <TextBlock Grid.Row="0" Grid.Column="0" Text="KernelSize" VerticalAlignment="Center" />
-                                            <editors:TextEditor Grid.Row="0" Grid.Column="1" Text="{Binding SelectedGaussianKernelSize, Mode=TwoWay}" />
-                                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Sigma" VerticalAlignment="Center" />
-                                            <editors:TextEditor Grid.Row="1" Grid.Column="1" Text="{Binding SelectedGaussianSigma, Mode=TwoWay}" />
-                                        </Grid>
-                                        <TextBlock Text="Map Gaussian input port to loadImage output in Process Control."
-                                                   TextWrapping="Wrap"
-                                                   FontSize="11"
-                                                   Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
-                                    </StackPanel>
-
-                                    <StackPanel Spacing="6" IsVisible="{Binding CanConfigureExtractLine}">
-                                        <TextBlock Text="extractLineInRegion" />
-                                        <TextBlock Text="{Binding SelectedExtractRoiStatus}"
-                                                   Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
+                    <ruiDock:DockPane Header="Properties"
+                                      CanClose="False"
+                                      HorizontalSizeMode="Content">
+                        <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                                      VerticalScrollBarVisibility="Auto">
+                            <StackPanel Spacing="10"
+                                        Margin="0,0,4,0">
+                                <Border BorderBrush="{DynamicResource fxBorderSubtleBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        Padding="10"
+                                        MinWidth="360">
+                                    <StackPanel Spacing="8">
+                                        <TextBlock Text="Selected Operation" FontWeight="SemiBold" />
+                                        <ComboBox ItemsSource="{Binding ProcessNodes}"
+                                                  SelectedItem="{Binding SelectedProcessNode, Mode=TwoWay}" />
                                         <StackPanel Orientation="Horizontal" Spacing="8">
-                                            <ruiRibbon:RibbonButton Header="Draw ROI"
-                                                                    Command="{Binding DrawRoiForSelectedOperationCommand}" />
-                                            <ruiRibbon:RibbonButton Header="Remove ROI"
-                                                                    Command="{Binding RemoveRoiForSelectedOperationCommand}" />
+                                            <ruiRibbon:RibbonButton Header="Bind Inputs"
+                                                                    Command="{Binding BeginBindSelectedOperationCommand}" />
+                                            <ruiRibbon:RibbonButton Header="Remove Operation"
+                                                                    Command="{Binding RemoveSelectedOperationCommand}" />
                                         </StackPanel>
-                                        <TextBlock Text="Connect extract input to either loadImage or GaussianBlur output."
-                                                   TextWrapping="Wrap"
-                                                   FontSize="11"
-                                                   Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
+
+                                        <StackPanel Spacing="4" IsVisible="{Binding CanEditLoadPath}">
+                                            <TextBlock Text="loadImage.Path" />
+                                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                                <TextBox Grid.Column="0"
+                                                         Text="{Binding SelectedLoadPath, Mode=TwoWay}"
+                                                         IsReadOnly="True" />
+                                                <ruiRibbon:RibbonButton Grid.Column="1"
+                                                                        Header="Browse"
+                                                                        Command="{Binding BrowseLoadPathForSelectedOperationCommand}" />
+                                            </Grid>
+                                        </StackPanel>
+
+                                        <StackPanel Spacing="4" IsVisible="{Binding CanEditGaussian}">
+                                            <TextBlock Text="GaussianBlur Parameters" />
+                                            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="6">
+                                                <TextBlock Grid.Row="0" Grid.Column="0" Text="KernelSize" VerticalAlignment="Center" />
+                                                <editors:TextEditor Grid.Row="0" Grid.Column="1" Text="{Binding SelectedGaussianKernelSize, Mode=TwoWay}" />
+                                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Sigma" VerticalAlignment="Center" />
+                                                <editors:TextEditor Grid.Row="1" Grid.Column="1" Text="{Binding SelectedGaussianSigma, Mode=TwoWay}" />
+                                            </Grid>
+                                        </StackPanel>
+
+                                        <StackPanel Spacing="6" IsVisible="{Binding CanConfigureExtractLine}">
+                                            <TextBlock Text="extractLineInRegion" />
+                                            <TextBlock Text="{Binding SelectedExtractRoiStatus}"
+                                                       Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <ruiRibbon:RibbonButton Header="Draw ROI"
+                                                                        Command="{Binding DrawRoiForSelectedOperationCommand}" />
+                                                <ruiRibbon:RibbonButton Header="Remove ROI"
+                                                                        Command="{Binding RemoveRoiForSelectedOperationCommand}" />
+                                            </StackPanel>
+                                        </StackPanel>
                                     </StackPanel>
-                                </StackPanel>
-                            </Border>
-
-                            <ruiProcessing:ProcessControl Nodes="{Binding ProcessNodes}"
-                                                          Links="{Binding ProcessLinks}"
-                                                          SelectedNode="{Binding SelectedProcessNode}"
-                                                          SelectedFromOperation="{Binding SelectedFromOperation}"
-                                                          AvailableOutputPorts="{Binding AvailableOutputPorts}"
-                                                          SelectedFromPort="{Binding SelectedFromPort}"
-                                                          SelectedToOperation="{Binding SelectedToOperation}"
-                                                          AvailableInputPorts="{Binding AvailableInputPorts}"
-                                                          SelectedToPort="{Binding SelectedToPort}"
-                                                          SelectedLink="{Binding SelectedProcessLink}"
-                                                          ConnectPortsCommand="{Binding ConnectPortsCommand}"
-                                                          RemoveConnectionCommand="{Binding RemoveConnectionCommand}"
-                                                          RunProcessCommand="{Binding RunPipelineCommand}" />
-
-                            <ruiProcessing:ResourcePoolControl ResourceItems="{Binding Resources}"
-                                                               SelectedResource="{Binding SelectedResource}"
-                                                               ViewResourceCommand="{Binding ViewResourceCommand}"
-                                                               ClearResourcesCommand="{Binding ClearResourcesCommand}" />
-                        </StackPanel>
-                    </ScrollViewer>
-                </Grid>
+                                </Border>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </ruiDock:DockPane>
+                </ruiDock:DockingControl>
             </DockPanel>
         </Border>
     </DockPanel>

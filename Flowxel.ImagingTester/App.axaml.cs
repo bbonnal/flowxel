@@ -34,6 +34,7 @@ public partial class App : Application
 
             services.GetRequiredService<IContentDialogService>().RegisterHost(mainWindow.HostDialog);
             services.GetRequiredService<IInfoBarService>().RegisterHost(mainWindow.HostInfoBar);
+            services.GetRequiredService<IFileDialogService>().SetStorageProvider(mainWindow.StorageProvider);
 
             desktop.MainWindow = mainWindow;
         }

@@ -79,6 +79,20 @@ public class DrawingCanvasControl : Control
             defaultValue: new List<string>(),
             defaultBindingMode: BindingMode.TwoWay);
 
+    public static readonly StyledProperty<DrawingInteractionMode> InteractionModeProperty =
+        AvaloniaProperty.Register<DrawingCanvasControl, DrawingInteractionMode>(
+            nameof(InteractionMode),
+            DrawingInteractionMode.Standard,
+            defaultBindingMode: BindingMode.TwoWay);
+
+    public static readonly StyledProperty<IList<string>> BindingCandidateShapeIdsProperty =
+        AvaloniaProperty.Register<DrawingCanvasControl, IList<string>>(
+            nameof(BindingCandidateShapeIds),
+            defaultValue: new List<string>());
+
+    public static readonly StyledProperty<ICommand?> ShapeInvokedCommandProperty =
+        AvaloniaProperty.Register<DrawingCanvasControl, ICommand?>(nameof(ShapeInvokedCommand));
+
     public static readonly StyledProperty<IContentDialogService?> DialogServiceProperty =
         AvaloniaProperty.Register<DrawingCanvasControl, IContentDialogService?>(nameof(DialogService));
 
@@ -220,6 +234,24 @@ public class DrawingCanvasControl : Control
     {
         get => GetValue(ComputedShapeIdsProperty);
         set => SetValue(ComputedShapeIdsProperty, value);
+    }
+
+    public DrawingInteractionMode InteractionMode
+    {
+        get => GetValue(InteractionModeProperty);
+        set => SetValue(InteractionModeProperty, value);
+    }
+
+    public IList<string> BindingCandidateShapeIds
+    {
+        get => GetValue(BindingCandidateShapeIdsProperty);
+        set => SetValue(BindingCandidateShapeIdsProperty, value);
+    }
+
+    public ICommand? ShapeInvokedCommand
+    {
+        get => GetValue(ShapeInvokedCommandProperty);
+        set => SetValue(ShapeInvokedCommandProperty, value);
     }
 
     public IContentDialogService? DialogService
@@ -399,12 +431,18 @@ public class DrawingCanvasControl : Control
                 continue;
 
             var isComputed = IsComputedShape(shape);
+            var isBindingCandidate = IsBindingCandidate(shape);
+            var stroke = isBindingCandidate ? SelectedStroke : (isComputed ? ComputedStroke : ShapeStroke);
+            var thickness = GetShapeStrokeThickness(shape) + (isBindingCandidate ? 1.25 : 0);
+            var dashPattern = isBindingCandidate
+                ? (double[])[4d, 3d]
+                : isComputed ? [5d, 4d] : null;
             DrawShape(
                 context,
                 shape,
-                isComputed ? ComputedStroke : ShapeStroke,
-                GetShapeStrokeThickness(shape),
-                isComputed ? [5, 4] : null);
+                stroke,
+                thickness,
+                dashPattern);
         }
 
         if (_hoveredShape is not null && !ReferenceEquals(_hoveredShape, _selectedShape))
@@ -418,7 +456,7 @@ public class DrawingCanvasControl : Control
                 _selectedShape,
                 selectedComputed ? ComputedStroke : SelectedStroke,
                 GetShapeStrokeThickness(_selectedShape) + 1.5,
-                selectedComputed ? [5, 4] : null);
+                selectedComputed ? [5d, 4d] : null);
             if (!selectedComputed)
                 DrawGrabHandles(context, _selectedShape);
         }
@@ -451,9 +489,21 @@ public class DrawingCanvasControl : Control
             InvalidateVisual();
         }
 
+        if (change.Property == BindingCandidateShapeIdsProperty)
+        {
+            if (change.OldValue is IList<string> oldCandidates)
+                DetachBindingCandidateShapeIdsCollection(oldCandidates);
+
+            if (change.NewValue is IList<string> newCandidates)
+                AttachBindingCandidateShapeIdsCollection(newCandidates);
+
+            InvalidateVisual();
+        }
+
         if (change.Property == ZoomProperty ||
             change.Property == PanProperty ||
             change.Property == ActiveToolProperty ||
+            change.Property == InteractionModeProperty ||
             change.Property == CanvasBackgroundProperty ||
             change.Property == ShowCanvasBoundaryProperty ||
             change.Property == CanvasBoundaryWidthProperty ||
@@ -667,6 +717,24 @@ public class DrawingCanvasControl : Control
 
     private void HandleSelectToolPointerPressed(PointerPressedEventArgs e, FlowVector world)
     {
+        if (InteractionMode == DrawingInteractionMode.Bind)
+        {
+            var bindHitShape = FindHitBindingCandidateShape(world);
+            if (bindHitShape is not null)
+            {
+                _selectedShape = bindHitShape;
+                if (ShapeInvokedCommand?.CanExecute(bindHitShape.Id) == true)
+                    ShapeInvokedCommand.Execute(bindHitShape.Id);
+            }
+
+            _activeHandle = ShapeHandleKind.None;
+            _lastDragWorld = null;
+            UpdateCursor(world);
+            InvalidateVisual();
+            e.Handled = true;
+            return;
+        }
+
         if (_selectedShape is not null && !IsComputedShape(_selectedShape))
         {
             var handle = HitTestHandle(_selectedShape, world);
@@ -798,6 +866,24 @@ public class DrawingCanvasControl : Control
     private void OnComputedShapeIdsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         => InvalidateVisual();
 
+    private void AttachBindingCandidateShapeIdsCollection(IList<string> candidateShapeIds)
+    {
+        if (!_isLifecycleAttached)
+            return;
+
+        if (candidateShapeIds is INotifyCollectionChanged observableCollection)
+            observableCollection.CollectionChanged += OnBindingCandidateShapeIdsCollectionChanged;
+    }
+
+    private void DetachBindingCandidateShapeIdsCollection(IList<string> candidateShapeIds)
+    {
+        if (candidateShapeIds is INotifyCollectionChanged observableCollection)
+            observableCollection.CollectionChanged -= OnBindingCandidateShapeIdsCollectionChanged;
+    }
+
+    private void OnBindingCandidateShapeIdsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        => InvalidateVisual();
+
     private void OnDeleteShapeRequested(object? sender, EventArgs e)
     {
         if (_contextMenuTargetShape is null || IsComputedShape(_contextMenuTargetShape))
@@ -830,6 +916,14 @@ public class DrawingCanvasControl : Control
 
     private bool IsComputedShape(Shape shape)
         => ComputedShapeIds.Contains(shape.Id);
+
+    private bool IsBindingCandidate(Shape shape)
+    {
+        if (InteractionMode != DrawingInteractionMode.Bind)
+            return false;
+
+        return BindingCandidateShapeIds.Contains(shape.Id);
+    }
 
     public void SetShapeComputed(Shape shape, bool isComputed)
     {
@@ -1247,6 +1341,19 @@ public class DrawingCanvasControl : Control
             return;
         }
 
+        if (InteractionMode == DrawingInteractionMode.Bind)
+        {
+            if (world is null)
+            {
+                Cursor = ArrowCursor;
+                return;
+            }
+
+            var hit = FindHitBindingCandidateShape(world.Value);
+            Cursor = hit is not null ? HandCursor : ArrowCursor;
+            return;
+        }
+
         if (world is null)
         {
             Cursor = HandCursor;
@@ -1270,6 +1377,27 @@ public class DrawingCanvasControl : Control
         for (var i = Shapes.Count - 1; i >= 0; i--)
         {
             var shape = Shapes[i];
+            if (ShapeInteractionEngine.IsShapePerimeterHit(shape, world, tolerance, pointRadius))
+                return shape;
+        }
+
+        return null;
+    }
+
+    private Shape? FindHitBindingCandidateShape(FlowVector world)
+    {
+        if (InteractionMode != DrawingInteractionMode.Bind)
+            return null;
+
+        var tolerance = HitTestTolerance / Math.Max(Zoom, MinZoom);
+        var pointRadius = PointDisplayRadius / Math.Max(Zoom, MinZoom);
+
+        for (var i = Shapes.Count - 1; i >= 0; i--)
+        {
+            var shape = Shapes[i];
+            if (!IsBindingCandidate(shape))
+                continue;
+
             if (ShapeInteractionEngine.IsShapePerimeterHit(shape, world, tolerance, pointRadius))
                 return shape;
         }
@@ -1672,6 +1800,7 @@ public class DrawingCanvasControl : Control
         ContextRequested += OnContextRequested;
         AttachShapesCollection(Shapes);
         AttachComputedShapeIdsCollection(ComputedShapeIds);
+        AttachBindingCandidateShapeIdsCollection(BindingCandidateShapeIds);
     }
 
     private void DetachLifecycleHandlers()
@@ -1686,6 +1815,7 @@ public class DrawingCanvasControl : Control
         ContextRequested -= OnContextRequested;
         DetachShapesCollection(Shapes);
         DetachComputedShapeIdsCollection(ComputedShapeIds);
+        DetachBindingCandidateShapeIdsCollection(BindingCandidateShapeIds);
         _contextMenu.Close();
         _openContextMenuOnRightRelease = false;
         _isMiddlePanning = false;

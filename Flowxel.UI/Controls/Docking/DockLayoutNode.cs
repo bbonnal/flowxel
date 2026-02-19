@@ -21,6 +21,10 @@ public class DockPaneModel : DockLayoutNode
     public object? Content { get; set; }
     public bool CanClose { get; set; } = true;
     public bool CanMove { get; set; } = true;
+    public DockPaneSizeMode HorizontalSizeMode { get; set; } = DockPaneSizeMode.Stretch;
+    public DockPaneSizeMode VerticalSizeMode { get; set; } = DockPaneSizeMode.Stretch;
+    public double PreferredWidth { get; set; } = double.NaN;
+    public double PreferredHeight { get; set; } = double.NaN;
 }
 
 /// <summary>
@@ -42,4 +46,6 @@ public class DockSplitModel : DockLayoutNode
     public DockLayoutNode? Second { get; set; }
     public GridLength FirstSize { get; set; } = new GridLength(1, GridUnitType.Star);
     public GridLength SecondSize { get; set; } = new GridLength(1, GridUnitType.Star);
+    public bool FirstResizable { get; set; } = true;
+    public bool SecondResizable { get; set; } = true;
 }

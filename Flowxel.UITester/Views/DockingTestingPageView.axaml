@@ -8,22 +8,25 @@
              x:Class="Flowxel.UITester.Views.DockingTestingPageView"
              x:DataType="vm:DockingTestingPageViewModel">
 
-    <rui:DockingControl>
-        <rui:DockPane Header="Explorer">
+    <rui:DockingControl InitialLayoutMode="SideBySide"
+                        InitialSplitOrientation="Horizontal">
+        <rui:DockPane Header="Explorer"
+                      HorizontalSizeMode="Stretch">
             <Border Padding="16">
                 <StackPanel Spacing="8">
                     <TextBlock Text="Explorer" FontSize="18" FontWeight="SemiBold" />
-                    <TextBlock Text="File tree would go here"
+                    <TextBlock Text="Resizable pane: drag separator at right edge."
                                Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
                 </StackPanel>
             </Border>
         </rui:DockPane>
 
-        <rui:DockPane Header="Editor">
+        <rui:DockPane Header="Editor"
+                      HorizontalSizeMode="Stretch">
             <Border Padding="16">
                 <StackPanel Spacing="8">
                     <TextBlock Text="Editor" FontSize="18" FontWeight="SemiBold" />
-                    <TextBlock Text="Code editor would go here"
+                    <TextBlock Text="Resizable pane: drag separator at left edge."
                                Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
                 </StackPanel>
             </Border>
@@ -33,17 +36,17 @@
             <Border Padding="16">
                 <StackPanel Spacing="8">
                     <TextBlock Text="Output" FontSize="18" FontWeight="SemiBold" />
-                    <TextBlock Text="Build output would go here"
+                    <TextBlock Text="Tab in right group."
                                Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
                 </StackPanel>
             </Border>
         </rui:DockPane>
 
-        <rui:DockPane Header="Properties" CanClose="False">
+        <rui:DockPane Header="Properties" CanClose="False" HorizontalSizeMode="Content" PreferredWidth="300">
             <Border Padding="16">
                 <StackPanel Spacing="8">
                     <TextBlock Text="Properties" FontSize="18" FontWeight="SemiBold" />
-                    <TextBlock Text="This pane cannot be closed"
+                    <TextBlock Text="Content-sized pane: when selected, separator is hidden."
                                Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
                 </StackPanel>
             </Border>
