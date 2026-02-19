@@ -15,8 +15,7 @@
                         CornerRadius="8"
                         Margin="24,24,24,0"
                         HorizontalAlignment="Stretch"
-                        VerticalAlignment="Top"
-                        BoxShadow="0 8 32 0 #66000000">
+                        VerticalAlignment="Top">
                     <Grid ColumnDefinitions="Auto,*,Auto" Margin="16">
                         <!-- Icon -->
                         <PathIcon Name="PART_Icon"
@@ -66,7 +65,8 @@
             <Setter Property="BorderBrush" Value="{DynamicResource rUIInfoBorderBrush}" />
         </Style>
         <Style Selector="^[Severity=Info] /template/ PathIcon#PART_Icon">
-            <Setter Property="Data" Value="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2Zm1 15h-2v-6h2v6Zm0-8h-2V7h2v2Z" />
+            <Setter Property="Data"
+                    Value="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2Zm1 15h-2v-6h2v6Zm0-8h-2V7h2v2Z" />
         </Style>
 
         <!-- Severity: Success -->
@@ -75,7 +75,8 @@
             <Setter Property="BorderBrush" Value="{DynamicResource rUISuccessBorderBrush}" />
         </Style>
         <Style Selector="^[Severity=Success] /template/ PathIcon#PART_Icon">
-            <Setter Property="Data" Value="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2Zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9Z" />
+            <Setter Property="Data"
+                    Value="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2Zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9Z" />
         </Style>
 
         <!-- Severity: Warning -->
@@ -93,7 +94,8 @@
             <Setter Property="BorderBrush" Value="{DynamicResource rUIErrorBorderBrush}" />
         </Style>
         <Style Selector="^[Severity=Error] /template/ PathIcon#PART_Icon">
-            <Setter Property="Data" Value="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2Zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59Z" />
+            <Setter Property="Data"
+                    Value="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2Zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59Z" />
         </Style>
     </ControlTheme>
 
