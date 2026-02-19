@@ -28,6 +28,7 @@
         <ResourceInclude Source="avares://Flowxel.UI/Themes/Controls/Processing/ProcessControl.axaml" />
         <ResourceInclude Source="avares://Flowxel.UI/Themes/Controls/Processing/ResourcePoolControl.axaml" />
         <ResourceInclude Source="avares://Flowxel.UI/Themes/Controls/Drawing/DrawingCanvasControl.axaml" />
+        <ResourceInclude Source="avares://Flowxel.UI/Themes/Controls/Drawing/DrawingEditors.axaml" />
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

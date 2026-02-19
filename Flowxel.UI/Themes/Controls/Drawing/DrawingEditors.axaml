@@ -1,0 +1,17 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="using:Flowxel.UI.Controls.Drawing">
+
+    <ControlTheme x:Key="{x:Type controls:DrawingCanvasSettingsEditor}"
+                  TargetType="controls:DrawingCanvasSettingsEditor">
+        <Setter Property="Spacing" Value="{DynamicResource fxDrawingEditorSpacing}" />
+        <Setter Property="MinWidth" Value="{DynamicResource fxDrawingEditorMinWidth}" />
+    </ControlTheme>
+
+    <ControlTheme x:Key="{x:Type controls:DrawingShapePropertiesEditor}"
+                  TargetType="controls:DrawingShapePropertiesEditor">
+        <Setter Property="MinWidth" Value="{DynamicResource fxDrawingEditorMinWidth}" />
+        <Setter Property="MaxHeight" Value="{DynamicResource fxDrawingEditorMaxHeight}" />
+    </ControlTheme>
+
+</ResourceDictionary>

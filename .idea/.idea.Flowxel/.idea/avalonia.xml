@@ -3,6 +3,9 @@
   <component name="AvaloniaProject">
     <option name="projectPerEditor">
       <map>
+        <entry key="Flowxel.UI/Themes/Controls/Drawing/DrawingCanvasControl.axaml" value="Flowxel.ImagingTester/Flowxel.ImagingTester.csproj" />
+        <entry key="Flowxel.UI/Themes/Controls/Drawing/DrawingEditors.axaml" value="Flowxel.ImagingTester/Flowxel.ImagingTester.csproj" />
+        <entry key="Flowxel.UI/Themes/Controls/Editors/BaseEditor.axaml" value="Flowxel.ImagingTester/Flowxel.ImagingTester.csproj" />
         <entry key="Flowxel.UI/Themes/Controls/InfoBarControl.axaml" value="Flowxel.UITester/Flowxel.UITester.csproj" />
         <entry key="Flowxel.UI/Themes/Tokens.axaml" value="Flowxel.UITester/Flowxel.UITester.csproj" />
         <entry key="Flowxel.UITester/Views/CanvasDocumentView.axaml" value="Flowxel.UITester/Flowxel.UITester.csproj" />
