@@ -58,7 +58,7 @@ public class OverlayTestingPageViewModel : ViewModelBase
             await Task.Delay(2000);
 
             // Phase 2: Determinate - Steps 1-2
-            _overlayService.Update(o =>
+            await _overlayService.UpdateAsync(o =>
             {
                 o.IsIndeterminate = false;
                 o.Progress = 0;
@@ -66,17 +66,17 @@ public class OverlayTestingPageViewModel : ViewModelBase
             });
             await Task.Delay(1000);
 
-            _overlayService.Update(o =>
+            await _overlayService.UpdateAsync(o =>
             {
                 o.Progress = 25;
                 o.Message = "Step 2 of 4...";
             });
             await Task.Delay(1000);
 
-            _overlayService.Update(o => o.Progress = 50);
+            await _overlayService.UpdateAsync(o => o.Progress = 50);
 
             // Phase 3: Indeterminate - Analyzing
-            _overlayService.Update(o =>
+            await _overlayService.UpdateAsync(o =>
             {
                 o.IsIndeterminate = true;
                 o.Message = "Analyzing results...";
@@ -84,7 +84,7 @@ public class OverlayTestingPageViewModel : ViewModelBase
             await Task.Delay(2000);
 
             // Phase 4: Determinate - Steps 3-4
-            _overlayService.Update(o =>
+            await _overlayService.UpdateAsync(o =>
             {
                 o.IsIndeterminate = false;
                 o.Progress = 75;
@@ -92,7 +92,7 @@ public class OverlayTestingPageViewModel : ViewModelBase
             });
             await Task.Delay(1000);
 
-            _overlayService.Update(o =>
+            await _overlayService.UpdateAsync(o =>
             {
                 o.Progress = 100;
                 o.Message = "Step 4 of 4...";
@@ -136,7 +136,7 @@ public class OverlayTestingPageViewModel : ViewModelBase
             for (int i = 0; i < steps.Length; i++)
             {
                 // Switch to indeterminate while "working" on this step
-                _overlayService.Update(o =>
+                await _overlayService.UpdateAsync(o =>
                 {
                     o.IsIndeterminate = true;
                     o.Message = steps[i] + "...";
@@ -146,7 +146,7 @@ public class OverlayTestingPageViewModel : ViewModelBase
 
                 // Mark step complete with determinate progress
                 int completed = i + 1;
-                _overlayService.Update(o =>
+                await _overlayService.UpdateAsync(o =>
                 {
                     o.IsIndeterminate = false;
                     o.Progress = (double)completed / steps.Length * 100;
@@ -155,7 +155,7 @@ public class OverlayTestingPageViewModel : ViewModelBase
                 await Task.Delay(500);
             }
 
-            _overlayService.Update(o => o.Message = "Done!");
+            await _overlayService.UpdateAsync(o => o.Message = "Done!");
             await Task.Delay(500);
 
             await _overlayService.HideAsync();

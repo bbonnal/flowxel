@@ -22,12 +22,13 @@ public class OverlayService : IOverlayService
         return Task.CompletedTask;
     }
 
-    public void Update(Action<OverlayControl> configure)
+    public Task UpdateAsync(Action<OverlayControl> configure)
     {
         if (_host is null)
             throw new InvalidOperationException("OverlayControl host has not been registered. Call RegisterHost first.");
 
         configure(_host);
+        return Task.CompletedTask;
     }
 
     public Task HideAsync()
