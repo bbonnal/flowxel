@@ -14,6 +14,7 @@ using CommunityToolkit.Mvvm.Input;
 using Flowxel.Core.Geometry.Primitives;
 using Flowxel.Core.Geometry.Shapes;
 using Flowxel.Graph;
+using Flowxel.Imaging.Operations.Constructions;
 using Flowxel.Imaging.Operations.Extractions;
 using Flowxel.Imaging.Operations.Filters;
 using Flowxel.Imaging.Operations.IO;
@@ -26,6 +27,7 @@ using Flowxel.UI.Controls.Drawing.Scene;
 using Flowxel.UI.Controls.Drawing.Shapes;
 using Shape = Flowxel.Core.Geometry.Shapes.Shape;
 using FlowLine = Flowxel.Core.Geometry.Shapes.Line;
+using FlowPoint = Flowxel.Core.Geometry.Shapes.Point;
 using FlowRectangle = Flowxel.Core.Geometry.Shapes.Rectangle;
 
 namespace Flowxel.ImagingTester.ViewModels;
@@ -50,11 +52,12 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
         _infoBarService = infoBarService;
 
         SelectToolCommand = new RelayCommand(() => ActiveTool = DrawingTool.Select);
-        SelectRectangleToolCommand = new RelayCommand(() => ActiveTool = DrawingTool.Rectangle);
+        SelectRectangleToolCommand = new RelayCommand(() => ActiveTool = DrawingTool.CenterlineRectangle);
 
         AddLoadImageOperationCommand = new RelayCommand(AddLoadImageOperation);
         AddGaussianBlurOperationCommand = new RelayCommand(AddGaussianBlurOperation);
         AddExtractLineInRegionOperationCommand = new RelayCommand(AddExtractLineInRegionOperation);
+        AddConstructLineLineIntersectionOperationCommand = new RelayCommand(AddConstructLineLineIntersectionOperation);
         RemoveSelectedOperationCommand = new RelayCommand(RemoveSelectedOperation);
         ClearPipelineCommand = new RelayCommand(ClearPipeline);
 
@@ -171,6 +174,7 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
     public IRelayCommand AddLoadImageOperationCommand { get; }
     public IRelayCommand AddGaussianBlurOperationCommand { get; }
     public IRelayCommand AddExtractLineInRegionOperationCommand { get; }
+    public IRelayCommand AddConstructLineLineIntersectionOperationCommand { get; }
     public IRelayCommand RemoveSelectedOperationCommand { get; }
     public IRelayCommand ClearPipelineCommand { get; }
 
@@ -263,6 +267,8 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
 
     private void AddExtractLineInRegionOperation() => AddOperationNode(CreateExtractLineDescriptor());
 
+    private void AddConstructLineLineIntersectionOperation() => AddOperationNode(CreateConstructLineLineIntersectionDescriptor());
+
     private void AddOperationNode(ProcessNodeDescriptor descriptor)
     {
         ProcessNodes.Add(descriptor);
@@ -330,7 +336,28 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
             ],
             Outputs =
             [
-                new ProcessPortDescriptor { Key = "out", Name = "Lines", TypeName = "Line[]", Direction = ProcessPortDirection.Output }
+                new ProcessPortDescriptor { Key = "out", Name = "Line", TypeName = "Line", Direction = ProcessPortDirection.Output }
+            ]
+        };
+    }
+
+    private ProcessNodeDescriptor CreateConstructLineLineIntersectionDescriptor()
+    {
+        var nodeId = NextNodeId("line-line-intersection");
+
+        return new ProcessNodeDescriptor
+        {
+            Id = nodeId,
+            Name = "constructLineLineIntersection",
+            OperationType = "ConstructLineLineIntersectionOperation",
+            Inputs =
+            [
+                new ProcessPortDescriptor { Key = "first", Name = "First", TypeName = "Line", Direction = ProcessPortDirection.Input },
+                new ProcessPortDescriptor { Key = "second", Name = "Second", TypeName = "Line", Direction = ProcessPortDirection.Input }
+            ],
+            Outputs =
+            [
+                new ProcessPortDescriptor { Key = "out", Name = "Point", TypeName = "Point", Direction = ProcessPortDirection.Output }
             ]
         };
     }
@@ -370,11 +397,11 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
             ? (_lastReadWidth, _lastReadHeight, defaultPath)
             : (fallbackWidth, fallbackHeight, "fallback");
 
-        var roi = new FlowRectangle
+        var roi = new CenterlineRectangleShape
         {
-            Pose = new Pose(new Vector(width * 0.5, height * 0.5), new Vector(1, 0)),
-            Width = width,
-            Height = height
+            Pose = new Pose(new Vector(0, height * 0.5), new Vector(1, 0)),
+            Length = width,
+            Width = height
         };
 
         Shapes.Add(roi);
@@ -474,15 +501,7 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
             return;
 
         if (ProcessNodes.Count == 0)
-        {
-            await _infoBarService.ShowAsync(infoBar =>
-            {
-                infoBar.Severity = InfoBarSeverity.Warning;
-                infoBar.Title = "Empty pipeline";
-                infoBar.Message = "Add at least one operation in the ribbon.";
-            });
             return;
-        }
 
         ClearComputedResults();
         ClearResources();
@@ -511,13 +530,6 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
             Console.WriteLine(
                 $"[Pipeline] nodes={ProcessNodes.Count} setup={setupSw.Elapsed.TotalMilliseconds:F2}ms execute={execSw.Elapsed.TotalMilliseconds:F2}ms collect={collectSw.Elapsed.TotalMilliseconds:F2}ms total={totalSw.Elapsed.TotalMilliseconds:F2}ms");
 
-            await _infoBarService.ShowAsync(infoBar =>
-            {
-                infoBar.Severity = InfoBarSeverity.Success;
-                infoBar.Title = "Pipeline executed";
-                infoBar.Message =
-                    $"Executed {ProcessNodes.Count} operation(s). Computed overlays: {ComputedShapeIds.Count}. Resources: {Resources.Count}.";
-            });
         }
         catch (Exception ex)
         {
@@ -541,6 +553,7 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
                 "LoadOperation" => new LoadOperation(pool, graph),
                 "GaussianBlurOperation" => new GaussianBlurOperation(pool, graph),
                 "ExtractLineInRegionsOperation" => new ExtractLineInRegionsOperation(pool, graph),
+                "ConstructLineLineIntersectionOperation" => new ConstructLineLineIntersectionOperation(pool, graph),
                 _ => throw new InvalidOperationException($"Unsupported operation type: {descriptor.OperationType}")
             };
 
@@ -594,8 +607,8 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
                             $"Operation '{descriptor.Name}' requires an ROI. Select the operation and click 'Draw ROI'.");
                     }
 
-                    var rectangle = Shapes.FirstOrDefault(shape => shape.Id == roiShapeId) as FlowRectangle;
-                    if (rectangle is null)
+                    var roiShape = Shapes.FirstOrDefault(shape => shape.Id == roiShapeId);
+                    if (!TryMapRoiShapeToRectangle(roiShape, out var rectangle))
                     {
                         throw new InvalidOperationException(
                             $"Operation '{descriptor.Name}' has an invalid ROI binding. Draw ROI again.");
@@ -629,14 +642,20 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
 
         foreach (var descriptor in ProcessNodes)
         {
-            if (descriptor.OperationType == "LoadOperation")
-                continue;
+            var expectedIncoming = descriptor.OperationType switch
+            {
+                "LoadOperation" => 0,
+                "GaussianBlurOperation" => 1,
+                "ExtractLineInRegionsOperation" => 1,
+                "ConstructLineLineIntersectionOperation" => 2,
+                _ => descriptor.Inputs.Count
+            };
 
-            if (incomingCounts.TryGetValue(descriptor.Id, out var count) && count == 1)
+            if (incomingCounts.TryGetValue(descriptor.Id, out var count) && count == expectedIncoming)
                 continue;
 
             throw new InvalidOperationException(
-                $"Operation '{descriptor.Name}' must have exactly one incoming image connection.");
+                $"Operation '{descriptor.Name}' must have exactly {expectedIncoming} incoming connection(s).");
         }
     }
 
@@ -666,14 +685,15 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
                 continue;
             }
 
-            if (node.OutputType == typeof(FlowLine[]))
+            if (node.OutputType == typeof(FlowLine))
             {
-                var lines = pool.Get<FlowLine[]>(node.Id);
+                var line = pool.Get<FlowLine>(node.Id);
+                var lines = line.Length > 0 ? new[] { line } : [];
 
                 AddResourceFromNodeOutput(
                     descriptor.Id,
-                    $"{descriptor.Name} Lines",
-                    "Line[]",
+                    $"{descriptor.Name} Line",
+                    "Line",
                     new LineCoordinatesResourceViewData
                     {
                         Lines = lines.Select(line => new LineCoordinateEntry
@@ -688,11 +708,37 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
                     ResourceValueKind.LineCoordinates,
                     $"{lines.Length} line(s)");
 
-                foreach (var line in lines)
+                if (line.Length > 0)
                 {
                     Shapes.Add(line);
                     ComputedShapeIds.Add(line.Id);
                 }
+
+                continue;
+            }
+
+            if (node.OutputType == typeof(FlowPoint))
+            {
+                var point = pool.Get<FlowPoint>(node.Id);
+
+                AddResourceFromNodeOutput(
+                    descriptor.Id,
+                    $"{descriptor.Name} Point",
+                    "Point",
+                    new ShapePropertyResourceViewData
+                    {
+                        ShapeType = "Point",
+                        Properties =
+                        [
+                            new KeyValuePair<string, string>("X", point.Pose.Position.X.ToString("0.###")),
+                            new KeyValuePair<string, string>("Y", point.Pose.Position.Y.ToString("0.###"))
+                        ]
+                    },
+                    ResourceValueKind.ShapeProperties,
+                    $"({point.Pose.Position.X:0.###}, {point.Pose.Position.Y:0.###})");
+
+                Shapes.Add(point);
+                ComputedShapeIds.Add(point.Id);
             }
         }
     }
@@ -825,12 +871,6 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
 
             await File.WriteAllTextAsync(path, json);
 
-            await _infoBarService.ShowAsync(infoBar =>
-            {
-                infoBar.Severity = InfoBarSeverity.Success;
-                infoBar.Title = "Scene saved";
-                infoBar.Message = path;
-            });
         }
         catch (Exception ex)
         {
@@ -867,12 +907,6 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
             foreach (var id in loaded.ComputedShapeIds)
                 ComputedShapeIds.Add(id);
 
-            await _infoBarService.ShowAsync(infoBar =>
-            {
-                infoBar.Severity = InfoBarSeverity.Success;
-                infoBar.Title = "Scene loaded";
-                infoBar.Message = $"{path} ({loaded.Shapes.Count} shape(s))";
-            });
         }
         catch (Exception ex)
         {
@@ -971,14 +1005,7 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
         }
 
         _pendingRoiNodeId = SelectedProcessNode.Id;
-        ActiveTool = DrawingTool.Rectangle;
-
-        _ = _infoBarService.ShowAsync(infoBar =>
-        {
-            infoBar.Severity = InfoBarSeverity.Info;
-            infoBar.Title = "Draw ROI";
-            infoBar.Message = "Draw a rectangle on the canvas to bind it to the selected extractLineInRegion operation.";
-        });
+        ActiveTool = DrawingTool.CenterlineRectangle;
     }
 
     private void RemoveRoiForSelectedOperation()
@@ -1041,22 +1068,45 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
         if (e.Action is not NotifyCollectionChangedAction.Add || e.NewItems is null)
             return;
 
-        var rectangle = e.NewItems.OfType<FlowRectangle>().FirstOrDefault();
-        if (rectangle is null)
+        var centerlineRectangle = e.NewItems.OfType<CenterlineRectangleShape>().FirstOrDefault();
+        if (centerlineRectangle is null)
             return;
 
-        _extractRoiShapeIdByNodeId[_pendingRoiNodeId] = rectangle.Id;
+        _extractRoiShapeIdByNodeId[_pendingRoiNodeId] = centerlineRectangle.Id;
         _pendingRoiNodeId = null;
         ActiveTool = DrawingTool.Select;
 
         RefreshSelectedNodeProperties();
+    }
 
-        _ = _infoBarService.ShowAsync(infoBar =>
+    private static bool TryMapRoiShapeToRectangle(Shape? shape, out FlowRectangle rectangle)
+    {
+        switch (shape)
         {
-            infoBar.Severity = InfoBarSeverity.Success;
-            infoBar.Title = "ROI bound";
-            infoBar.Message = $"ROI {rectangle.Id} is now bound to the selected extract operation.";
-        });
+            case null:
+                rectangle = null!;
+                return false;
+            case FlowRectangle flowRectangle:
+                rectangle = flowRectangle;
+                return true;
+            case CenterlineRectangleShape centerlineRectangle:
+            {
+                var orientation = centerlineRectangle.Pose.Orientation.M <= 1e-9
+                    ? new Vector(1, 0)
+                    : centerlineRectangle.Pose.Orientation.Normalize();
+                var center = centerlineRectangle.Pose.Position + orientation.Scale(centerlineRectangle.Length * 0.5);
+                rectangle = new FlowRectangle
+                {
+                    Pose = new Pose(center, orientation),
+                    Width = centerlineRectangle.Length,
+                    Height = centerlineRectangle.Width
+                };
+                return rectangle.Width > 0 && rectangle.Height > 0;
+            }
+            default:
+                rectangle = null!;
+                return false;
+        }
     }
 
     private void RemoveDeletedRoiBindings(NotifyCollectionChangedEventArgs e)

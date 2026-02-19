@@ -27,6 +27,8 @@
                     <ruiRibbon:RibbonButton Header="extractLineInRegion"
                                             IconData="{pia:IconGeometry Icon=line_segment}"
                                             Command="{Binding AddExtractLineInRegionOperationCommand}" />
+                    <ruiRibbon:RibbonButton Header="constructLineLineIntersection"
+                                            Command="{Binding AddConstructLineLineIntersectionOperationCommand}" />
                     <ruiRibbon:RibbonButton Header="Remove Selected"
                                             IconData="{pia:IconGeometry Icon=trash}"
                                             Command="{Binding RemoveSelectedOperationCommand}" />

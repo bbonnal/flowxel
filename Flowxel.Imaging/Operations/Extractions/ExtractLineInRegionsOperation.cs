@@ -6,9 +6,9 @@ using OpenCvSharp;
 
 namespace Flowxel.Imaging.Operations.Extractions;
 
-public class ExtractLineInRegionsOperation(ResourcePool pool, Graph<IExecutableNode> graph) : Node<Mat, Line[]>(pool, graph)
+public class ExtractLineInRegionsOperation(ResourcePool pool, Graph<IExecutableNode> graph) : Node<Mat, Line>(pool, graph)
 {
-    protected override Line[] ExecuteInternal(
+    protected override Line ExecuteInternal(
         IReadOnlyList<Mat> inputs,
         IReadOnlyDictionary<string, object> parameters,
         CancellationToken ct)
@@ -30,7 +30,7 @@ public class ExtractLineInRegionsOperation(ResourcePool pool, Graph<IExecutableN
             {
                 totalSw.Stop();
                 Console.WriteLine($"[ExtractLine] end node={Id} empty-roi total={totalSw.Elapsed.TotalMilliseconds:F2}ms");
-                return [];
+                return CreateEmptyLine();
             }
 
             var roiSw = Stopwatch.StartNew();
@@ -65,7 +65,7 @@ public class ExtractLineInRegionsOperation(ResourcePool pool, Graph<IExecutableN
             {
                 totalSw.Stop();
                 Console.WriteLine($"[ExtractLine] end node={Id} no-segments total={totalSw.Elapsed.TotalMilliseconds:F2}ms");
-                return [];
+                return CreateEmptyLine();
             }
 
             var refined = new List<Line>(segments.Length);
@@ -110,8 +110,21 @@ public class ExtractLineInRegionsOperation(ResourcePool pool, Graph<IExecutableN
                 $"[ExtractLine] refine node={Id} refine={refineMs:F2}ms collectInliers={collectMs:F2}ms scannedPixels={inspectedPixels} edgePixels={edgePixels} keptInliers={inliers} refined={refined.Count}/{segments.Length}");
             Console.WriteLine($"[ExtractLine] end node={Id} total={totalSw.Elapsed.TotalMilliseconds:F2}ms");
 
-            return refined.ToArray();
+            if (refined.Count == 0)
+                return CreateEmptyLine();
+
+            var longest = refined.MaxBy(line => line.Length);
+            return longest ?? CreateEmptyLine();
         }
+    }
+
+    private static Line CreateEmptyLine()
+    {
+        return new Line
+        {
+            Pose = new Pose(new Vector(0, 0), new Vector(1, 0)),
+            Length = 0
+        };
     }
 
     private static Line? RefineSegmentToSubpixelLine(
