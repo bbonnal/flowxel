@@ -86,10 +86,14 @@ public partial class App : Application
         // that need shortcuts bound when they appear
         Control.DataContextProperty.Changed.AddClassHandler<Control>((control, e) =>
         {
+            var shortcutService = services.GetService<IShortcutService>();
+            if (shortcutService is null)
+                return;
+
             if (e.NewValue is IShortcutBindingProvider provider)
-            {
-                services.GetService<IShortcutService>()?.Bind(control, provider.GetShortcutDefinitions());
-            }
+                _ = shortcutService.Bind(control, provider.GetShortcutDefinitions());
+            else
+                _ = shortcutService.Bind(control, []);
         });
 
         base.OnFrameworkInitializationCompleted();

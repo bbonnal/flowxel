@@ -1,16 +1,27 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Input;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.VisualTree;
 
 namespace Flowxel.UI.Services.Shortcuts;
 
 public sealed class ShortcutService : IShortcutService
 {
+    private readonly Dictionary<Control, ShortcutBindingHandle> _bindingsByScope = [];
+
     public IDisposable Bind(Control scope, IEnumerable<ShortcutDefinition> definitions)
     {
         ArgumentNullException.ThrowIfNull(scope);
         ArgumentNullException.ThrowIfNull(definitions);
+
+        if (_bindingsByScope.TryGetValue(scope, out var existing))
+        {
+            existing.Dispose();
+            _bindingsByScope.Remove(scope);
+        }
 
         var createdBindings = new List<KeyBinding>();
 
@@ -47,19 +58,27 @@ public sealed class ShortcutService : IShortcutService
             createdBindings.Add(keyBinding);
         }
 
-        return new ShortcutBindingHandle(scope, createdBindings);
+        if (createdBindings.Count == 0)
+            return NoOpDisposable.Instance;
+
+        var handle = new ShortcutBindingHandle(scope, createdBindings, () => _bindingsByScope.Remove(scope));
+        _bindingsByScope[scope] = handle;
+        return handle;
     }
 
     private sealed class ShortcutBindingHandle : IDisposable
     {
         private readonly Control _scope;
         private readonly IReadOnlyList<KeyBinding> _bindings;
+        private readonly Action _onDisposed;
         private bool _disposed;
 
-        public ShortcutBindingHandle(Control scope, IReadOnlyList<KeyBinding> bindings)
+        public ShortcutBindingHandle(Control scope, IReadOnlyList<KeyBinding> bindings, Action onDisposed)
         {
             _scope = scope;
             _bindings = bindings;
+            _onDisposed = onDisposed;
+            _scope.DetachedFromVisualTree += OnDetachedFromVisualTree;
         }
 
         public void Dispose()
@@ -70,10 +89,18 @@ public sealed class ShortcutService : IShortcutService
             }
 
             _disposed = true;
+            _scope.DetachedFromVisualTree -= OnDetachedFromVisualTree;
             foreach (var binding in _bindings)
             {
                 _scope.KeyBindings.Remove(binding);
             }
+
+            _onDisposed();
+        }
+
+        private void OnDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+        {
+            Dispose();
         }
     }
 
@@ -100,6 +127,9 @@ public sealed class ShortcutService : IShortcutService
 
         public bool CanExecute(object? parameter)
         {
+            if (!IsFocusWithinScope())
+                return false;
+
             if (!_allowWhenTextInputFocused && IsTextInputFocused())
             {
                 return false;
@@ -123,6 +153,28 @@ public sealed class ShortcutService : IShortcutService
             var topLevel = TopLevel.GetTopLevel(_scope);
             var focused = topLevel?.FocusManager?.GetFocusedElement();
             return focused is TextBox;
+        }
+
+        private bool IsFocusWithinScope()
+        {
+            var topLevel = TopLevel.GetTopLevel(_scope);
+            var focused = topLevel?.FocusManager?.GetFocusedElement() as Visual;
+            return focused is not null &&
+                   (ReferenceEquals(focused, _scope) ||
+                    focused.GetVisualAncestors().Any(v => ReferenceEquals(v, _scope)));
+        }
+    }
+
+    private sealed class NoOpDisposable : IDisposable
+    {
+        public static readonly NoOpDisposable Instance = new();
+
+        private NoOpDisposable()
+        {
+        }
+
+        public void Dispose()
+        {
         }
     }
 }
