@@ -21,7 +21,7 @@ public interface INavigationService
     /// <summary>
     /// Gets the footer navigation items.
     /// </summary>
-    IReadOnlyList<NavigationItemControl>? FooterItems { get; }
+    IReadOnlyList<NavigationItemControl> FooterItems { get; }
 
     /// <summary>
     /// Initializes navigation items.
@@ -31,7 +31,7 @@ public interface INavigationService
     /// <summary>
     /// Gets the currently displayed page.
     /// </summary>
-    object? CurrentPage { get; }
+    Control? CurrentPage { get; }
 
     /// <summary>
     /// Gets or sets the factory function used to create pages from navigation items.

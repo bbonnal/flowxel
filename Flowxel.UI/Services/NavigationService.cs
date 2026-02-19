@@ -20,7 +20,7 @@ public class NavigationService(IServiceProvider serviceProvider) : ObservableObj
         return page;
     };
 
-    public object? CurrentPage
+    public Control? CurrentPage
     {
         get;
         set => SetProperty(ref field, value);
@@ -39,12 +39,12 @@ public class NavigationService(IServiceProvider serviceProvider) : ObservableObj
 
     public IReadOnlyList<NavigationItemControl> Items { get; private set; } = [];
 
-    public IReadOnlyList<NavigationItemControl>? FooterItems { get; private set; }
+    public IReadOnlyList<NavigationItemControl> FooterItems { get; private set; } = [];
 
     public void Initialize(IReadOnlyList<NavigationItemControl> items, IReadOnlyList<NavigationItemControl>? footerItems = null)
     {
         Items = items;
-        FooterItems = footerItems;
+        FooterItems = footerItems ?? [];
     }
 
     public Task NavigateToAsync<TViewModel>() where TViewModel : class
@@ -113,9 +113,6 @@ public class NavigationService(IServiceProvider serviceProvider) : ObservableObj
                 return item;
         }
 
-        if (FooterItems is null)
-            return null;
-
         foreach (var item in FooterItems)
         {
             if (item.PageViewModelType == viewModelType)
@@ -125,12 +122,11 @@ public class NavigationService(IServiceProvider serviceProvider) : ObservableObj
         return null;
     }
 
-    private static async Task<bool> InvokeDisappearingAsync(object page)
+    private static async Task<bool> InvokeDisappearingAsync(Control page)
     {
         try
         {
-            var vm = page is Control control ? control.DataContext : page;
-            if (vm is INavigationViewModel nav)
+            if (page.DataContext is INavigationViewModel nav)
                 return await nav.OnDisappearingAsync();
             return true;
         }
@@ -140,12 +136,11 @@ public class NavigationService(IServiceProvider serviceProvider) : ObservableObj
         }
     }
 
-    private static async Task InvokeAppearingAsync(object page)
+    private static async Task InvokeAppearingAsync(Control page)
     {
         try
         {
-            var vm = page is Control control ? control.DataContext : page;
-            if (vm is INavigationViewModel nav)
+            if (page.DataContext is INavigationViewModel nav)
                 await nav.OnAppearingAsync();
         }
         catch
