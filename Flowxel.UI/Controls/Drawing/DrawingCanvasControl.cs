@@ -149,6 +149,9 @@ public class DrawingCanvasControl : Control
             nameof(ComputedStroke),
             Brushes.MediumSeaGreen);
 
+    public static readonly StyledProperty<bool> UseDashedComputedStrokeProperty =
+        AvaloniaProperty.Register<DrawingCanvasControl, bool>(nameof(UseDashedComputedStroke), true);
+
     public static readonly StyledProperty<IBrush> HandleFillProperty =
         AvaloniaProperty.Register<DrawingCanvasControl, IBrush>(
             nameof(HandleFill),
@@ -338,6 +341,12 @@ public class DrawingCanvasControl : Control
         set => SetValue(ComputedStrokeProperty, value);
     }
 
+    public bool UseDashedComputedStroke
+    {
+        get => GetValue(UseDashedComputedStrokeProperty);
+        set => SetValue(UseDashedComputedStrokeProperty, value);
+    }
+
     public IBrush HandleFill
     {
         get => GetValue(HandleFillProperty);
@@ -436,7 +445,7 @@ public class DrawingCanvasControl : Control
             var thickness = GetShapeStrokeThickness(shape) + (isBindingCandidate ? 1.25 : 0);
             var dashPattern = isBindingCandidate
                 ? (double[])[4d, 3d]
-                : isComputed ? [5d, 4d] : null;
+                : (isComputed && UseDashedComputedStroke) ? [5d, 4d] : null;
             DrawShape(
                 context,
                 shape,
@@ -456,7 +465,7 @@ public class DrawingCanvasControl : Control
                 _selectedShape,
                 selectedComputed ? ComputedStroke : SelectedStroke,
                 GetShapeStrokeThickness(_selectedShape) + 1.5,
-                selectedComputed ? [5d, 4d] : null);
+                (selectedComputed && UseDashedComputedStroke) ? [5d, 4d] : null);
             if (!selectedComputed)
                 DrawGrabHandles(context, _selectedShape);
         }

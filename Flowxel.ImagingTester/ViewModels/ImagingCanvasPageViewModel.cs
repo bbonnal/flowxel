@@ -345,7 +345,7 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
         return new ProcessNodeDescriptor
         {
             Id = nodeId,
-            Name = "loadImage",
+            Name = "Load",
             OperationType = "LoadOperation",
             Inputs =
             [
@@ -367,7 +367,7 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
         return new ProcessNodeDescriptor
         {
             Id = nodeId,
-            Name = "GaussianBlur",
+            Name = "Blur",
             OperationType = "GaussianBlurOperation",
             Inputs =
             [
@@ -387,7 +387,7 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
         return new ProcessNodeDescriptor
         {
             Id = nodeId,
-            Name = "extractLineInRegion",
+            Name = "Extract",
             OperationType = "ExtractLineInRegionsOperation",
             Inputs =
             [
@@ -408,7 +408,7 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
         return new ProcessNodeDescriptor
         {
             Id = nodeId,
-            Name = "constructLineLineIntersection",
+            Name = "Intersect",
             OperationType = "ConstructLineLineIntersectionOperation",
             Inputs =
             [
@@ -814,6 +814,7 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
         if (node.OutputType == typeof(FlowLine))
         {
             var line = pool.Get<FlowLine>(node.Id);
+            line.LineWeight = Math.Max(line.LineWeight, 3d);
             var lines = line.Length > 0 ? new[] { line } : [];
 
             AddResourceFromNodeOutput(

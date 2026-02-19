@@ -18,16 +18,17 @@
         <ruiRibbon:RibbonControl DockPanel.Dock="Top">
             <ruiRibbon:RibbonTab Header="Imaging Basis">
                 <ruiRibbon:RibbonGroup Header="Add Operation">
-                    <ruiRibbon:RibbonButton Header="loadImage"
+                    <ruiRibbon:RibbonButton Header="Load"
                                             IconData="{pia:IconGeometry Icon=image}"
                                             Command="{Binding AddLoadImageOperationCommand}" />
-                    <ruiRibbon:RibbonButton Header="GaussianBlur"
+                    <ruiRibbon:RibbonButton Header="Blur"
                                             IconData="{pia:IconGeometry Icon=circles_three_plus}"
                                             Command="{Binding AddGaussianBlurOperationCommand}" />
-                    <ruiRibbon:RibbonButton Header="extractLineInRegion"
+                    <ruiRibbon:RibbonButton Header="Extract"
                                             IconData="{pia:IconGeometry Icon=line_segment}"
                                             Command="{Binding AddExtractLineInRegionOperationCommand}" />
-                    <ruiRibbon:RibbonButton Header="constructLineLineIntersection"
+                    <ruiRibbon:RibbonButton Header="Intersect"
+                                            IconData="{pia:IconGeometry Icon=dot_outline}"
                                             Command="{Binding AddConstructLineLineIntersectionOperationCommand}" />
                     <ruiRibbon:RibbonButton Header="Remove Selected"
                                             IconData="{pia:IconGeometry Icon=trash}"
@@ -95,6 +96,8 @@
                                       HorizontalSizeMode="Stretch">
                         <ruiDrawing:DrawingCanvasControl Shapes="{Binding Shapes}"
                                                          ComputedShapeIds="{Binding ComputedShapeIds}"
+                                                         UseDashedComputedStroke="False"
+                                                         StrokeThickness="2.5"
                                                          InteractionMode="{Binding InteractionMode}"
                                                          BindingCandidateShapeIds="{Binding BindingCandidateShapeIds}"
                                                          ShapeInvokedCommand="{Binding BindFromCanvasShapeCommand}"
@@ -132,7 +135,7 @@
                                         </StackPanel>
 
                                         <StackPanel Spacing="4" IsVisible="{Binding CanEditLoadPath}">
-                                            <TextBlock Text="loadImage.Path" />
+                                            <TextBlock Text="Load.Path" />
                                             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
                                                 <TextBox Grid.Column="0"
                                                          Text="{Binding SelectedLoadPath, Mode=TwoWay}"
@@ -154,7 +157,7 @@
                                         </StackPanel>
 
                                         <StackPanel Spacing="6" IsVisible="{Binding CanConfigureExtractLine}">
-                                            <TextBlock Text="extractLineInRegion" />
+                                            <TextBlock Text="Extract" />
                                             <TextBlock Text="{Binding SelectedExtractRoiStatus}"
                                                        Foreground="{DynamicResource fxForegroundSecondaryBrush}" />
                                             <StackPanel Orientation="Horizontal" Spacing="8">
