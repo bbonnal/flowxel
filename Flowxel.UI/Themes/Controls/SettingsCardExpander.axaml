@@ -80,6 +80,14 @@
             <Setter Property="Background" Value="{DynamicResource fxPressedBrush}" />
         </Style>
 
+        <Style Selector="^:focus-visible /template/ Border#PART_Header">
+            <Setter Property="Background" Value="{DynamicResource fxHoverBrush}" />
+        </Style>
+
+        <Style Selector="^:focus-visible /template/ Border#PART_Root">
+            <Setter Property="BorderBrush" Value="{DynamicResource fxAccentBrush}" />
+        </Style>
+
         <Style Selector="^:expanded /template/ PathIcon#PART_Chevron">
             <Setter Property="RenderTransform">
                 <RotateTransform Angle="90" />

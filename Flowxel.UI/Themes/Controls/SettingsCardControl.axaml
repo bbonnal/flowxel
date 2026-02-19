@@ -58,6 +58,10 @@
         <Style Selector="^:pressed /template/ Border#PART_Root">
             <Setter Property="Background" Value="{DynamicResource fxPressedBrush}" />
         </Style>
+
+        <Style Selector="^:focus-visible /template/ Border#PART_Root">
+            <Setter Property="BorderBrush" Value="{DynamicResource fxAccentBrush}" />
+        </Style>
     </ControlTheme>
 
 </ResourceDictionary>

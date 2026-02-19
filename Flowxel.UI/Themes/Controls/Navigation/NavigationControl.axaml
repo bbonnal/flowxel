@@ -30,6 +30,9 @@
                                 <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
                                     <Setter Property="Background" Value="{DynamicResource fxHoverBrush}" />
                                 </Style>
+                                <Style Selector="ListBoxItem:focus-visible /template/ ContentPresenter#PART_ContentPresenter">
+                                    <Setter Property="Background" Value="{DynamicResource fxHoverBrush}" />
+                                </Style>
                                 <Style Selector="ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
                                     <Setter Property="Background" Value="{DynamicResource fxSelectionBrush}" />
                                 </Style>
@@ -53,6 +56,9 @@
                                     <Setter Property="Padding" Value="{DynamicResource fxPaddingNavItem}" />
                                 </Style>
                                 <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                                    <Setter Property="Background" Value="{DynamicResource fxHoverBrush}" />
+                                </Style>
+                                <Style Selector="ListBoxItem:focus-visible /template/ ContentPresenter#PART_ContentPresenter">
                                     <Setter Property="Background" Value="{DynamicResource fxHoverBrush}" />
                                 </Style>
                                 <Style Selector="ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">

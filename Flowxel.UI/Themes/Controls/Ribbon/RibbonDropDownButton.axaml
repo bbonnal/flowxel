@@ -8,18 +8,20 @@
                 <Panel>
                     <Border x:Name="PART_Root"
                             Background="Transparent"
-                            CornerRadius="4"
-                            Padding="6,4"
-                            MinWidth="56">
+                            BorderBrush="Transparent"
+                            BorderThickness="1"
+                            CornerRadius="{DynamicResource fxCornerRadiusS}"
+                            Padding="{DynamicResource fxPaddingButton}"
+                            MinWidth="{DynamicResource fxButtonMinWidth}">
                         <StackPanel HorizontalAlignment="Center" Spacing="2">
                             <PathIcon Data="{Binding IconData, RelativeSource={RelativeSource TemplatedParent}}"
-                                      Width="24" Height="24"
+                                      Width="{DynamicResource fxIconL}" Height="{DynamicResource fxIconL}"
                                       HorizontalAlignment="Center"
                                       Foreground="{DynamicResource fxForegroundBrush}"
                                       IsVisible="{Binding IconData, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static ObjectConverters.IsNotNull}}" />
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="4">
                                 <TextBlock Text="{Binding Header, RelativeSource={RelativeSource TemplatedParent}}"
-                                           FontSize="11"
+                                           FontSize="{DynamicResource fxFontSizeS}"
                                            VerticalAlignment="Center"
                                            Foreground="{DynamicResource fxForegroundBrush}"
                                            IsVisible="{Binding Header, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
@@ -77,6 +79,11 @@
 
         <Style Selector="^:pressed /template/ Border#PART_Root">
             <Setter Property="Background" Value="{DynamicResource fxPressedBrush}" />
+        </Style>
+
+        <Style Selector="^:focus-visible /template/ Border#PART_Root">
+            <Setter Property="Background" Value="{DynamicResource fxHoverBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource fxAccentBrush}" />
         </Style>
     </ControlTheme>
 

@@ -45,6 +45,12 @@
                                       Orientation="Horizontal"
                                       HorizontalAlignment="Right"
                                       Spacing="8">
+                                <StackPanel.Styles>
+                                    <Style Selector="Button:focus-visible">
+                                        <Setter Property="BorderBrush" Value="{DynamicResource fxAccentBrush}" />
+                                        <Setter Property="BorderThickness" Value="1" />
+                                    </Style>
+                                </StackPanel.Styles>
                                 <Button Name="PART_PrimaryButton"
                                        Content="{TemplateBinding PrimaryButtonText}"
                                        IsEnabled="{TemplateBinding IsPrimaryButtonEnabled}"

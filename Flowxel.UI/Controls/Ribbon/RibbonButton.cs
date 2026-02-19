@@ -8,6 +8,12 @@ namespace Flowxel.UI.Controls.Ribbon;
 
 public class RibbonButton : TemplatedControl
 {
+    public RibbonButton()
+    {
+        Focusable = true;
+        IsTabStop = true;
+    }
+
     public static readonly StyledProperty<string?> HeaderProperty =
         AvaloniaProperty.Register<RibbonButton, string?>(nameof(Header));
 
@@ -66,5 +72,18 @@ public class RibbonButton : TemplatedControl
     {
         base.OnPointerCaptureLost(e);
         PseudoClasses.Remove(":pressed");
+    }
+
+    protected override void OnKeyDown(KeyEventArgs e)
+    {
+        base.OnKeyDown(e);
+
+        if (e.Key is not (Key.Enter or Key.Space))
+            return;
+
+        if (Command is { } command && command.CanExecute(CommandParameter))
+            command.Execute(CommandParameter);
+
+        e.Handled = true;
     }
 }

@@ -13,6 +13,12 @@ public class RibbonDropDownButton : TemplatedControl
 {
     private Popup? _popup;
 
+    public RibbonDropDownButton()
+    {
+        Focusable = true;
+        IsTabStop = true;
+    }
+
     public static readonly StyledProperty<string?> HeaderProperty =
         AvaloniaProperty.Register<RibbonDropDownButton, string?>(nameof(Header));
 
@@ -69,5 +75,16 @@ public class RibbonDropDownButton : TemplatedControl
     {
         base.OnPointerCaptureLost(e);
         PseudoClasses.Remove(":pressed");
+    }
+
+    protected override void OnKeyDown(KeyEventArgs e)
+    {
+        base.OnKeyDown(e);
+
+        if (e.Key is not (Key.Enter or Key.Space))
+            return;
+
+        IsDropDownOpen = !IsDropDownOpen;
+        e.Handled = true;
     }
 }

@@ -8,6 +8,12 @@ namespace Flowxel.UI.Controls;
 
 public class SettingsCardControl : TemplatedControl
 {
+    public SettingsCardControl()
+    {
+        Focusable = true;
+        IsTabStop = true;
+    }
+
     public static readonly StyledProperty<string?> HeaderProperty =
         AvaloniaProperty.Register<SettingsCardControl, string?>(nameof(Header));
 
@@ -75,5 +81,18 @@ public class SettingsCardControl : TemplatedControl
     {
         base.OnPointerCaptureLost(e);
         PseudoClasses.Remove(":pressed");
+    }
+
+    protected override void OnKeyDown(KeyEventArgs e)
+    {
+        base.OnKeyDown(e);
+
+        if (e.Key is not (Key.Enter or Key.Space))
+            return;
+
+        if (Command is { } command && command.CanExecute(CommandParameter))
+            command.Execute(CommandParameter);
+
+        e.Handled = true;
     }
 }

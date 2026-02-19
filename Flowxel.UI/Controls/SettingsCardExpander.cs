@@ -11,6 +11,12 @@ public class SettingsCardExpander : TemplatedControl
 {
     private Border? _headerBorder;
 
+    public SettingsCardExpander()
+    {
+        Focusable = true;
+        IsTabStop = true;
+    }
+
     public static readonly StyledProperty<string?> HeaderProperty =
         AvaloniaProperty.Register<SettingsCardExpander, string?>(nameof(Header));
 
@@ -106,5 +112,16 @@ public class SettingsCardExpander : TemplatedControl
     private void OnHeaderPointerCaptureLost(object? sender, PointerCaptureLostEventArgs e)
     {
         PseudoClasses.Remove(":pressed");
+    }
+
+    protected override void OnKeyDown(KeyEventArgs e)
+    {
+        base.OnKeyDown(e);
+
+        if (e.Key is not (Key.Enter or Key.Space))
+            return;
+
+        IsExpanded = !IsExpanded;
+        e.Handled = true;
     }
 }
