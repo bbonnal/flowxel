@@ -1,0 +1,36 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <SolidColorBrush x:Key="rUIBackgroundBrush" Color="{DynamicResource rUIBackgroundColor}" />
+    <SolidColorBrush x:Key="rUISurfaceBrush" Color="{DynamicResource rUISurfaceColor}" />
+    <SolidColorBrush x:Key="rUISurfaceHighBrush" Color="{DynamicResource rUISurfaceHighColor}" />
+    <SolidColorBrush x:Key="rUIBorderBrush" Color="{DynamicResource rUIBorderColor}" />
+    <SolidColorBrush x:Key="rUIBorderSubtleBrush" Color="{DynamicResource rUIBorderSubtleColor}" />
+    <SolidColorBrush x:Key="rUIForegroundBrush" Color="{DynamicResource rUIForegroundColor}" />
+    <SolidColorBrush x:Key="rUIForegroundSecondaryBrush" Color="{DynamicResource rUIForegroundSecondaryColor}" />
+    <SolidColorBrush x:Key="rUIForegroundTertiaryBrush" Color="{DynamicResource rUIForegroundTertiaryColor}" />
+    <SolidColorBrush x:Key="rUIAccentBrush" Color="{DynamicResource rUIAccentColor}" />
+    <SolidColorBrush x:Key="rUIAccentHoverBrush" Color="{DynamicResource rUIAccentHoverColor}" />
+    <SolidColorBrush x:Key="rUISelectionBrush" Color="{DynamicResource rUISelectionColor}" />
+    <SolidColorBrush x:Key="rUIHoverBrush" Color="{DynamicResource rUIHoverColor}" />
+    <SolidColorBrush x:Key="rUIPressedBrush" Color="{DynamicResource rUIPressedColor}" />
+    <SolidColorBrush x:Key="rUIOverlayBrush" Color="{DynamicResource rUIOverlayColor}" />
+    <SolidColorBrush x:Key="rUISuccessBrush" Color="{DynamicResource rUISuccessColor}" />
+    <SolidColorBrush x:Key="rUIWarningBrush" Color="{DynamicResource rUIWarningColor}" />
+    <SolidColorBrush x:Key="rUIErrorBrush" Color="{DynamicResource rUIErrorColor}" />
+    <SolidColorBrush x:Key="rUIInfoBackgroundBrush" Color="{DynamicResource rUIInfoBackgroundColor}" />
+    <SolidColorBrush x:Key="rUIInfoBorderBrush" Color="{DynamicResource rUIInfoBorderColor}" />
+    <SolidColorBrush x:Key="rUISuccessBackgroundBrush" Color="{DynamicResource rUISuccessBackgroundColor}" />
+    <SolidColorBrush x:Key="rUISuccessBorderBrush" Color="{DynamicResource rUISuccessBorderColor}" />
+    <SolidColorBrush x:Key="rUIWarningBackgroundBrush" Color="{DynamicResource rUIWarningBackgroundColor}" />
+    <SolidColorBrush x:Key="rUIWarningBorderBrush" Color="{DynamicResource rUIWarningBorderColor}" />
+    <SolidColorBrush x:Key="rUIErrorBackgroundBrush" Color="{DynamicResource rUIErrorBackgroundColor}" />
+    <SolidColorBrush x:Key="rUIErrorBorderBrush" Color="{DynamicResource rUIErrorBorderColor}" />
+    <SolidColorBrush x:Key="rUICalendarTodayBrush" Color="{DynamicResource rUICalendarTodayColor}" />
+    <SolidColorBrush x:Key="rUICalendarSelectedBrush" Color="{DynamicResource rUICalendarSelectedColor}" />
+    <SolidColorBrush x:Key="rUICalendarOutOfMonthBrush" Color="{DynamicResource rUICalendarOutOfMonthColor}" />
+    <SolidColorBrush x:Key="rUICalendarAppointmentBrush" Color="{DynamicResource rUICalendarAppointmentColor}" />
+    <SolidColorBrush x:Key="rUICalendarGridLineBrush" Color="{DynamicResource rUICalendarGridLineColor}" />
+    <SolidColorBrush x:Key="rUICalendarCurrentTimeBrush" Color="{DynamicResource rUICalendarCurrentTimeColor}" />
+
+</ResourceDictionary>

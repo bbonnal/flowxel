@@ -1,0 +1,31 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Flowxel.UITester.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
+             x:Class="Flowxel.UITester.Views.ContentDialogTestingPageView"
+             x:DataType="vm:ContentDialogTestingPageViewModel">
+
+    <StackPanel Margin="24" Spacing="16">
+        <TextBlock Text="Content Dialog Testing"
+                   FontSize="24"
+                   FontWeight="SemiBold" />
+        <TextBlock Text="Test the ContentDialog control by clicking the buttons below."
+                   Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+
+        <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,8,0,0">
+            <Button Content="Show Simple Message"
+                    Command="{Binding ShowSimpleDialogCommand}" />
+            <Button Content="Show Complex Dialog"
+                    Command="{Binding ShowComplexDialogCommand}" />
+            <Button Content="Ask Password"
+                    Command="{Binding ShowPasswordDialogCommand}" />
+        </StackPanel>
+
+        <TextBlock Text="{Binding LastResult}"
+                   IsVisible="{Binding LastResult, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                   FontWeight="SemiBold"
+                   Margin="0,8,0,0" />
+    </StackPanel>
+</UserControl>

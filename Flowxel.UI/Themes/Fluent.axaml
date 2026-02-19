@@ -1,0 +1,31 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="avares://Flowxel.UI/Themes/Colors.axaml" />
+        <ResourceInclude Source="avares://Flowxel.UI/Themes/Brushes.axaml" />
+        <ResourceInclude Source="avares://Flowxel.UI/Themes/Controls/CalendarSchedule/CalendarScheduleControl.axaml" />
+        <ResourceInclude Source="avares://Flowxel.UI/Themes/Controls/Docking/DockPane.axaml" />
+        <ResourceInclude Source="avares://Flowxel.UI/Themes/Controls/Docking/DockSplitContainer.axaml" />
+        <ResourceInclude Source="avares://Flowxel.UI/Themes/Controls/Docking/DockTabGroup.axaml" />
+        <ResourceInclude Source="avares://Flowxel.UI/Themes/Controls/Docking/DockingControl.axaml" />
+        <ResourceInclude Source="avares://Flowxel.UI/Themes/Controls/Navigation/NavigationControl.axaml" />
+        <ResourceInclude Source="avares://Flowxel.UI/Themes/Controls/Navigation/NavigationItemControl.axaml" />
+        <ResourceInclude Source="avares://Flowxel.UI/Themes/Controls/Ribbon/RibbonButton.axaml" />
+        <ResourceInclude Source="avares://Flowxel.UI/Themes/Controls/Ribbon/RibbonControl.axaml" />
+        <ResourceInclude Source="avares://Flowxel.UI/Themes/Controls/Ribbon/RibbonDropDownButton.axaml" />
+        <ResourceInclude Source="avares://Flowxel.UI/Themes/Controls/Ribbon/RibbonGroup.axaml" />
+        <ResourceInclude Source="avares://Flowxel.UI/Themes/Controls/Ribbon/RibbonTab.axaml" />
+        <ResourceInclude Source="avares://Flowxel.UI/Themes/Controls/Ribbon/RibbonToggleButton.axaml" />
+        <ResourceInclude Source="avares://Flowxel.UI/Themes/Controls/ContentDialog.axaml" />
+        <ResourceInclude Source="avares://Flowxel.UI/Themes/Controls/InfoBarControl.axaml" />
+        <ResourceInclude Source="avares://Flowxel.UI/Themes/Controls/OverlayControl.axaml" />
+        <ResourceInclude Source="avares://Flowxel.UI/Themes/Controls/SettingsCardControl.axaml" />
+        <ResourceInclude Source="avares://Flowxel.UI/Themes/Controls/SettingsCardExpander.axaml" />
+        <ResourceInclude Source="avares://Flowxel.UI/Themes/Controls/Editors/BaseEditor.axaml" />
+        <ResourceInclude Source="avares://Flowxel.UI/Themes/Controls/Editors/MultiLineTextEditor.axaml" />
+        <ResourceInclude Source="avares://Flowxel.UI/Themes/Controls/Processing/ProcessControl.axaml" />
+        <ResourceInclude Source="avares://Flowxel.UI/Themes/Controls/Processing/ResourcePoolControl.axaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+</ResourceDictionary>

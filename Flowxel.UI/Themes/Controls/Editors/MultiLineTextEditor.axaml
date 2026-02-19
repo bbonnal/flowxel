@@ -1,0 +1,118 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:editors="using:Flowxel.UI.Controls.Editors">
+
+    <ControlTheme x:Key="{x:Type editors:MultiLineTextEditor}" TargetType="editors:MultiLineTextEditor">
+        <Setter Property="Background" Value="{DynamicResource rUISurfaceBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource rUIForegroundBrush}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource rUIForegroundBrush}" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource rUISelectionBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource rUIBorderSubtleBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="Padding" Value="10,6" />
+        <Setter Property="MinHeight" Value="76" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="VerticalContentAlignment" Value="Top" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <StackPanel>
+                    <!-- Title above the border -->
+                    <TextBlock x:Name="PART_Title"
+                               Text="{Binding Title, RelativeSource={RelativeSource TemplatedParent}}"
+                               Foreground="{DynamicResource rUIForegroundSecondaryBrush}"
+                               FontSize="12"
+                               Margin="0,0,0,4"
+                               IsVisible="{Binding Title, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+                    <Border x:Name="PART_Border"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}">
+                        <Grid RowDefinitions="*,Auto">
+                            <!-- Text area with vertical scroll -->
+                            <ScrollViewer Grid.Row="0"
+                                          Cursor="IBeam"
+                                          HorizontalScrollBarVisibility="Hidden"
+                                          VerticalScrollBarVisibility="Auto">
+                                <Panel Margin="{TemplateBinding Padding}">
+                                    <TextBlock x:Name="PART_Watermark"
+                                               Text="{TemplateBinding Watermark}"
+                                               Foreground="{DynamicResource rUIForegroundTertiaryBrush}"
+                                               IsVisible="False"
+                                               VerticalAlignment="Top"
+                                               IsHitTestVisible="False" />
+                                    <TextPresenter x:Name="PART_TextPresenter"
+                                                   Text="{TemplateBinding Text, Mode=TwoWay}"
+                                                   CaretBrush="{TemplateBinding CaretBrush}"
+                                                   CaretIndex="{TemplateBinding CaretIndex}"
+                                                   SelectionStart="{TemplateBinding SelectionStart}"
+                                                   SelectionEnd="{TemplateBinding SelectionEnd}"
+                                                   SelectionBrush="{TemplateBinding SelectionBrush}"
+                                                   SelectionForegroundBrush="{TemplateBinding SelectionForegroundBrush}"
+                                                   TextAlignment="{TemplateBinding TextAlignment}"
+                                                   TextWrapping="{TemplateBinding TextWrapping}"
+                                                   PasswordChar="{TemplateBinding PasswordChar}"
+                                                   RevealPassword="{TemplateBinding RevealPassword}"
+                                                   LetterSpacing="{TemplateBinding LetterSpacing}"
+                                                   LineHeight="{TemplateBinding LineHeight}"
+                                                   VerticalAlignment="Top" />
+                                </Panel>
+                            </ScrollViewer>
+
+                            <!-- Unit / Action content row at bottom -->
+                            <StackPanel Grid.Row="1"
+                                        Orientation="Horizontal"
+                                        HorizontalAlignment="Right"
+                                        Margin="0,0,0,4">
+                                <TextBlock x:Name="PART_UnitLabel"
+                                           Text="{Binding Unit, RelativeSource={RelativeSource TemplatedParent}}"
+                                           Foreground="{DynamicResource rUIForegroundTertiaryBrush}"
+                                           FontSize="12"
+                                           VerticalAlignment="Center"
+                                           Margin="4,0,8,0"
+                                           IsVisible="{Binding Unit, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                <ContentPresenter x:Name="PART_ActionContent"
+                                                  Cursor="Arrow"
+                                                  Content="{Binding ActionContent, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  VerticalAlignment="Center"
+                                                  Margin="0,0,6,0"
+                                                  IsVisible="{Binding ActionContent, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </ControlTemplate>
+        </Setter>
+
+        <!-- Watermark visible when empty -->
+        <Style Selector="^:empty /template/ TextBlock#PART_Watermark">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+
+        <!-- Pointer over -->
+        <Style Selector="^:pointerover /template/ Border#PART_Border">
+            <Setter Property="BorderBrush" Value="{DynamicResource rUIBorderBrush}" />
+        </Style>
+
+        <!-- Focus state -->
+        <Style Selector="^:focus /template/ Border#PART_Border">
+            <Setter Property="BorderBrush" Value="{DynamicResource rUIAccentBrush}" />
+        </Style>
+        <Style Selector="^:focus-within /template/ Border#PART_Border">
+            <Setter Property="BorderBrush" Value="{DynamicResource rUIAccentBrush}" />
+        </Style>
+
+        <!-- Error state -->
+        <Style Selector="^:error /template/ Border#PART_Border">
+            <Setter Property="BorderBrush" Value="{DynamicResource rUIErrorBrush}" />
+        </Style>
+
+        <!-- Disabled state -->
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="0.5" />
+        </Style>
+    </ControlTheme>
+
+</ResourceDictionary>

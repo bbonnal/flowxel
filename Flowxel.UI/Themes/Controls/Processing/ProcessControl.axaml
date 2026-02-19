@@ -1,0 +1,109 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:processing="using:Flowxel.UI.Controls.Processing">
+
+    <ControlTheme x:Key="{x:Type processing:ProcessControl}" TargetType="processing:ProcessControl">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Background="{DynamicResource rUISurfaceBrush}"
+                        BorderBrush="{DynamicResource rUIBorderSubtleBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="10">
+                    <DockPanel LastChildFill="True">
+                        <StackPanel DockPanel.Dock="Bottom"
+                                    Spacing="8"
+                                    Margin="0,10,0,0">
+                            <TextBlock Text="Connect Ports"
+                                       FontWeight="SemiBold" />
+                            <Grid ColumnDefinitions="Auto,*"
+                                  RowDefinitions="Auto,Auto,Auto,Auto"
+                                  RowSpacing="6"
+                                  ColumnSpacing="8">
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="From Operation" VerticalAlignment="Center" />
+                                <ComboBox Grid.Row="0" Grid.Column="1"
+                                          ItemsSource="{TemplateBinding Nodes}"
+                                          SelectedItem="{TemplateBinding SelectedFromOperation, Mode=TwoWay}" />
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="From Output Port" VerticalAlignment="Center" />
+                                <ComboBox Grid.Row="1" Grid.Column="1"
+                                          ItemsSource="{TemplateBinding AvailableOutputPorts}"
+                                          SelectedItem="{TemplateBinding SelectedFromPort, Mode=TwoWay}" />
+
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="To Operation" VerticalAlignment="Center" />
+                                <ComboBox Grid.Row="2" Grid.Column="1"
+                                          ItemsSource="{TemplateBinding Nodes}"
+                                          SelectedItem="{TemplateBinding SelectedToOperation, Mode=TwoWay}" />
+
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="To Input Port" VerticalAlignment="Center" />
+                                <ComboBox Grid.Row="3" Grid.Column="1"
+                                          ItemsSource="{TemplateBinding AvailableInputPorts}"
+                                          SelectedItem="{TemplateBinding SelectedToPort, Mode=TwoWay}" />
+                            </Grid>
+
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="8"
+                                        HorizontalAlignment="Right">
+                                <Button Content="Connect"
+                                        Command="{TemplateBinding ConnectPortsCommand}" />
+                                <Button Content="Remove Link"
+                                        Command="{TemplateBinding RemoveConnectionCommand}" />
+                                <Button Content="Run"
+                                        Classes="accent"
+                                        Command="{TemplateBinding RunProcessCommand}" />
+                            </StackPanel>
+                        </StackPanel>
+
+                        <Grid ColumnDefinitions="2*,1*"
+                              RowDefinitions="Auto,*"
+                              RowSpacing="8"
+                              ColumnSpacing="8">
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Operations" FontWeight="SemiBold" />
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="Connections" FontWeight="SemiBold" />
+
+                            <ListBox Grid.Row="1"
+                                     Grid.Column="0"
+                                     ItemsSource="{TemplateBinding Nodes}"
+                                     SelectedItem="{TemplateBinding SelectedNode, Mode=TwoWay}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate x:DataType="processing:ProcessNodeDescriptor">
+                                        <Border BorderBrush="{DynamicResource rUIBorderSubtleBrush}"
+                                                BorderThickness="1"
+                                                CornerRadius="6"
+                                                Padding="8"
+                                                Margin="0,0,0,4">
+                                            <StackPanel Spacing="3">
+                                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                                                <TextBlock Text="{Binding OperationType}" Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                                                <TextBlock Text="{Binding Inputs.Count, StringFormat=Inputs: {0}}" FontSize="11" Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                                                <TextBlock Text="{Binding Outputs.Count, StringFormat=Outputs: {0}}" FontSize="11" Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+
+                            <ListBox Grid.Row="1"
+                                     Grid.Column="1"
+                                     ItemsSource="{TemplateBinding Links}"
+                                     SelectedItem="{TemplateBinding SelectedLink, Mode=TwoWay}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate x:DataType="processing:ProcessLinkDescriptor">
+                                        <Border BorderBrush="{DynamicResource rUIBorderSubtleBrush}"
+                                                BorderThickness="1"
+                                                CornerRadius="6"
+                                                Padding="8"
+                                                Margin="0,0,0,4">
+                                            <TextBlock Text="{Binding DisplayLabel}" TextWrapping="Wrap" />
+                                        </Border>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Grid>
+                    </DockPanel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+</ResourceDictionary>

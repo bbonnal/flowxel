@@ -1,0 +1,98 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="using:Flowxel.UI.Controls">
+
+    <ControlTheme x:Key="{x:Type controls:SettingsCardExpander}" TargetType="controls:SettingsCardExpander">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border x:Name="PART_Root"
+                        Background="{DynamicResource rUISurfaceBrush}"
+                        BorderBrush="{DynamicResource rUIBorderSubtleBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="0">
+                    <StackPanel>
+
+                        <!-- Header row -->
+                        <Border x:Name="PART_Header" Padding="16" Background="Transparent">
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+
+                                <!-- Icon container -->
+                                <Border Grid.Column="0"
+                                        Width="40" Height="40"
+                                        VerticalAlignment="Center"
+                                        IsVisible="{Binding IconData, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static ObjectConverters.IsNotNull}}">
+                                    <PathIcon Data="{Binding IconData, RelativeSource={RelativeSource TemplatedParent}}"
+                                              Width="20" Height="20"
+                                              Foreground="{DynamicResource rUIForegroundBrush}" />
+                                </Border>
+
+                                <!-- Header + Description -->
+                                <StackPanel Grid.Column="1"
+                                            VerticalAlignment="Center"
+                                            Margin="12,0,12,0">
+                                    <TextBlock Text="{Binding Header, RelativeSource={RelativeSource TemplatedParent}}"
+                                               FontSize="14"
+                                               FontWeight="SemiBold"
+                                               Foreground="{DynamicResource rUIForegroundBrush}" />
+                                    <TextBlock Text="{Binding Description, RelativeSource={RelativeSource TemplatedParent}}"
+                                               FontSize="12"
+                                               TextWrapping="Wrap"
+                                               Foreground="{DynamicResource rUIForegroundSecondaryBrush}"
+                                               IsVisible="{Binding Description, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                </StackPanel>
+
+                                <!-- Chevron -->
+                                <PathIcon x:Name="PART_Chevron"
+                                          Grid.Column="2"
+                                          Width="12" Height="12"
+                                          VerticalAlignment="Center"
+                                          Data="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"
+                                          Foreground="{DynamicResource rUIForegroundBrush}" />
+
+                            </Grid>
+                        </Border>
+
+                        <!-- Separator -->
+                        <Border x:Name="PART_Separator"
+                                Height="1"
+                                Margin="0"
+                                Background="{DynamicResource rUIBorderSubtleBrush}"
+                                IsVisible="False" />
+
+                        <!-- Expandable content -->
+                        <Border x:Name="PART_Content"
+                                Padding="16,12,16,16"
+                                IsVisible="False">
+                            <ContentPresenter Content="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}" />
+                        </Border>
+
+                    </StackPanel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^ /template/ Border#PART_Header:pointerover">
+            <Setter Property="Background" Value="{DynamicResource rUIHoverBrush}" />
+        </Style>
+
+        <Style Selector="^:pressed /template/ Border#PART_Header">
+            <Setter Property="Background" Value="{DynamicResource rUIPressedBrush}" />
+        </Style>
+
+        <Style Selector="^:expanded /template/ PathIcon#PART_Chevron">
+            <Setter Property="RenderTransform">
+                <RotateTransform Angle="90" />
+            </Setter>
+        </Style>
+
+        <Style Selector="^:expanded /template/ Border#PART_Separator">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+
+        <Style Selector="^:expanded /template/ Border#PART_Content">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+    </ControlTheme>
+
+</ResourceDictionary>

@@ -1,0 +1,30 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="using:Flowxel.UI.Controls.Navigation">
+
+    <Design.PreviewWith>
+
+    </Design.PreviewWith>
+
+    <ControlTheme x:Key="{x:Type controls:NavigationItemControl}" TargetType="controls:NavigationItemControl">
+        <Setter Property="Margin" Value="1" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <StackPanel Orientation="Vertical"
+                           HorizontalAlignment="Center"
+                           Spacing="4"
+                           Margin="{TemplateBinding Margin}">
+                    <PathIcon Data="{TemplateBinding IconData}"
+                             Width="24"
+                             Height="24"
+                             Foreground="{DynamicResource rUIForegroundBrush}" />
+                    <TextBlock Text="{TemplateBinding Header}"
+                              FontSize="11"
+                              TextAlignment="Center"
+                              Foreground="{DynamicResource rUIForegroundBrush}" />
+                </StackPanel>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+</ResourceDictionary>

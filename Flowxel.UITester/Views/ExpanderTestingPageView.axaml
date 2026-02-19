@@ -1,0 +1,50 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Flowxel.UITester.ViewModels"
+             xmlns:rui="using:Flowxel.UI.Controls"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:pia="using:PhosphorIconsAvalonia.Markup"
+             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="700"
+             x:Class="Flowxel.UITester.Views.ExpanderTestingPageView"
+             x:DataType="vm:ExpanderTestingPageViewModel">
+
+    <ScrollViewer>
+        <StackPanel Margin="24" Spacing="16">
+            <TextBlock Text="Expander"
+                       FontSize="24"
+                       FontWeight="SemiBold" />
+            <TextBlock Text="SettingsCardExpander controls that expand to reveal content."
+                       Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+
+            <!-- Text content -->
+            <rui:SettingsCardExpander Header="About this app"
+                                         Description="View application details"
+                                         IconData="{pia:IconGeometry Icon=info}">
+                <TextBlock Text="Enigma is a desktop application for encryption and key management, built with Avalonia and the Enigma.Cryptography library."
+                           TextWrapping="Wrap"
+                           Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+            </rui:SettingsCardExpander>
+
+            <!-- Controls content -->
+            <rui:SettingsCardExpander Header="Preferences"
+                                         Description="Configure display and behavior options"
+                                         IconData="{pia:IconGeometry Icon=gear}">
+                <StackPanel Spacing="12">
+                    <TextBox Watermark="Display name" />
+                    <CheckBox Content="Enable notifications" />
+                    <CheckBox Content="Use dark theme" />
+                </StackPanel>
+            </rui:SettingsCardExpander>
+
+            <!-- No icon -->
+            <rui:SettingsCardExpander Header="Advanced"
+                                         Description="Additional configuration options">
+                <TextBlock Text="Advanced settings will be available in a future release."
+                           TextWrapping="Wrap"
+                           Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+            </rui:SettingsCardExpander>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

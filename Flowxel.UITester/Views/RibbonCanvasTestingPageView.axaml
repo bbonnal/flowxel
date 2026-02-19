@@ -1,0 +1,130 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Flowxel.UITester.ViewModels"
+             xmlns:ruiRibbon="using:Flowxel.UI.Controls.Ribbon"
+             xmlns:ruiDrawing="using:Flowxel.UI.Controls.Drawing"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:pia="using:PhosphorIconsAvalonia.Markup"
+             mc:Ignorable="d"
+             d:DesignWidth="1320"
+             d:DesignHeight="800"
+             x:Class="Flowxel.UITester.Views.RibbonCanvasTestingPageView"
+             x:DataType="vm:RibbonCanvasTestingPageViewModel">
+
+    <DockPanel>
+        <ruiRibbon:RibbonControl DockPanel.Dock="Top">
+            <ruiRibbon:RibbonTab Header="Draw">
+                <ruiRibbon:RibbonGroup Header="Base">
+                    <ruiRibbon:RibbonButton Header="Select/Move"
+                                            IconData="{pia:IconGeometry Icon=cursor_click}"
+                                            Command="{Binding SelectToolCommand}" />
+                    <ruiRibbon:RibbonButton Header="Point"
+                                            IconData="{pia:IconGeometry Icon=dot_outline}"
+                                            Command="{Binding SelectPointToolCommand}" />
+                    <ruiRibbon:RibbonButton Header="Line"
+                                            IconData="{pia:IconGeometry Icon=line_segment}"
+                                            Command="{Binding SelectLineToolCommand}" />
+                    <ruiRibbon:RibbonButton Header="Rectangle"
+                                            IconData="{pia:IconGeometry Icon=rectangle}"
+                                            Command="{Binding SelectRectangleToolCommand}" />
+                    <ruiRibbon:RibbonButton Header="Circle"
+                                            IconData="{pia:IconGeometry Icon=circle}"
+                                            Command="{Binding SelectCircleToolCommand}" />
+                    <ruiRibbon:RibbonButton Header="Arc"
+                                            IconData="{pia:IconGeometry Icon=circles_three_plus}"
+                                            Command="{Binding SelectArcToolCommand}" />
+                </ruiRibbon:RibbonGroup>
+
+                <ruiRibbon:RibbonGroup Header="Text &amp; Icons">
+                    <ruiRibbon:RibbonButton Header="Text"
+                                            Command="{Binding SelectTextToolCommand}" />
+                    <ruiRibbon:RibbonButton Header="Multiline"
+                                            Command="{Binding SelectMultilineTextToolCommand}" />
+                    <ruiRibbon:RibbonButton Header="Icon"
+                                            Command="{Binding SelectIconToolCommand}" />
+                    <ruiRibbon:RibbonButton Header="Text Box"
+                                            Command="{Binding SelectTextBoxToolCommand}" />
+                </ruiRibbon:RibbonGroup>
+
+                <ruiRibbon:RibbonGroup Header="Advanced">
+                    <ruiRibbon:RibbonButton Header="Image"
+                                            IconData="{pia:IconGeometry Icon=image}"
+                                            Command="{Binding SelectImageToolCommand}" />
+                    <ruiRibbon:RibbonButton Header="Arrow"
+                                            IconData="{pia:IconGeometry Icon=line_segment}"
+                                            Command="{Binding SelectArrowToolCommand}" />
+                    <ruiRibbon:RibbonButton Header="Centerline Rect"
+                                            IconData="{pia:IconGeometry Icon=rectangle}"
+                                            Command="{Binding SelectCenterlineRectangleToolCommand}" />
+                    <ruiRibbon:RibbonButton Header="Referential"
+                                            IconData="{pia:IconGeometry Icon=line_segment}"
+                                            Command="{Binding SelectReferentialToolCommand}" />
+                    <ruiRibbon:RibbonButton Header="Dimension"
+                                            IconData="{pia:IconGeometry Icon=line_segment}"
+                                            Command="{Binding SelectDimensionToolCommand}" />
+                    <ruiRibbon:RibbonButton Header="Angle Dim"
+                                            IconData="{pia:IconGeometry Icon=circle}"
+                                            Command="{Binding SelectAngleDimensionToolCommand}" />
+                </ruiRibbon:RibbonGroup>
+
+                <ruiRibbon:RibbonGroup Header="Canvas &amp; Export">
+                    <ruiRibbon:RibbonButton Header="Save Scene"
+                                            Command="{Binding SaveSceneCommand}" />
+                    <ruiRibbon:RibbonButton Header="Load Scene"
+                                            Command="{Binding LoadSceneCommand}" />
+                    <ruiRibbon:RibbonButton Header="Export SVG"
+                                            Command="{Binding ExportSvgCommand}" />
+                    <ruiRibbon:RibbonButton Header="Reset View"
+                                            IconData="{pia:IconGeometry Icon=arrows_clockwise}"
+                                            Command="{Binding ResetViewCommand}" />
+                    <ruiRibbon:RibbonButton Header="Clear"
+                                            IconData="{pia:IconGeometry Icon=trash}"
+                                            Command="{Binding ClearCanvasCommand}" />
+                </ruiRibbon:RibbonGroup>
+            </ruiRibbon:RibbonTab>
+
+            <ruiRibbon:RibbonTab Header="Help">
+                <ruiRibbon:RibbonGroup Header="Usage">
+                    <TextBlock Width="640"
+                               TextWrapping="Wrap"
+                               Foreground="{DynamicResource rUIForegroundSecondaryBrush}"
+                               Text="Select/Move: select, drag, and resize with handles. Draw tools create elements on drag. Middle mouse: pan. Wheel: zoom. Right click: context menu (shape properties, canvas settings, delete, center view). Scene can be saved/loaded as JSON and exported as SVG. Shortcuts: Ctrl+S save, Ctrl+O load, Ctrl+Shift+E export, Ctrl+R reset, Esc select, P/L/R/C/A/T/M/I tool picks." />
+                </ruiRibbon:RibbonGroup>
+            </ruiRibbon:RibbonTab>
+        </ruiRibbon:RibbonControl>
+
+        <Border Margin="16"
+                CornerRadius="10"
+                BorderBrush="{DynamicResource rUIBorderSubtleBrush}"
+                BorderThickness="1"
+                Background="{DynamicResource rUISurfaceBrush}">
+            <DockPanel LastChildFill="True">
+                <Border DockPanel.Dock="Bottom"
+                        Padding="10,8"
+                        BorderBrush="{DynamicResource rUIBorderSubtleBrush}"
+                        BorderThickness="0,1,0,0">
+                    <TextBlock Text="{Binding StatusText}"
+                               Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                </Border>
+
+                <ruiDrawing:DrawingCanvasControl Shapes="{Binding Shapes}"
+                                                ActiveTool="{Binding ActiveTool}"
+                                                Zoom="{Binding Zoom}"
+                                                Pan="{Binding Pan}"
+                                                CursorAvaloniaPosition="{Binding CursorAvaloniaPosition}"
+                                                CursorCanvasPosition="{Binding CursorCanvasPosition}"
+                                                DialogService="{Binding DialogService}"
+                                                InfoBarService="{Binding InfoBarService}"
+                                                ComputedShapeIds="{Binding ComputedShapeIds}"
+                                                CanvasBackground="{Binding CanvasBackgroundBrush, Mode=TwoWay}"
+                                                ShowCanvasBoundary="{Binding ShowCanvasBoundary, Mode=TwoWay}"
+                                                CanvasBoundaryWidth="{Binding CanvasBoundaryWidth, Mode=TwoWay}"
+                                                CanvasBoundaryHeight="{Binding CanvasBoundaryHeight, Mode=TwoWay}"
+                                                ShapeStroke="{DynamicResource rUIAccentBrush}"
+                                                PreviewStroke="{DynamicResource rUIWarningBrush}"
+                                                HoverStroke="{DynamicResource rUIWarningBrush}" />
+            </DockPanel>
+        </Border>
+    </DockPanel>
+</UserControl>

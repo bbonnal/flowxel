@@ -1,0 +1,46 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Flowxel.UITester.ViewModels"
+             xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="1200"
+             x:Class="Flowxel.UITester.Views.ChartsPageView"
+             x:DataType="vm:ChartsPageViewModel">
+
+    <ScrollViewer>
+        <StackPanel Margin="24" Spacing="16">
+            <TextBlock Text="Charts"
+                       FontSize="24"
+                       FontWeight="SemiBold" />
+            <TextBlock Text="Sample charts using LiveCharts2. Toggle theme to see charts adapt."
+                       Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+
+            <!-- Line Chart -->
+            <TextBlock Text="Line Chart"
+                       FontSize="18"
+                       FontWeight="SemiBold"
+                       Margin="0,16,0,0" />
+            <lvc:CartesianChart Series="{Binding LineSeries}"
+                                Height="300" />
+
+            <!-- Column Chart -->
+            <TextBlock Text="Column Chart"
+                       FontSize="18"
+                       FontWeight="SemiBold"
+                       Margin="0,16,0,0" />
+            <lvc:CartesianChart Series="{Binding ColumnSeries}"
+                                XAxes="{Binding XAxes}"
+                                YAxes="{Binding YAxes}"
+                                Height="300" />
+
+            <!-- Pie Chart -->
+            <TextBlock Text="Pie Chart"
+                       FontSize="18"
+                       FontWeight="SemiBold"
+                       Margin="0,16,0,0" />
+            <lvc:PieChart Series="{Binding PieSeries}"
+                          Height="300" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -1,0 +1,55 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:processing="using:Flowxel.UI.Controls.Processing">
+
+    <ControlTheme x:Key="{x:Type processing:ResourcePoolControl}" TargetType="processing:ResourcePoolControl">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Background="{DynamicResource rUISurfaceBrush}"
+                        BorderBrush="{DynamicResource rUIBorderSubtleBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="10">
+                    <DockPanel LastChildFill="True">
+                        <StackPanel DockPanel.Dock="Top"
+                                    Orientation="Horizontal"
+                                    HorizontalAlignment="Stretch"
+                                    Margin="0,0,0,8">
+                            <TextBlock Text="Resource Pool"
+                                       FontWeight="SemiBold"
+                                       VerticalAlignment="Center" />
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="8"
+                                        HorizontalAlignment="Right">
+                                <Button Content="View"
+                                        Command="{TemplateBinding ViewResourceCommand}" />
+                                <Button Content="Clear"
+                                        Command="{TemplateBinding ClearResourcesCommand}" />
+                            </StackPanel>
+                        </StackPanel>
+
+                        <ListBox ItemsSource="{TemplateBinding ResourceItems}"
+                                 SelectedItem="{TemplateBinding SelectedResource, Mode=TwoWay}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate x:DataType="processing:ResourceEntryDescriptor">
+                                    <Border BorderBrush="{DynamicResource rUIBorderSubtleBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="6"
+                                            Padding="8"
+                                            Margin="0,0,0,4">
+                                        <StackPanel Spacing="2">
+                                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                                            <TextBlock Text="{Binding TypeName}" Foreground="{DynamicResource rUIForegroundSecondaryBrush}"/>
+                                            <TextBlock Text="{Binding Preview}" FontSize="11" Foreground="{DynamicResource rUIForegroundSecondaryBrush}"/>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </DockPanel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+</ResourceDictionary>

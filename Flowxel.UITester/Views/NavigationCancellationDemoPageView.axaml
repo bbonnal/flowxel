@@ -1,0 +1,134 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Flowxel.UITester.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="Flowxel.UITester.Views.NavigationCancellationDemoPageView"
+             x:DataType="vm:NavigationCancellationDemoPageViewModel">
+
+    <ScrollViewer>
+        <StackPanel Spacing="24" Margin="32">
+
+            <!-- Header -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="Navigation Cancellation Demo"
+                          FontSize="24"
+                          FontWeight="Bold" />
+                <TextBlock Text="This page demonstrates INavigationLifecycleAsync with cancellation support."
+                          Opacity="0.7"
+                          TextWrapping="Wrap" />
+            </StackPanel>
+
+            <!-- Instructions -->
+            <Border Background="{DynamicResource rUISurfaceBrush}"
+                    BorderBrush="{DynamicResource rUIBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="16">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="📝 Instructions:"
+                              FontWeight="SemiBold"
+                              FontSize="16" />
+                    <TextBlock TextWrapping="Wrap">
+                        <Run Text="1. Type some text in the editor below" />
+                        <LineBreak />
+                        <Run Text="2. Try to navigate to another page (notice the unsaved changes indicator)" />
+                        <LineBreak />
+                        <Run Text="3. A confirmation dialog will appear asking if you want to discard changes" />
+                        <LineBreak />
+                        <Run Text="4. Click 'Keep Editing' to cancel navigation and stay on this page" />
+                        <LineBreak />
+                        <Run Text="5. Click 'Discard Changes' to allow navigation" />
+                        <LineBreak />
+                        <Run Text="6. Or click 'Save' to save changes, then navigation will proceed without confirmation" />
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+            <!-- Unsaved Changes Indicator -->
+            <Border Background="{DynamicResource rUIWarningBrush}"
+                    BorderBrush="{DynamicResource rUIBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="12"
+                    IsVisible="{Binding HasUnsavedChanges}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="⚠️" FontSize="16" />
+                    <TextBlock Text="You have unsaved changes"
+                              FontWeight="SemiBold"
+                              VerticalAlignment="Center" />
+                </StackPanel>
+            </Border>
+
+            <!-- Document Editor -->
+            <StackPanel Spacing="12">
+                <TextBlock Text="Document Editor"
+                          FontSize="18"
+                          FontWeight="SemiBold" />
+
+                <TextBox Text="{Binding DocumentText, Mode=TwoWay}"
+                         AcceptsReturn="True"
+                         TextWrapping="Wrap"
+                         MinHeight="200"
+                         Watermark="Start typing here to create unsaved changes..." />
+
+                <!-- Action Buttons -->
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <Button Content="💾 Save"
+                            Command="{Binding SaveCommand}"
+                            IsEnabled="{Binding HasUnsavedChanges}" />
+
+                    <Button Content="🔄 Discard"
+                            Command="{Binding DiscardCommand}"
+                            IsEnabled="{Binding HasUnsavedChanges}" />
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Technical Info -->
+            <Border Background="{DynamicResource rUISurfaceBrush}"
+                    BorderBrush="{DynamicResource rUIBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="16">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="🔧 Technical Details:"
+                              FontWeight="SemiBold"
+                              FontSize="16" />
+                    <TextBlock TextWrapping="Wrap"
+                              Opacity="0.8">
+                        <Run Text="This page implements " />
+                        <Run Text="INavigationLifecycleAsync" FontFamily="Consolas" />
+                        <Run Text=" which allows async operations and navigation cancellation." />
+                        <LineBreak />
+                        <LineBreak />
+                        <Run Text="The " />
+                        <Run Text="OnDisappearingAsync(NavigationContext)" FontFamily="Consolas" />
+                        <Run Text=" method:" />
+                        <LineBreak />
+                        <Run Text="• Returns " />
+                        <Run Text="Task&lt;bool&gt;" FontFamily="Consolas" />
+                        <Run Text=" to allow async operations" />
+                        <LineBreak />
+                        <Run Text="• Returns " />
+                        <Run Text="false" FontFamily="Consolas" />
+                        <Run Text=" to cancel navigation" />
+                        <LineBreak />
+                        <Run Text="• Returns " />
+                        <Run Text="true" FontFamily="Consolas" />
+                        <Run Text=" to allow navigation" />
+                        <LineBreak />
+                        <Run Text="• Can show dialogs, validate data, or perform cleanup" />
+                        <LineBreak />
+                        <LineBreak />
+                        <Run Text="When navigation is cancelled, the " />
+                        <Run Text="NavigationService" FontFamily="Consolas" />
+                        <Run Text=" restores the previous page selection in the UI." />
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+
+</UserControl>

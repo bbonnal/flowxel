@@ -1,0 +1,146 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Flowxel.UITester.ViewModels"
+             xmlns:editors="using:Flowxel.UI.Controls.Editors"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="700"
+             x:Class="Flowxel.UITester.Views.EditorsTestingPageView"
+             x:DataType="vm:EditorsTestingPageViewModel">
+
+    <ScrollViewer>
+        <StackPanel Margin="24" Spacing="24">
+            <TextBlock Text="Editors"
+                       FontSize="24"
+                       FontWeight="SemiBold" />
+            <TextBlock Text="Typed editor controls with input validation, formatting, and action areas."
+                       Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+
+            <!-- TextEditor -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="TextEditor"
+                           FontSize="16"
+                           FontWeight="SemiBold" />
+                <editors:TextEditor Title="Label"
+                                    Watermark="Enter text..."
+                                    Text="{Binding TextValue, Mode=TwoWay}"
+                                    Unit="txt" />
+                <editors:TextEditor Title="With action content"
+                                    Watermark="Type something..."
+                                    Text="{Binding TextValue, Mode=TwoWay}">
+                    <editors:TextEditor.ActionContent>
+                        <Button Content="Go"
+                                Padding="6,2"
+                                FontSize="12" />
+                    </editors:TextEditor.ActionContent>
+                </editors:TextEditor>
+                <editors:TextEditor Watermark="No title" />
+                <TextBlock Text="{Binding TextValue, StringFormat='Bound value: {0}'}"
+                           FontSize="12"
+                           Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+            </StackPanel>
+
+            <!-- DoubleEditor -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="DoubleEditor"
+                           FontSize="16"
+                           FontWeight="SemiBold" />
+                <editors:DoubleEditor Title="Distance"
+                                      Watermark="Enter decimal..."
+                                      Value="{Binding DoubleValue, Mode=TwoWay}"
+                                      Digits="2"
+                                      Minimum="0"
+                                      Maximum="1000"
+                                      Unit="mm" />
+                <editors:DoubleEditor Title="Speed"
+                                      Watermark="No constraints"
+                                      Value="{Binding DoubleValue, Mode=TwoWay}"
+                                      Unit="m/s" />
+                <TextBlock Text="{Binding DoubleValue, StringFormat='Bound value: {0}'}"
+                           FontSize="12"
+                           Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+            </StackPanel>
+
+            <!-- IntEditor -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="IntEditor"
+                           FontSize="16"
+                           FontWeight="SemiBold" />
+                <editors:IntEditor Title="Size"
+                                   Watermark="Enter integer..."
+                                   Value="{Binding IntValue, Mode=TwoWay}"
+                                   Minimum="-100"
+                                   Maximum="100"
+                                   Unit="px" />
+                <TextBlock Text="{Binding IntValue, StringFormat='Bound value: {0}'}"
+                           FontSize="12"
+                           Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+            </StackPanel>
+
+            <!-- ULongEditor -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="ULongEditor"
+                           FontSize="16"
+                           FontWeight="SemiBold" />
+                <editors:ULongEditor Title="File size"
+                                     Watermark="Enter unsigned integer..."
+                                     Value="{Binding UlongValue, Mode=TwoWay}"
+                                     Maximum="999999"
+                                     Unit="bytes" />
+                <TextBlock Text="{Binding UlongValue, StringFormat='Bound value: {0}'}"
+                           FontSize="12"
+                           Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+            </StackPanel>
+
+            <!-- MultiLineTextEditor -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="MultiLineTextEditor"
+                           FontSize="16"
+                           FontWeight="SemiBold" />
+                <editors:MultiLineTextEditor Title="Notes"
+                                             Watermark="Enter multi-line text..."
+                                             Text="{Binding MultiLineTextValue, Mode=TwoWay}" />
+                <editors:MultiLineTextEditor Title="With action"
+                                             Watermark="Type something..."
+                                             Text="{Binding MultiLineTextValue, Mode=TwoWay}"
+                                             Unit="md">
+                    <editors:MultiLineTextEditor.ActionContent>
+                        <Button Content="Format"
+                                Padding="6,2"
+                                FontSize="12" />
+                    </editors:MultiLineTextEditor.ActionContent>
+                </editors:MultiLineTextEditor>
+                <TextBlock Text="{Binding MultiLineTextValue, StringFormat='Bound value: {0}'}"
+                           FontSize="12"
+                           Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+            </StackPanel>
+
+            <!-- HexadecimalEditor -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="HexadecimalEditor"
+                           FontSize="16"
+                           FontWeight="SemiBold" />
+                <editors:HexadecimalEditor Title="Raw bytes (hex)"
+                                           Watermark="Enter hex bytes (e.g. 0A FF 1B)..."
+                                           Value="{Binding HexValue, Mode=TwoWay}" />
+                <TextBlock Text="{Binding HexValue.Length, StringFormat='Bound value: {0} bytes', FallbackValue='Bound value: (null)'}"
+                           FontSize="12"
+                           Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+            </StackPanel>
+
+            <!-- Base64Editor -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="Base64Editor"
+                           FontSize="16"
+                           FontWeight="SemiBold" />
+                <editors:Base64Editor Title="Encoded data"
+                                      Watermark="Enter Base64 string..."
+                                      Value="{Binding Base64Value, Mode=TwoWay}" />
+                <TextBlock Text="{Binding Base64Value.Length, StringFormat='Bound value: {0} bytes', FallbackValue='Bound value: (null)'}"
+                           FontSize="12"
+                           Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

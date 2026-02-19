@@ -1,39 +1,9 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003ACancellationToken_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002Econfig_003FJetBrains_003FRider2025_002E3_003Fresharper_002Dhost_003FDecompilerCache_003Fdecompiler_003Fb9c62e8e682440cd84e6081f7672fcd3d1a000_003Fd0_003F93d65a3c_003FCancellationToken_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
-	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003ACv2_005Fimgproc_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002Econfig_003FJetBrains_003FRider2025_002E3_003Fresharper_002Dhost_003FSourcesCache_003F5e8925b12d69ae23d722fd1282c671a537d098ec74e5d4715ba729cbf9078_003FCv2_005Fimgproc_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
-	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003ADisposableObject_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002Econfig_003FJetBrains_003FRider2025_002E3_003Fresharper_002Dhost_003FSourcesCache_003Fb1954bdade917f465891dd31d9eb368ec4153f74d345ceab37d2d7880122a_003FDisposableObject_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
-	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AExceptionDispatchInfo_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002Econfig_003FJetBrains_003FRider2025_002E3_003Fresharper_002Dhost_003FDecompilerCache_003Fdecompiler_003Fb9c62e8e682440cd84e6081f7672fcd3d1a000_003F02_003F9ccb3786_003FExceptionDispatchInfo_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
-	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AExceptionHandler_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002Econfig_003FJetBrains_003FRider2025_002E3_003Fresharper_002Dhost_003FSourcesCache_003Fa35ac365b2fed37c7ba87723329db1f9dfae3fc7adc6de1d7074c0eea6c843_003FExceptionHandler_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
-	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AInvalidCastException_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002Econfig_003FJetBrains_003FRider2025_002E3_003Fresharper_002Dhost_003FDecompilerCache_003Fdecompiler_003Fe7f701bc05fe4c4c938e43df30078ba3dba800_003Fb4_003Fe1369c3f_003FInvalidCastException_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
-	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003ATask_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002Econfig_003FJetBrains_003FRider2025_002E3_003Fresharper_002Dhost_003FDecompilerCache_003Fdecompiler_003Fb9c62e8e682440cd84e6081f7672fcd3d1a000_003Fdf_003F6df063ff_003FTask_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
-	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003ATestContext_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002Econfig_003FJetBrains_003FRider2025_002E3_003Fresharper_002Dhost_003FSourcesCache_003Ff11ab44a1593682f63b2d461e435d27698370a98af98c722f3c6f49d5d1dba_003FTestContext_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
-	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AValueTask_00601_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002Econfig_003FJetBrains_003FRider2025_002E3_003Fresharper_002Dhost_003FDecompilerCache_003Fdecompiler_003Fb9c62e8e682440cd84e6081f7672fcd3d1a000_003F98_003Fc2037ea7_003FValueTask_00601_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=65903da2_002D8959_002D4ae0_002D87f3_002Dc10316c255bc/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="FullPipeline_Load_Blur_Save_ProducesCorrectOutput" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AContextMenu_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002Econfig_003FJetBrains_003FRider2025_002E3_003Fresharper_002Dhost_003FSourcesCache_003F2f887010d25ec5f81a607741ccadc8671ca7b80b7e76178a944e61574840da_003FContextMenu_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AShape_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002Econfig_003FJetBrains_003FRider2025_002E3_003Fresharper_002Dhost_003FDecompilerCache_003Fdecompiler_003F901a6e58a6cc44acac18960168548c723200_003Fc4_003Fd18c624a_003FShape_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003ATextBox_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002Econfig_003FJetBrains_003FRider2025_002E3_003Fresharper_002Dhost_003FSourcesCache_003Fdb95d7dabdb565ea620b2412f3b7a446bfad6d447cb7c738563a536e5f89ce_003FTextBox_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=ffaec5eb_002D9a83_002D49f7_002Da873_002Dabc823c050ad/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="SlantedAntiAliasedLine_ExtractionProvidesSubpixelPose" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;TestAncestor&gt;
-    &lt;TestId&gt;xUnit::28EE70D9-EF9B-4D11-ADEF-993BD96FA8AC::net9.0::Flowxel.Imaging.Tests.VisionPipelineIntegrationTests.FullPipeline_Load_Blur_Save_ProducesCorrectOutput&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::1B0A3739-D011-48D0-A78C-F1FE2BE10D08::net10.0::Flowxel.Imaging.Tests.AdvancedOperationsTests.SlantedAntiAliasedLine_ExtractionProvidesSubpixelPose&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
-&lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=7868f8d6_002D9cad_002D43cc_002D97fd_002Dc110b5919650/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="FullPipeline_Load_Blur_Save_ProducesCorrectOutput #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
-  &lt;TestAncestor&gt;
-    &lt;TestId&gt;xUnit::28EE70D9-EF9B-4D11-ADEF-993BD96FA8AC::net9.0::Flowxel.Imaging.Tests.VisionPipelineIntegrationTests&lt;/TestId&gt;
-  &lt;/TestAncestor&gt;
-&lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=7de32569_002Dcc1a_002D447b_002D8531_002D602d239315dd/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="ParallelVsSerial_IntuitionBuilder" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
-  &lt;TestAncestor&gt;
-    &lt;TestId&gt;xUnit::28EE70D9-EF9B-4D11-ADEF-993BD96FA8AC::net10.0::Flowxel.Imaging.Tests.ShapeDetectionTests.ProduceSquareInMat&lt;/TestId&gt;
-    &lt;TestId&gt;xUnit::28EE70D9-EF9B-4D11-ADEF-993BD96FA8AC::net10.0::Flowxel.Imaging.Tests.ShapeDetectionTests.ProduceEllipseInMat&lt;/TestId&gt;
-    &lt;TestId&gt;xUnit::28EE70D9-EF9B-4D11-ADEF-993BD96FA8AC::net10.0::Flowxel.Imaging.Tests.ShapeDetectionTests.DetectCircleInMat&lt;/TestId&gt;
-    &lt;TestId&gt;xUnit::28EE70D9-EF9B-4D11-ADEF-993BD96FA8AC::net10.0::Flowxel.Imaging.Tests.ShapeDetectionTests.DetectContoursInMat&lt;/TestId&gt;
-    &lt;TestId&gt;xUnit::28EE70D9-EF9B-4D11-ADEF-993BD96FA8AC::net10.0::Flowxel.Imaging.Tests.AdvancedOperationsTests.CircleWithCircleRoi_CropThenExtractCircle_ReturnsExpectedCenterAndRadius&lt;/TestId&gt;
-  &lt;/TestAncestor&gt;
-&lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=c73cca0b_002D8fc4_002D4777_002D9b6a_002Da2cbe07007a8/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="ParallelDemo_ForTheBoss" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
-  &lt;TestAncestor&gt;
-    &lt;TestId&gt;xUnit::28EE70D9-EF9B-4D11-ADEF-993BD96FA8AC::net10.0::Flowxel.Imaging.Tests.AdvancedOperationsTests.CropImageFromRectangleRegion_CropsAroundTheRequestedRegion&lt;/TestId&gt;
-  &lt;/TestAncestor&gt;
-&lt;/SessionState&gt;</s:String>
-	
-	
-	
-	
-	</wpf:ResourceDictionary>
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

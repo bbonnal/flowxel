@@ -1,0 +1,73 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Flowxel.UITester.ViewModels"
+             xmlns:rui="using:Flowxel.UI.Controls.Docking"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
+             x:Class="Flowxel.UITester.Views.DockingTestingPageView"
+             x:DataType="vm:DockingTestingPageViewModel">
+
+    <rui:DockingControl>
+        <rui:DockPane Header="Explorer">
+            <Border Padding="16">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Explorer" FontSize="18" FontWeight="SemiBold" />
+                    <TextBlock Text="File tree would go here"
+                               Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                </StackPanel>
+            </Border>
+        </rui:DockPane>
+
+        <rui:DockPane Header="Editor">
+            <Border Padding="16">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Editor" FontSize="18" FontWeight="SemiBold" />
+                    <TextBlock Text="Code editor would go here"
+                               Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                </StackPanel>
+            </Border>
+        </rui:DockPane>
+
+        <rui:DockPane Header="Output">
+            <Border Padding="16">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Output" FontSize="18" FontWeight="SemiBold" />
+                    <TextBlock Text="Build output would go here"
+                               Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                </StackPanel>
+            </Border>
+        </rui:DockPane>
+
+        <rui:DockPane Header="Properties" CanClose="False">
+            <Border Padding="16">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Properties" FontSize="18" FontWeight="SemiBold" />
+                    <TextBlock Text="This pane cannot be closed"
+                               Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                </StackPanel>
+            </Border>
+        </rui:DockPane>
+
+        <rui:DockPane Header="Terminal">
+            <Border Padding="16">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Terminal" FontSize="18" FontWeight="SemiBold" />
+                    <TextBlock Text="Terminal would go here"
+                               Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                </StackPanel>
+            </Border>
+        </rui:DockPane>
+
+        <rui:DockPane Header="Fixed" CanMove="False" CanClose="False">
+            <Border Padding="16">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Fixed" FontSize="18" FontWeight="SemiBold" />
+                    <TextBlock Text="This pane cannot be moved or closed"
+                               Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                </StackPanel>
+            </Border>
+        </rui:DockPane>
+    </rui:DockingControl>
+
+</UserControl>

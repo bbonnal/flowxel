@@ -1,0 +1,29 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Flowxel.UITester.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
+             x:Class="Flowxel.UITester.Views.OverlayTestingPageView"
+             x:DataType="vm:OverlayTestingPageViewModel">
+
+    <StackPanel Margin="24" Spacing="16">
+        <TextBlock Text="Overlay Testing"
+                   FontSize="24"
+                   FontWeight="SemiBold" />
+        <TextBlock Text="Test the OverlayControl by clicking the buttons below. The overlay blocks interaction while a task is running."
+                   Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+
+        <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,8,0,0">
+            <Button Content="Run Simple Task"
+                    Command="{Binding RunSimpleTaskCommand}" />
+            <Button Content="Run Complex Task"
+                    Command="{Binding RunComplexTaskCommand}" />
+        </StackPanel>
+
+        <TextBlock Text="{Binding LastResult}"
+                   IsVisible="{Binding LastResult, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                   FontWeight="SemiBold"
+                   Margin="0,8,0,0" />
+    </StackPanel>
+</UserControl>

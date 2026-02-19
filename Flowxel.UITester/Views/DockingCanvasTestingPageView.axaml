@@ -1,0 +1,75 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Flowxel.UITester.ViewModels"
+             xmlns:ruiRibbon="using:Flowxel.UI.Controls.Ribbon"
+             xmlns:ruiDock="using:Flowxel.UI.Controls.Docking"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:pia="using:PhosphorIconsAvalonia.Markup"
+             mc:Ignorable="d"
+             d:DesignWidth="1320"
+             d:DesignHeight="820"
+             x:Class="Flowxel.UITester.Views.DockingCanvasTestingPageView"
+             x:DataType="vm:DockingCanvasTestingPageViewModel">
+
+    <DockPanel>
+        <ruiRibbon:RibbonControl DockPanel.Dock="Top">
+            <ruiRibbon:RibbonTab Header="Draw">
+                <ruiRibbon:RibbonGroup Header="Canvas">
+                    <ruiRibbon:RibbonButton Header="New Canvas"
+                                            IconData="{pia:IconGeometry Icon=plus}"
+                                            Command="{Binding AddCanvasCommand}" />
+                    <ruiRibbon:RibbonButton Header="Clear Focused"
+                                            IconData="{pia:IconGeometry Icon=trash}"
+                                            Command="{Binding ClearFocusedCanvasCommand}" />
+                    <ruiRibbon:RibbonButton Header="Reset View"
+                                            IconData="{pia:IconGeometry Icon=arrows_clockwise}"
+                                            Command="{Binding ResetFocusedViewCommand}" />
+                </ruiRibbon:RibbonGroup>
+
+                <ruiRibbon:RibbonGroup Header="Focused Tool">
+                    <ruiRibbon:RibbonButton Header="Select"
+                                            IconData="{pia:IconGeometry Icon=cursor_click}"
+                                            Command="{Binding SelectToolCommand}" />
+                    <ruiRibbon:RibbonButton Header="Line"
+                                            IconData="{pia:IconGeometry Icon=line_segment}"
+                                            Command="{Binding SelectLineToolCommand}" />
+                    <ruiRibbon:RibbonButton Header="Rectangle"
+                                            IconData="{pia:IconGeometry Icon=rectangle}"
+                                            Command="{Binding SelectRectangleToolCommand}" />
+                    <ruiRibbon:RibbonButton Header="Circle"
+                                            IconData="{pia:IconGeometry Icon=circle}"
+                                            Command="{Binding SelectCircleToolCommand}" />
+                    <ruiRibbon:RibbonButton Header="Arc"
+                                            IconData="{pia:IconGeometry Icon=circles_three_plus}"
+                                            Command="{Binding SelectArcToolCommand}" />
+                    <ruiRibbon:RibbonButton Header="Text"
+                                            Command="{Binding SelectTextToolCommand}" />
+                    <ruiRibbon:RibbonButton Header="Image"
+                                            IconData="{pia:IconGeometry Icon=image}"
+                                            Command="{Binding SelectImageToolCommand}" />
+                </ruiRibbon:RibbonGroup>
+            </ruiRibbon:RibbonTab>
+        </ruiRibbon:RibbonControl>
+
+        <Border Margin="16"
+                CornerRadius="10"
+                BorderBrush="{DynamicResource rUIBorderSubtleBrush}"
+                BorderThickness="1"
+                Background="{DynamicResource rUISurfaceBrush}">
+            <DockPanel LastChildFill="True">
+                <Border DockPanel.Dock="Bottom"
+                        Padding="10,8"
+                        BorderBrush="{DynamicResource rUIBorderSubtleBrush}"
+                        BorderThickness="0,1,0,0">
+                    <TextBlock Text="{Binding StatusText}"
+                               Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                </Border>
+
+                <ruiDock:DockingControl x:Name="DockHost"
+                                        EnablePaneFocusTracking="True"
+                                        HighlightFocusedPane="True" />
+            </DockPanel>
+        </Border>
+    </DockPanel>
+</UserControl>

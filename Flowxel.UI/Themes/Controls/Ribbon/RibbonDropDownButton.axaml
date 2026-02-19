@@ -1,0 +1,83 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="using:Flowxel.UI.Controls.Ribbon">
+
+    <ControlTheme x:Key="{x:Type controls:RibbonDropDownButton}" TargetType="controls:RibbonDropDownButton">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel>
+                    <Border x:Name="PART_Root"
+                            Background="Transparent"
+                            CornerRadius="4"
+                            Padding="6,4"
+                            MinWidth="56">
+                        <StackPanel HorizontalAlignment="Center" Spacing="2">
+                            <PathIcon Data="{Binding IconData, RelativeSource={RelativeSource TemplatedParent}}"
+                                      Width="24" Height="24"
+                                      HorizontalAlignment="Center"
+                                      Foreground="{DynamicResource rUIForegroundBrush}"
+                                      IsVisible="{Binding IconData, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="4">
+                                <TextBlock Text="{Binding Header, RelativeSource={RelativeSource TemplatedParent}}"
+                                           FontSize="11"
+                                           VerticalAlignment="Center"
+                                           Foreground="{DynamicResource rUIForegroundBrush}"
+                                           IsVisible="{Binding Header, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                <PathIcon Data="M7 10l5 5 5-5z"
+                                          Width="8" Height="8"
+                                          VerticalAlignment="Center"
+                                          Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <Popup x:Name="PART_Popup"
+                           IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                           Placement="Bottom"
+                           IsLightDismissEnabled="True">
+                        <Border Background="{DynamicResource rUISurfaceBrush}"
+                                BorderBrush="{DynamicResource rUIBorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="4"
+                                Padding="2"
+                                MinWidth="140">
+                            <ItemsControl ItemsSource="{Binding Items, RelativeSource={RelativeSource TemplatedParent}}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="controls:RibbonMenuItem">
+                                        <Button Command="{Binding Command}"
+                                                CommandParameter="{Binding CommandParameter}"
+                                                Background="Transparent"
+                                                BorderThickness="0"
+                                                HorizontalAlignment="Stretch"
+                                                HorizontalContentAlignment="Left"
+                                                Padding="10,6"
+                                                CornerRadius="3">
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <PathIcon Data="{Binding IconData}"
+                                                          Width="14" Height="14"
+                                                          Foreground="{DynamicResource rUIForegroundBrush}"
+                                                          IsVisible="{Binding IconData, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                                                <TextBlock Text="{Binding Header}"
+                                                           FontSize="12"
+                                                           Foreground="{DynamicResource rUIForegroundBrush}" />
+                                            </StackPanel>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Border>
+                    </Popup>
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^:pointerover /template/ Border#PART_Root">
+            <Setter Property="Background" Value="{DynamicResource rUIHoverBrush}" />
+        </Style>
+
+        <Style Selector="^:pressed /template/ Border#PART_Root">
+            <Setter Property="Background" Value="{DynamicResource rUIPressedBrush}" />
+        </Style>
+    </ControlTheme>
+
+</ResourceDictionary>

@@ -1,0 +1,94 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Flowxel.UITester.ViewModels"
+             xmlns:tr="using:Flowxel.UI.Translation"
+             xmlns:rui="using:Flowxel.UI.Controls"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:pia="using:PhosphorIconsAvalonia.Markup"
+             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="700"
+             x:Class="Flowxel.UITester.Views.SettingsPageView"
+             x:DataType="vm:SettingsPageViewModel">
+
+    <ScrollViewer>
+        <StackPanel Margin="24" Spacing="16">
+            <TextBlock Text="{tr:Translate settings.title}"
+                       FontSize="24"
+                       FontWeight="SemiBold" />
+            <TextBlock Text="{tr:Translate settings.subtitle}"
+                       Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+
+            <!-- General -->
+            <TextBlock Text="{tr:Translate settings.section.general}"
+                       FontSize="16"
+                       FontWeight="SemiBold"
+                       Margin="0,8,0,0" />
+
+            <rui:SettingsCardControl Header="{tr:Translate settings.card.appearance.header}"
+                                        Description="{tr:Translate settings.card.appearance.description}"
+                                        IconData="{pia:IconGeometry Icon=palette}"
+                                        Command="{Binding CardClickedCommand}"
+                                        CommandParameter="Appearance" />
+
+            <rui:SettingsCardExpander Header="{tr:Translate settings.language.header}"
+                                         Description="{tr:Translate settings.language.description}"
+                                         IconData="{pia:IconGeometry Icon=translate}">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="{Binding CurrentLanguageDisplay}"
+                               Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Content="{tr:Translate settings.language.english}"
+                                Command="{Binding SetEnglishCommand}" />
+                        <Button Content="{tr:Translate settings.language.french}"
+                                Command="{Binding SetFrenchCommand}" />
+                    </StackPanel>
+                </StackPanel>
+            </rui:SettingsCardExpander>
+
+            <!-- Security -->
+            <TextBlock Text="{tr:Translate settings.section.security}"
+                       FontSize="16"
+                       FontWeight="SemiBold"
+                       Margin="0,8,0,0" />
+
+            <rui:SettingsCardControl Header="{tr:Translate settings.card.encryption.header}"
+                                        Description="{tr:Translate settings.card.encryption.description}"
+                                        IconData="{pia:IconGeometry Icon=lock_key}"
+                                        Command="{Binding CardClickedCommand}"
+                                        CommandParameter="Encryption" />
+
+            <rui:SettingsCardControl Header="{tr:Translate settings.card.keys.header}"
+                                        Description="{tr:Translate settings.card.keys.description}"
+                                        IconData="{pia:IconGeometry Icon=key}"
+                                        Command="{Binding CardClickedCommand}"
+                                        CommandParameter="Key Management" />
+
+            <!-- About -->
+            <TextBlock Text="{tr:Translate settings.section.about}"
+                       FontSize="16"
+                       FontWeight="SemiBold"
+                       Margin="0,8,0,0" />
+
+            <rui:SettingsCardControl Header="{tr:Translate settings.card.updates.header}"
+                                        Description="{tr:Translate settings.card.updates.description}"
+                                        IconData="{pia:IconGeometry Icon=arrow_clockwise}"
+                                        Command="{Binding CardClickedCommand}"
+                                        CommandParameter="Updates" />
+
+            <rui:SettingsCardControl Header="{tr:Translate settings.card.about.header}"
+                                        Description="{tr:Translate settings.card.about.description}"
+                                        IconData="{pia:IconGeometry Icon=info}"
+                                        Command="{Binding CardClickedCommand}"
+                                        CommandParameter="About Enigma" />
+
+            <!-- Feedback -->
+            <TextBlock Text="{Binding LastAction}"
+                       IsVisible="{Binding LastAction, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                       FontWeight="SemiBold"
+                       Margin="0,8,0,0" />
+
+            <TextBlock Text="{Binding SaveStatus}"
+                       Foreground="{DynamicResource rUIForegroundSecondaryBrush}" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
