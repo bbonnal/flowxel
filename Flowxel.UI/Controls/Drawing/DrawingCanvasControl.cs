@@ -32,6 +32,9 @@ public class DrawingCanvasControl : Control
     private static readonly double[] BindingDash = [4d, 3d];
     private static readonly double[] ComputedDash = [5d, 4d];
     private static readonly double[] PreviewDash = [6d, 4d];
+    private static readonly ICanvasInteractionHandler SelectInteraction = new SelectInteractionHandler();
+    private static readonly ICanvasInteractionHandler BindInteraction = new BindInteractionHandler();
+    private static readonly ICanvasInteractionHandler DrawInteraction = new DrawInteractionHandler();
 
     private const double MinShapeSize = 0.0001;
 
@@ -603,26 +606,7 @@ public class DrawingCanvasControl : Control
         if (!pointer.Properties.IsLeftButtonPressed)
             return;
 
-        if (ActiveTool == DrawingTool.Select)
-        {
-            HandleSelectToolPointerPressed(e, world);
-            return;
-        }
-
-        if (ActiveTool == DrawingTool.Point)
-        {
-            Shapes.Add(new FlowPoint { Pose = CreatePose(world.X, world.Y) });
-            InvalidateScene();
-            e.Handled = true;
-            return;
-        }
-
-        _gestureStartWorld = world;
-        _previewShape = ShapeInteractionEngine.BuildShape(ActiveTool, world, world, MinShapeSize);
-        e.Pointer.Capture(this);
-        UpdateCursor();
-        InvalidateScene();
-        e.Handled = true;
+        GetActiveInteractionHandler().OnPointerPressed(this, e, world);
     }
 
     protected override void OnPointerMoved(PointerEventArgs e)
@@ -642,30 +626,7 @@ public class DrawingCanvasControl : Control
             return;
         }
 
-        if (ActiveTool == DrawingTool.Select && _selectedShape is not null && !IsComputedShape(_selectedShape) && _activeHandle != ShapeHandleKind.None)
-        {
-            ShapeInteractionEngine.ApplyHandleDrag(_selectedShape, _activeHandle, world, _lastDragWorld, MinShapeSize);
-            _lastDragWorld = world;
-            UpdateCursor();
-            InvalidateScene();
-            e.Handled = true;
-            return;
-        }
-
-        if (_gestureStartWorld is not null)
-        {
-            _previewShape = ShapeInteractionEngine.BuildShape(ActiveTool, _gestureStartWorld.Value, world, MinShapeSize);
-            UpdateCursor();
-            InvalidateScene();
-            e.Handled = true;
-            return;
-        }
-
-        var previousHover = _hoveredShape;
-        _hoveredShape = FindHitShape(world);
-        UpdateCursor(world);
-        if (!ReferenceEquals(previousHover, _hoveredShape))
-            InvalidateScene();
+        GetActiveInteractionHandler().OnPointerMoved(this, e, world);
     }
 
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
@@ -694,30 +655,11 @@ public class DrawingCanvasControl : Control
             return;
         }
 
-        if (e.InitialPressMouseButton == MouseButton.Left && _activeHandle != ShapeHandleKind.None)
-        {
-            _activeHandle = ShapeHandleKind.None;
-            _lastDragWorld = null;
-            e.Pointer.Capture(null);
-            UpdateCursor();
-            e.Handled = true;
-            return;
-        }
-
-        if (e.InitialPressMouseButton != MouseButton.Left || _gestureStartWorld is null)
+        if (e.InitialPressMouseButton != MouseButton.Left)
             return;
 
-        var currentWorld = ScreenToWorld(e.GetPosition(this));
-        var finalShape = ShapeInteractionEngine.BuildShape(ActiveTool, _gestureStartWorld.Value, currentWorld, MinShapeSize);
-        if (finalShape is not null)
-            Shapes.Add(finalShape);
-
-        _gestureStartWorld = null;
-        _previewShape = null;
-        e.Pointer.Capture(null);
-        UpdateCursor();
-        InvalidateScene();
-        e.Handled = true;
+        var world = ScreenToWorld(e.GetPosition(this));
+        GetActiveInteractionHandler().OnPointerReleased(this, e, world);
     }
 
     protected override void OnPointerExited(PointerEventArgs e)
@@ -746,90 +688,12 @@ public class DrawingCanvasControl : Control
         e.Handled = true;
     }
 
-    private void HandleSelectToolPointerPressed(PointerPressedEventArgs e, FlowVector world)
+    private ICanvasInteractionHandler GetActiveInteractionHandler()
     {
-        if (InteractionMode == DrawingInteractionMode.Bind)
-        {
-            var bindHitShape = FindHitBindingCandidateShape(world);
-            if (bindHitShape is not null)
-            {
-                _selectedShape = bindHitShape;
-                if (ShapeInvokedCommand?.CanExecute(bindHitShape.Id) == true)
-                    ShapeInvokedCommand.Execute(bindHitShape.Id);
-            }
+        if (ActiveTool == DrawingTool.Select)
+            return InteractionMode == DrawingInteractionMode.Bind ? BindInteraction : SelectInteraction;
 
-            _activeHandle = ShapeHandleKind.None;
-            _lastDragWorld = null;
-            UpdateCursor(world);
-            InvalidateScene();
-            e.Handled = true;
-            return;
-        }
-
-        if (_selectedShape is not null && !IsComputedShape(_selectedShape))
-        {
-            var handle = HitTestHandle(_selectedShape, world);
-            if (handle != ShapeHandleKind.None)
-            {
-                _activeHandle = handle;
-                _lastDragWorld = world;
-                e.Pointer.Capture(this);
-                UpdateCursor();
-                e.Handled = true;
-                return;
-            }
-        }
-
-        var hitShape = FindHitShape(world);
-        _hoveredShape = hitShape;
-
-        if (hitShape is null)
-        {
-            _selectedShape = null;
-            _activeHandle = ShapeHandleKind.None;
-            _lastDragWorld = null;
-            UpdateCursor();
-            InvalidateScene();
-            e.Handled = true;
-            return;
-        }
-
-        if (ReferenceEquals(hitShape, _selectedShape) && !IsComputedShape(hitShape) && e.ClickCount >= 2)
-        {
-            _ = ShowShapePropertiesDialogAsync(hitShape);
-            _activeHandle = ShapeHandleKind.None;
-            _lastDragWorld = null;
-            UpdateCursor();
-            InvalidateScene();
-            e.Handled = true;
-            return;
-        }
-
-        if (!ReferenceEquals(hitShape, _selectedShape))
-        {
-            _selectedShape = hitShape;
-            UpdateCursor();
-            InvalidateScene();
-            e.Handled = true;
-            return;
-        }
-
-        if (IsComputedShape(hitShape))
-        {
-            _activeHandle = ShapeHandleKind.None;
-            _lastDragWorld = null;
-            UpdateCursor();
-            InvalidateScene();
-            e.Handled = true;
-            return;
-        }
-
-        _activeHandle = ShapeHandleKind.Move;
-        _lastDragWorld = world;
-        e.Pointer.Capture(this);
-        UpdateCursor();
-        InvalidateScene();
-        e.Handled = true;
+        return DrawInteraction;
     }
 
     private void ConfigureContextMenuTarget(Shape? shape)
@@ -1659,6 +1523,204 @@ public class DrawingCanvasControl : Control
             DrawingCanvasRenderBackendKind.CulledImmediate => new CulledImmediateDrawingCanvasRenderBackend(),
             _ => new ImmediateDrawingCanvasRenderBackend(),
         };
+
+    private interface ICanvasInteractionHandler
+    {
+        void OnPointerPressed(DrawingCanvasControl canvas, PointerPressedEventArgs e, FlowVector world);
+        void OnPointerMoved(DrawingCanvasControl canvas, PointerEventArgs e, FlowVector world);
+        void OnPointerReleased(DrawingCanvasControl canvas, PointerReleasedEventArgs e, FlowVector world);
+    }
+
+    private sealed class BindInteractionHandler : ICanvasInteractionHandler
+    {
+        public void OnPointerPressed(DrawingCanvasControl canvas, PointerPressedEventArgs e, FlowVector world)
+        {
+            var bindHitShape = canvas.FindHitBindingCandidateShape(world);
+            if (bindHitShape is not null)
+            {
+                canvas._selectedShape = bindHitShape;
+                if (canvas.ShapeInvokedCommand?.CanExecute(bindHitShape.Id) == true)
+                    canvas.ShapeInvokedCommand.Execute(bindHitShape.Id);
+            }
+
+            canvas._activeHandle = ShapeHandleKind.None;
+            canvas._lastDragWorld = null;
+            canvas.UpdateCursor(world);
+            canvas.InvalidateScene();
+            e.Handled = true;
+        }
+
+        public void OnPointerMoved(DrawingCanvasControl canvas, PointerEventArgs e, FlowVector world)
+        {
+            var previousHover = canvas._hoveredShape;
+            canvas._hoveredShape = canvas.FindHitBindingCandidateShape(world);
+            canvas.UpdateCursor(world);
+            if (!ReferenceEquals(previousHover, canvas._hoveredShape))
+                canvas.InvalidateScene();
+        }
+
+        public void OnPointerReleased(DrawingCanvasControl canvas, PointerReleasedEventArgs e, FlowVector world)
+        {
+        }
+    }
+
+    private sealed class SelectInteractionHandler : ICanvasInteractionHandler
+    {
+        public void OnPointerPressed(DrawingCanvasControl canvas, PointerPressedEventArgs e, FlowVector world)
+        {
+            if (canvas._selectedShape is not null && !canvas.IsComputedShape(canvas._selectedShape))
+            {
+                var handle = canvas.HitTestHandle(canvas._selectedShape, world);
+                if (handle != ShapeHandleKind.None)
+                {
+                    canvas._activeHandle = handle;
+                    canvas._lastDragWorld = world;
+                    e.Pointer.Capture(canvas);
+                    canvas.UpdateCursor();
+                    e.Handled = true;
+                    return;
+                }
+            }
+
+            var hitShape = canvas.FindHitShape(world);
+            canvas._hoveredShape = hitShape;
+
+            if (hitShape is null)
+            {
+                canvas._selectedShape = null;
+                canvas._activeHandle = ShapeHandleKind.None;
+                canvas._lastDragWorld = null;
+                canvas.UpdateCursor();
+                canvas.InvalidateScene();
+                e.Handled = true;
+                return;
+            }
+
+            if (ReferenceEquals(hitShape, canvas._selectedShape) && !canvas.IsComputedShape(hitShape) && e.ClickCount >= 2)
+            {
+                _ = canvas.ShowShapePropertiesDialogAsync(hitShape);
+                canvas._activeHandle = ShapeHandleKind.None;
+                canvas._lastDragWorld = null;
+                canvas.UpdateCursor();
+                canvas.InvalidateScene();
+                e.Handled = true;
+                return;
+            }
+
+            if (!ReferenceEquals(hitShape, canvas._selectedShape))
+            {
+                canvas._selectedShape = hitShape;
+                canvas.UpdateCursor();
+                canvas.InvalidateScene();
+                e.Handled = true;
+                return;
+            }
+
+            if (canvas.IsComputedShape(hitShape))
+            {
+                canvas._activeHandle = ShapeHandleKind.None;
+                canvas._lastDragWorld = null;
+                canvas.UpdateCursor();
+                canvas.InvalidateScene();
+                e.Handled = true;
+                return;
+            }
+
+            canvas._activeHandle = ShapeHandleKind.Move;
+            canvas._lastDragWorld = world;
+            e.Pointer.Capture(canvas);
+            canvas.UpdateCursor();
+            canvas.InvalidateScene();
+            e.Handled = true;
+        }
+
+        public void OnPointerMoved(DrawingCanvasControl canvas, PointerEventArgs e, FlowVector world)
+        {
+            if (canvas._selectedShape is not null && !canvas.IsComputedShape(canvas._selectedShape) && canvas._activeHandle != ShapeHandleKind.None)
+            {
+                ShapeInteractionEngine.ApplyHandleDrag(canvas._selectedShape, canvas._activeHandle, world, canvas._lastDragWorld, MinShapeSize);
+                canvas._lastDragWorld = world;
+                canvas.UpdateCursor();
+                canvas.InvalidateScene();
+                e.Handled = true;
+                return;
+            }
+
+            var previousHover = canvas._hoveredShape;
+            canvas._hoveredShape = canvas.FindHitShape(world);
+            canvas.UpdateCursor(world);
+            if (!ReferenceEquals(previousHover, canvas._hoveredShape))
+                canvas.InvalidateScene();
+        }
+
+        public void OnPointerReleased(DrawingCanvasControl canvas, PointerReleasedEventArgs e, FlowVector world)
+        {
+            if (canvas._activeHandle == ShapeHandleKind.None)
+                return;
+
+            canvas._activeHandle = ShapeHandleKind.None;
+            canvas._lastDragWorld = null;
+            e.Pointer.Capture(null);
+            canvas.UpdateCursor();
+            e.Handled = true;
+        }
+    }
+
+    private sealed class DrawInteractionHandler : ICanvasInteractionHandler
+    {
+        public void OnPointerPressed(DrawingCanvasControl canvas, PointerPressedEventArgs e, FlowVector world)
+        {
+            if (canvas.ActiveTool == DrawingTool.Point)
+            {
+                canvas.Shapes.Add(new FlowPoint { Pose = DrawingCanvasControl.CreatePose(world.X, world.Y) });
+                canvas.InvalidateScene();
+                e.Handled = true;
+                return;
+            }
+
+            canvas._gestureStartWorld = world;
+            canvas._previewShape = ShapeInteractionEngine.BuildShape(canvas.ActiveTool, world, world, MinShapeSize);
+            e.Pointer.Capture(canvas);
+            canvas.UpdateCursor();
+            canvas.InvalidateScene();
+            e.Handled = true;
+        }
+
+        public void OnPointerMoved(DrawingCanvasControl canvas, PointerEventArgs e, FlowVector world)
+        {
+            if (canvas._gestureStartWorld is null)
+            {
+                var previousHover = canvas._hoveredShape;
+                canvas._hoveredShape = canvas.FindHitShape(world);
+                canvas.UpdateCursor(world);
+                if (!ReferenceEquals(previousHover, canvas._hoveredShape))
+                    canvas.InvalidateScene();
+                return;
+            }
+
+            canvas._previewShape = ShapeInteractionEngine.BuildShape(canvas.ActiveTool, canvas._gestureStartWorld.Value, world, MinShapeSize);
+            canvas.UpdateCursor();
+            canvas.InvalidateScene();
+            e.Handled = true;
+        }
+
+        public void OnPointerReleased(DrawingCanvasControl canvas, PointerReleasedEventArgs e, FlowVector world)
+        {
+            if (canvas._gestureStartWorld is null)
+                return;
+
+            var finalShape = ShapeInteractionEngine.BuildShape(canvas.ActiveTool, canvas._gestureStartWorld.Value, world, MinShapeSize);
+            if (finalShape is not null)
+                canvas.Shapes.Add(finalShape);
+
+            canvas._gestureStartWorld = null;
+            canvas._previewShape = null;
+            e.Pointer.Capture(null);
+            canvas.UpdateCursor();
+            canvas.InvalidateScene();
+            e.Handled = true;
+        }
+    }
 
     private sealed class ActionCommand(Action execute) : ICommand
     {
