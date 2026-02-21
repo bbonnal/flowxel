@@ -339,9 +339,6 @@ public partial class DrawingCanvasControl
         InvalidateScene();
     }
 
-    private static Pose CreatePose(double x, double y, FlowVector? orientation = null)
-        => new(new FlowVector(x, y), orientation ?? new FlowVector(1, 0));
-
     private void UpdateCursorPositions(AvaloniaPoint screen, FlowVector world)
     {
         CursorAvaloniaPosition = screen;
