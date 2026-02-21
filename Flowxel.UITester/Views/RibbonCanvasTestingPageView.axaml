@@ -110,6 +110,7 @@
 
                 <ruiDrawing:DrawingCanvasControl Shapes="{Binding Shapes}"
                                                 UseDebugOverlayRenderer="True"
+                                                RenderBackendKind="Immediate"
                                                 ActiveTool="{Binding ActiveTool}"
                                                 Zoom="{Binding Zoom}"
                                                 Pan="{Binding Pan}"

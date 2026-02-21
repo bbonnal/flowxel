@@ -37,6 +37,8 @@ public class DrawingCanvasControl : Control
 
     private readonly DrawingCanvasContextMenu _contextMenu;
     private IDrawingCanvasRenderer _renderer;
+    private IDrawingCanvasRenderBackend _renderBackend;
+    private DrawingCanvasRenderStats _lastRenderStats;
     private readonly Dictionary<string, Bitmap?> _imageCache = new(StringComparer.OrdinalIgnoreCase);
     private readonly HashSet<string> _invalidImageWarnings = new(StringComparer.OrdinalIgnoreCase);
     private DrawingCanvasSceneSnapshot _sceneSnapshot = DrawingCanvasSceneSnapshot.Empty;
@@ -194,6 +196,11 @@ public class DrawingCanvasControl : Control
     public static readonly StyledProperty<bool> UseDebugOverlayRendererProperty =
         AvaloniaProperty.Register<DrawingCanvasControl, bool>(nameof(UseDebugOverlayRenderer), false);
 
+    public static readonly StyledProperty<DrawingCanvasRenderBackendKind> RenderBackendKindProperty =
+        AvaloniaProperty.Register<DrawingCanvasControl, DrawingCanvasRenderBackendKind>(
+            nameof(RenderBackendKind),
+            DrawingCanvasRenderBackendKind.Immediate);
+
     public static readonly StyledProperty<AvaloniaPoint> CursorAvaloniaPositionProperty =
         AvaloniaProperty.Register<DrawingCanvasControl, AvaloniaPoint>(
             nameof(CursorAvaloniaPosition),
@@ -213,6 +220,7 @@ public class DrawingCanvasControl : Control
         ComputedShapeIds = [];
 
         _contextMenu = new DrawingCanvasContextMenu();
+        _renderBackend = CreateRenderBackend();
         _renderer = CreateRenderer();
         ContextMenu = _contextMenu;
     }
@@ -415,6 +423,14 @@ public class DrawingCanvasControl : Control
         set => SetValue(UseDebugOverlayRendererProperty, value);
     }
 
+    public DrawingCanvasRenderBackendKind RenderBackendKind
+    {
+        get => GetValue(RenderBackendKindProperty);
+        set => SetValue(RenderBackendKindProperty, value);
+    }
+
+    internal DrawingCanvasRenderStats LastRenderStats => _lastRenderStats;
+
     public AvaloniaPoint CursorAvaloniaPosition
     {
         get => GetValue(CursorAvaloniaPositionProperty);
@@ -453,6 +469,11 @@ public class DrawingCanvasControl : Control
         DrawOriginMarker(context);
 
         var scene = GetSceneSnapshot();
+        _lastRenderStats = _renderBackend.Render(this, context, scene);
+    }
+
+    internal void RenderSceneImmediate(DrawingContext context, DrawingCanvasSceneSnapshot scene)
+    {
         foreach (var shape in scene.Shapes)
             DrawShape(context, shape.Shape, shape.Stroke, shape.Thickness, shape.DashArray);
 
@@ -509,6 +530,7 @@ public class DrawingCanvasControl : Control
             change.Property == ActiveToolProperty ||
             change.Property == InteractionModeProperty ||
             change.Property == UseDebugOverlayRendererProperty ||
+            change.Property == RenderBackendKindProperty ||
             change.Property == CanvasBackgroundProperty ||
             change.Property == ShowCanvasBoundaryProperty ||
             change.Property == CanvasBoundaryWidthProperty ||
@@ -526,6 +548,8 @@ public class DrawingCanvasControl : Control
         {
             if (change.Property == UseDebugOverlayRendererProperty)
                 _renderer = CreateRenderer();
+            else if (change.Property == RenderBackendKindProperty)
+                _renderBackend = CreateRenderBackend();
 
             InvalidateScene();
         }
@@ -1627,6 +1651,14 @@ public class DrawingCanvasControl : Control
 
         return new DebugOverlayDrawingCanvasRenderer(new DefaultDrawingCanvasRenderer());
     }
+
+    private IDrawingCanvasRenderBackend CreateRenderBackend()
+        => RenderBackendKind switch
+        {
+            DrawingCanvasRenderBackendKind.Immediate => new ImmediateDrawingCanvasRenderBackend(),
+            DrawingCanvasRenderBackendKind.CulledImmediate => new CulledImmediateDrawingCanvasRenderBackend(),
+            _ => new ImmediateDrawingCanvasRenderBackend(),
+        };
 
     private sealed class ActionCommand(Action execute) : ICommand
     {
