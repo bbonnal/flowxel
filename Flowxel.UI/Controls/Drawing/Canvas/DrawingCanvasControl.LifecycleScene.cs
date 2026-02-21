@@ -3,13 +3,9 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Threading;
 using Flowxel.Core.Geometry.Primitives;
 using Flowxel.Core.Geometry.Shapes;
-using Flowxel.UI.Controls;
 
 using AvaloniaPoint = global::Avalonia.Point;
 using FlowVector = Flowxel.Core.Geometry.Primitives.Vector;
@@ -106,7 +102,7 @@ public partial class DrawingCanvasControl
         _contextMenu.DeleteShapeRequested += OnDeleteShapeRequested;
         _contextMenu.CenterViewRequested += OnCenterViewRequested;
         _contextMenu.PropertiesRequested += OnPropertiesRequested;
-        ContextRequested += OnContextRequested;
+        _contextInteraction.Attach();
         AttachShapesCollection(Shapes);
         AttachComputedShapeIdsCollection(ComputedShapeIds);
         AttachBindingCandidateShapeIdsCollection(BindingCandidateShapeIds);
@@ -121,12 +117,11 @@ public partial class DrawingCanvasControl
         _contextMenu.DeleteShapeRequested -= OnDeleteShapeRequested;
         _contextMenu.CenterViewRequested -= OnCenterViewRequested;
         _contextMenu.PropertiesRequested -= OnPropertiesRequested;
-        ContextRequested -= OnContextRequested;
+        _contextInteraction.Detach();
         DetachShapesCollection(Shapes);
         DetachComputedShapeIdsCollection(ComputedShapeIds);
         DetachBindingCandidateShapeIdsCollection(BindingCandidateShapeIds);
         _contextMenu.Close();
-        _openContextMenuOnRightRelease = false;
         _isMiddlePanning = false;
         _gestureStartWorld = null;
         _gestureStartScreen = null;
@@ -134,25 +129,11 @@ public partial class DrawingCanvasControl
         _lastDragWorld = null;
         _previewShape = null;
         _hoveredShape = null;
-        _contextMenuTargetShape = null;
+        _contextInteraction.ClearTarget();
         _selectedShape = null;
         ClearImageCache();
         ClearTextLayoutCache();
         _isLifecycleAttached = false;
-    }
-
-    private void ConfigureContextMenuTarget(Shape? shape)
-    {
-        if (shape is null)
-        {
-            _contextMenu.ConfigureForCanvas();
-            return;
-        }
-
-        if (IsComputedShape(shape))
-            _contextMenu.ConfigureForComputedShape();
-        else
-            _contextMenu.ConfigureForShape();
     }
 
     private void AttachShapesCollection(IList<Shape> shapes)
@@ -193,6 +174,10 @@ public partial class DrawingCanvasControl
         if (_selectedShape is not null && !Shapes.Contains(_selectedShape))
             _selectedShape = null;
 
+        var contextTarget = _contextInteraction.TargetShape;
+        if (contextTarget is not null && !Shapes.Contains(contextTarget))
+            _contextInteraction.ClearTarget();
+
         for (var i = ComputedShapeIds.Count - 1; i >= 0; i--)
         {
             var id = ComputedShapeIds[i];
@@ -226,15 +211,16 @@ public partial class DrawingCanvasControl
 
     private void OnDeleteShapeRequested(object? sender, EventArgs e)
     {
-        if (_contextMenuTargetShape is null || IsComputedShape(_contextMenuTargetShape))
+        var targetShape = _contextInteraction.TargetShape;
+        if (targetShape is null || IsComputedShape(targetShape))
             return;
 
-        Shapes.Remove(_contextMenuTargetShape);
-        if (ReferenceEquals(_selectedShape, _contextMenuTargetShape))
+        Shapes.Remove(targetShape);
+        if (ReferenceEquals(_selectedShape, targetShape))
             _selectedShape = null;
 
         _hoveredShape = null;
-        _contextMenuTargetShape = null;
+        _contextInteraction.ClearTarget();
         _activeHandle = ShapeHandleKind.None;
         _lastDragWorld = null;
         InvalidateScene();
@@ -248,10 +234,11 @@ public partial class DrawingCanvasControl
 
     private async void OnPropertiesRequested(object? sender, EventArgs e)
     {
-        if (_contextMenuTargetShape is null || IsComputedShape(_contextMenuTargetShape))
+        var targetShape = _contextInteraction.TargetShape;
+        if (targetShape is null || IsComputedShape(targetShape))
             return;
 
-        await ShowShapePropertiesDialogAsync(_contextMenuTargetShape);
+        await ShowShapePropertiesDialogAsync(targetShape);
     }
 
     private bool IsComputedShape(Shape shape)
@@ -281,63 +268,20 @@ public partial class DrawingCanvasControl
     }
 
     private async Task ShowShapePropertiesDialogAsync(Shape shape)
-    {
-        if (DialogService is null)
-            return;
-
-        var editor = new DrawingShapePropertiesEditor(shape);
-
-        await DialogService.ShowAsync(dialog =>
-        {
-            dialog.Title = $"{shape.Type} properties";
-            dialog.Content = editor;
-            dialog.PrimaryButtonText = "Apply";
-            dialog.CloseButtonText = "Cancel";
-            dialog.DefaultButton = DefaultButton.Primary;
-            dialog.PrimaryButtonCommand = new ActionCommand(() =>
+        => await DrawingCanvasDialogPresenter.ShowShapePropertiesAsync(
+            DialogService,
+            shape,
+            () =>
             {
-                editor.ApplyChanges();
                 ClearImageCache();
                 InvalidateScene();
             });
-        });
-    }
 
     private async Task ShowCanvasSettingsDialogAsync()
-    {
-        if (DialogService is null)
-            return;
-
-        var editor = new DrawingCanvasSettingsEditor(this);
-
-        await DialogService.ShowAsync(dialog =>
-        {
-            dialog.Title = "Canvas settings";
-            dialog.Content = editor;
-            dialog.PrimaryButtonText = "Apply";
-            dialog.CloseButtonText = "Cancel";
-            dialog.DefaultButton = DefaultButton.Primary;
-            dialog.PrimaryButtonCommand = new ActionCommand(() =>
-            {
-                editor.ApplyTo(this);
-                InvalidateScene();
-            });
-        });
-    }
-
-    private void OnContextRequested(object? sender, ContextRequestedEventArgs e)
-    {
-        if (!e.TryGetPosition(this, out var position))
-            position = CursorAvaloniaPosition;
-
-        var world = ScreenToWorld(position);
-        _contextMenuTargetShape = FindHitShape(world);
-        if (_contextMenuTargetShape is not null)
-            _selectedShape = _contextMenuTargetShape;
-
-        ConfigureContextMenuTarget(_contextMenuTargetShape);
-        InvalidateScene();
-    }
+        => await DrawingCanvasDialogPresenter.ShowCanvasSettingsAsync(
+            DialogService,
+            this,
+            InvalidateScene);
 
     private void UpdateCursorPositions(AvaloniaPoint screen, FlowVector world)
     {
@@ -423,17 +367,4 @@ public partial class DrawingCanvasControl
             DrawingCanvasRenderBackendKind.CulledImmediate => new CulledImmediateDrawingCanvasRenderBackend(),
             _ => new ImmediateDrawingCanvasRenderBackend(),
         };
-
-    private sealed class ActionCommand(Action execute) : ICommand
-    {
-        public event EventHandler? CanExecuteChanged
-        {
-            add { }
-            remove { }
-        }
-
-        public bool CanExecute(object? parameter) => true;
-
-        public void Execute(object? parameter) => execute();
-    }
 }

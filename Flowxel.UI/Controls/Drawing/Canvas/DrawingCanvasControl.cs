@@ -33,6 +33,7 @@ public partial class DrawingCanvasControl : Control
     private const double MinShapeSize = 0.0001;
 
     private readonly DrawingCanvasContextMenu _contextMenu;
+    private readonly ContextMenuInteractionCoordinator _contextInteraction;
     private IDrawingCanvasRenderer _renderer;
     private IDrawingCanvasRenderBackend _renderBackend;
     private DrawingCanvasRenderStats _lastRenderStats;
@@ -45,13 +46,11 @@ public partial class DrawingCanvasControl : Control
     private Shape? _previewShape;
     private Shape? _hoveredShape;
     private Shape? _selectedShape;
-    private Shape? _contextMenuTargetShape;
     private FlowVector? _gestureStartWorld;
     private FlowVector? _lastDragWorld;
     private AvaloniaPoint? _gestureStartScreen;
     private AvaloniaVector _panAtGestureStart;
     private bool _isMiddlePanning;
-    private bool _openContextMenuOnRightRelease;
     private bool _isLifecycleAttached;
     private ShapeHandleKind _activeHandle = ShapeHandleKind.None;
 
@@ -218,6 +217,7 @@ public partial class DrawingCanvasControl : Control
         ComputedShapeIds = [];
 
         _contextMenu = new DrawingCanvasContextMenu();
+        _contextInteraction = new ContextMenuInteractionCoordinator(this, _contextMenu);
         _renderBackend = CreateRenderBackend();
         _renderer = CreateRenderer();
         ContextMenu = _contextMenu;

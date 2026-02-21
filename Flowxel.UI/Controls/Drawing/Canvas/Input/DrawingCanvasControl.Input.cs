@@ -1,7 +1,5 @@
 using System;
-using Avalonia;
 using Avalonia.Input;
-using Avalonia.Threading;
 using Shape = Flowxel.Core.Geometry.Shapes.Shape;
 using Vector = Flowxel.Core.Geometry.Primitives.Vector;
 
@@ -21,11 +19,7 @@ public partial class DrawingCanvasControl
 
         if (pointer.Properties.IsRightButtonPressed)
         {
-            _contextMenuTargetShape = FindHitShape(world);
-            _selectedShape = _contextMenuTargetShape ?? _selectedShape;
-            _hoveredShape = _contextMenuTargetShape;
-            ConfigureContextMenuTarget(_contextMenuTargetShape);
-            _openContextMenuOnRightRelease = true;
+            _contextInteraction.OnRightPressed(world);
             InvalidateScene();
             e.Handled = true;
             return;
@@ -84,12 +78,7 @@ public partial class DrawingCanvasControl
 
         if (e.InitialPressMouseButton == MouseButton.Right)
         {
-            if (_openContextMenuOnRightRelease)
-            {
-                _openContextMenuOnRightRelease = false;
-                Dispatcher.UIThread.Post(() => _contextMenu.Open(this), DispatcherPriority.Background);
-            }
-
+            _contextInteraction.OnRightReleased();
             e.Handled = true;
             return;
         }
