@@ -6,7 +6,7 @@ namespace Flowxel.UI.Controls.Drawing;
 internal sealed class IconShapeBehavior : ShapeBehavior<IconShape>
 {
     protected override bool IsPerimeterHit(IconShape shape, Vector world, double tolerance, double pointRadius)
-        => ShapeInteractionEngine.Distance(shape.Pose.Position, world) <= Math.Max(tolerance * 2, shape.Size * 0.6);
+        => ShapeMath.Distance(shape.Pose.Position, world) <= Math.Max(tolerance * 2, shape.Size * 0.6);
 
     protected override IReadOnlyList<ShapeHandle> GetHandles(IconShape shape)
         =>
@@ -16,5 +16,5 @@ internal sealed class IconShapeBehavior : ShapeBehavior<IconShape>
         ];
 
     protected override void ApplyHandleDrag(IconShape shape, ShapeHandleKind handle, Vector world, Vector? lastWorld, double minShapeSize)
-        => ShapeInteractionEngine.ApplyIconDrag(shape, handle, world, lastWorld, minShapeSize);
+        => ShapeHandleOps.ApplyIconDrag(shape, handle, world, lastWorld, minShapeSize);
 }

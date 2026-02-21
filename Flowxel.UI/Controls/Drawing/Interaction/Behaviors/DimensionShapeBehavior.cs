@@ -6,7 +6,7 @@ namespace Flowxel.UI.Controls.Drawing;
 internal sealed class DimensionShapeBehavior : ShapeBehavior<DimensionShape>
 {
     protected override bool IsPerimeterHit(DimensionShape shape, Vector world, double tolerance, double pointRadius)
-        => ShapeInteractionEngine.IsDimensionHit(shape, world, tolerance);
+        => ShapeMath.IsDimensionHit(shape, world, tolerance);
 
     protected override IReadOnlyList<ShapeHandle> GetHandles(DimensionShape shape)
         =>
@@ -14,9 +14,9 @@ internal sealed class DimensionShapeBehavior : ShapeBehavior<DimensionShape>
             new ShapeHandle(ShapeHandleKind.LineStart, shape.StartPoint),
             new ShapeHandle(ShapeHandleKind.LineEnd, shape.EndPoint),
             new ShapeHandle(ShapeHandleKind.DimensionOffset, shape.OffsetMidpoint),
-            new ShapeHandle(ShapeHandleKind.Move, ShapeInteractionEngine.Midpoint(shape.StartPoint, shape.EndPoint))
+            new ShapeHandle(ShapeHandleKind.Move, ShapeMath.Midpoint(shape.StartPoint, shape.EndPoint))
         ];
 
     protected override void ApplyHandleDrag(DimensionShape shape, ShapeHandleKind handle, Vector world, Vector? lastWorld, double minShapeSize)
-        => ShapeInteractionEngine.ApplyDimensionDrag(shape, handle, world, lastWorld, minShapeSize);
+        => ShapeHandleOps.ApplyDimensionDrag(shape, handle, world, lastWorld, minShapeSize);
 }

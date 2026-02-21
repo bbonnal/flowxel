@@ -10,12 +10,12 @@ internal sealed class MultilineTextToolShapeFactory : IToolShapeFactory
 
     public Shape? Build(Vector start, Vector end, double minShapeSize)
     {
-        if (!ShapeInteractionEngine.TryBuildAxisAlignedBox(start, end, minShapeSize, out var center, out var width, out _))
+        if (!ShapeMath.TryBuildAxisAlignedBox(start, end, minShapeSize, out var center, out var width, out _))
             return null;
 
         return new MultilineTextShape
         {
-            Pose = ShapeInteractionEngine.CreatePose(center.X, center.Y),
+            Pose = ShapeMath.CreatePose(center.X, center.Y),
             Width = width,
             FontSize = 16,
             Text = "Line 1\\nLine 2"

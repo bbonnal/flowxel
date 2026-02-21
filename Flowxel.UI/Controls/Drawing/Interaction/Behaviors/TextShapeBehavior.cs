@@ -6,7 +6,7 @@ namespace Flowxel.UI.Controls.Drawing;
 internal sealed class TextShapeBehavior : ShapeBehavior<TextShape>
 {
     protected override bool IsPerimeterHit(TextShape shape, Vector world, double tolerance, double pointRadius)
-        => ShapeInteractionEngine.Distance(shape.Pose.Position, world) <= Math.Max(tolerance * 2, shape.FontSize * 0.5);
+        => ShapeMath.Distance(shape.Pose.Position, world) <= Math.Max(tolerance * 2, shape.FontSize * 0.5);
 
     protected override IReadOnlyList<ShapeHandle> GetHandles(TextShape shape)
         => [new ShapeHandle(ShapeHandleKind.Move, shape.Pose.Position)];

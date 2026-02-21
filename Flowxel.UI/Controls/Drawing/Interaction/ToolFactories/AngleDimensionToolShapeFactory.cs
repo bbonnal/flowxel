@@ -21,7 +21,7 @@ internal sealed class AngleDimensionToolShapeFactory : IToolShapeFactory
 
         return new AngleDimensionShape
         {
-            Pose = ShapeInteractionEngine.CreatePose(start.X, start.Y),
+            Pose = ShapeMath.CreatePose(start.X, start.Y),
             Radius = radius,
             StartAngleRad = 0,
             SweepAngleRad = sweep,

@@ -13,7 +13,7 @@ internal sealed class IconToolShapeFactory : IToolShapeFactory
         var delta = end - start;
         return new IconShape
         {
-            Pose = ShapeInteractionEngine.CreatePose(start.X, start.Y),
+            Pose = ShapeMath.CreatePose(start.X, start.Y),
             Size = Math.Max(16, delta.M),
             IconKey = "★"
         };

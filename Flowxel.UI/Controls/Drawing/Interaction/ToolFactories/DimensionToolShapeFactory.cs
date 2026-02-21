@@ -17,7 +17,7 @@ internal sealed class DimensionToolShapeFactory : IToolShapeFactory
 
         return new DimensionShape
         {
-            Pose = ShapeInteractionEngine.CreatePose(start.X, start.Y, delta.Normalize()),
+            Pose = ShapeMath.CreatePose(start.X, start.Y, delta.Normalize()),
             Length = length,
             Offset = Math.Max(24, length * 0.2),
             Text = length.ToString("0.##")

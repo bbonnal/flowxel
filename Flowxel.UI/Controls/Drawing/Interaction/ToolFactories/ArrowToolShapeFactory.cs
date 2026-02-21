@@ -17,7 +17,7 @@ internal sealed class ArrowToolShapeFactory : IToolShapeFactory
 
         return new ArrowShape
         {
-            Pose = ShapeInteractionEngine.CreatePose(start.X, start.Y, delta.Normalize()),
+            Pose = ShapeMath.CreatePose(start.X, start.Y, delta.Normalize()),
             Length = length,
             HeadLength = Math.Max(12, length * 0.15)
         };

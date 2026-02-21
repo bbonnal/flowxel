@@ -17,7 +17,7 @@ internal sealed class CircleToolShapeFactory : IToolShapeFactory
 
         return new Circle
         {
-            Pose = ShapeInteractionEngine.CreatePose(start.X, start.Y),
+            Pose = ShapeMath.CreatePose(start.X, start.Y),
             Radius = radius
         };
     }

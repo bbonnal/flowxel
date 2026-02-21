@@ -17,7 +17,7 @@ internal sealed class CenterlineRectangleToolShapeFactory : IToolShapeFactory
 
         return new CenterlineRectangleShape
         {
-            Pose = ShapeInteractionEngine.CreatePose(start.X, start.Y, delta.Normalize()),
+            Pose = ShapeMath.CreatePose(start.X, start.Y, delta.Normalize()),
             Length = length,
             Width = Math.Max(24, length * 0.2)
         };

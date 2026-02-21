@@ -17,7 +17,7 @@ internal sealed class LineToolShapeFactory : IToolShapeFactory
 
         return new Line
         {
-            Pose = ShapeInteractionEngine.CreatePose(start.X, start.Y, delta.Normalize()),
+            Pose = ShapeMath.CreatePose(start.X, start.Y, delta.Normalize()),
             Length = length
         };
     }

@@ -6,7 +6,7 @@ namespace Flowxel.UI.Controls.Drawing;
 internal sealed class MultilineTextShapeBehavior : ShapeBehavior<MultilineTextShape>
 {
     protected override bool IsPerimeterHit(MultilineTextShape shape, Vector world, double tolerance, double pointRadius)
-        => ShapeInteractionEngine.Distance(shape.Pose.Position, world) <= Math.Max(tolerance * 2, shape.FontSize);
+        => ShapeMath.Distance(shape.Pose.Position, world) <= Math.Max(tolerance * 2, shape.FontSize);
 
     protected override IReadOnlyList<ShapeHandle> GetHandles(MultilineTextShape shape)
         => [new ShapeHandle(ShapeHandleKind.Move, shape.Pose.Position)];

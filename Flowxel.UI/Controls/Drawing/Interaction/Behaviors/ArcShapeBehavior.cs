@@ -6,7 +6,7 @@ namespace Flowxel.UI.Controls.Drawing;
 internal sealed class ArcShapeBehavior : ShapeBehavior<ArcShape>
 {
     protected override bool IsPerimeterHit(ArcShape shape, Vector world, double tolerance, double pointRadius)
-        => ShapeInteractionEngine.IsArcHit(shape, world, tolerance);
+        => ShapeMath.IsArcHit(shape, world, tolerance);
 
     protected override IReadOnlyList<ShapeHandle> GetHandles(ArcShape shape)
         =>
@@ -18,5 +18,5 @@ internal sealed class ArcShapeBehavior : ShapeBehavior<ArcShape>
         ];
 
     protected override void ApplyHandleDrag(ArcShape shape, ShapeHandleKind handle, Vector world, Vector? lastWorld, double minShapeSize)
-        => ShapeInteractionEngine.ApplyArcDrag(shape, handle, world, lastWorld, minShapeSize);
+        => ShapeHandleOps.ApplyArcDrag(shape, handle, world, lastWorld, minShapeSize);
 }

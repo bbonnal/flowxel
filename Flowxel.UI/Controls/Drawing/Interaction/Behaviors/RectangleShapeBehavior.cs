@@ -7,14 +7,14 @@ internal sealed class RectangleShapeBehavior : ShapeBehavior<FlowRectangle>
 {
     protected override bool IsPerimeterHit(FlowRectangle shape, Vector world, double tolerance, double pointRadius)
     {
-        return ShapeInteractionEngine.IsRectanglePerimeterHit(
+        return ShapeMath.IsRectanglePerimeterHit(
                    shape.TopLeft.Position,
                    shape.TopRight.Position,
                    shape.BottomRight.Position,
                    shape.BottomLeft.Position,
                    world,
                    tolerance) ||
-               (shape.Fill && ShapeInteractionEngine.IsInsideConvexQuad(
+               (shape.Fill && ShapeMath.IsInsideConvexQuad(
                    shape.TopLeft.Position,
                    shape.TopRight.Position,
                    shape.BottomRight.Position,
@@ -23,7 +23,7 @@ internal sealed class RectangleShapeBehavior : ShapeBehavior<FlowRectangle>
     }
 
     protected override IReadOnlyList<ShapeHandle> GetHandles(FlowRectangle shape)
-        => ShapeInteractionEngine.GetBoxHandles(
+        => ShapeMath.GetBoxHandles(
             shape.TopLeft.Position,
             shape.TopRight.Position,
             shape.BottomRight.Position,
@@ -41,16 +41,16 @@ internal sealed class RectangleShapeBehavior : ShapeBehavior<FlowRectangle>
         switch (handle)
         {
             case ShapeHandleKind.RectTopLeft:
-                ShapeInteractionEngine.ResizeRectangle(shape, world, shape.BottomRight.Position, minShapeSize);
+                ShapeHandleOps.ResizeRectangle(shape, world, shape.BottomRight.Position, minShapeSize);
                 return;
             case ShapeHandleKind.RectTopRight:
-                ShapeInteractionEngine.ResizeRectangle(shape, world, shape.BottomLeft.Position, minShapeSize);
+                ShapeHandleOps.ResizeRectangle(shape, world, shape.BottomLeft.Position, minShapeSize);
                 return;
             case ShapeHandleKind.RectBottomRight:
-                ShapeInteractionEngine.ResizeRectangle(shape, world, shape.TopLeft.Position, minShapeSize);
+                ShapeHandleOps.ResizeRectangle(shape, world, shape.TopLeft.Position, minShapeSize);
                 return;
             case ShapeHandleKind.RectBottomLeft:
-                ShapeInteractionEngine.ResizeRectangle(shape, world, shape.TopRight.Position, minShapeSize);
+                ShapeHandleOps.ResizeRectangle(shape, world, shape.TopRight.Position, minShapeSize);
                 return;
         }
     }

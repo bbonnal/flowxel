@@ -21,7 +21,7 @@ internal sealed class ArcToolShapeFactory : IToolShapeFactory
 
         return new ArcShape
         {
-            Pose = ShapeInteractionEngine.CreatePose(start.X, start.Y),
+            Pose = ShapeMath.CreatePose(start.X, start.Y),
             Radius = radius,
             StartAngleRad = 0,
             SweepAngleRad = sweep

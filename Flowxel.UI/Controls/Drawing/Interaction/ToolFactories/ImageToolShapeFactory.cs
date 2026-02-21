@@ -10,12 +10,12 @@ internal sealed class ImageToolShapeFactory : IToolShapeFactory
 
     public Shape? Build(Vector start, Vector end, double minShapeSize)
     {
-        if (!ShapeInteractionEngine.TryBuildAxisAlignedBox(start, end, minShapeSize, out var center, out var width, out var height))
+        if (!ShapeMath.TryBuildAxisAlignedBox(start, end, minShapeSize, out var center, out var width, out var height))
             return null;
 
         return new ImageShape
         {
-            Pose = ShapeInteractionEngine.CreatePose(center.X, center.Y),
+            Pose = ShapeMath.CreatePose(center.X, center.Y),
             Width = width,
             Height = height
         };

@@ -9,5 +9,5 @@ internal sealed class PointToolShapeFactory : IToolShapeFactory
     public DrawingTool Tool => DrawingTool.Point;
 
     public Shape? Build(Vector start, Vector end, double minShapeSize)
-        => new FlowPoint { Pose = ShapeInteractionEngine.CreatePose(start.X, start.Y) };
+        => new FlowPoint { Pose = ShapeMath.CreatePose(start.X, start.Y) };
 }

@@ -17,7 +17,7 @@ internal sealed class ReferentialToolShapeFactory : IToolShapeFactory
 
         return new ReferentialShape
         {
-            Pose = ShapeInteractionEngine.CreatePose(start.X, start.Y, delta.Normalize()),
+            Pose = ShapeMath.CreatePose(start.X, start.Y, delta.Normalize()),
             XAxisLength = axisLength,
             YAxisLength = axisLength
         };

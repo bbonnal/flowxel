@@ -13,7 +13,7 @@ internal sealed class TextToolShapeFactory : IToolShapeFactory
         var delta = end - start;
         return new TextShape
         {
-            Pose = ShapeInteractionEngine.CreatePose(start.X, start.Y),
+            Pose = ShapeMath.CreatePose(start.X, start.Y),
             FontSize = Math.Max(12, delta.M * 0.1),
             Text = "Text"
         };

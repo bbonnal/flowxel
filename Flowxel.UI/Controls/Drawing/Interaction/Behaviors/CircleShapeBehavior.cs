@@ -7,7 +7,7 @@ internal sealed class CircleShapeBehavior : ShapeBehavior<Circle>
 {
     protected override bool IsPerimeterHit(Circle shape, Vector world, double tolerance, double pointRadius)
     {
-        var radialDistance = ShapeInteractionEngine.Distance(shape.Pose.Position, world);
+        var radialDistance = ShapeMath.Distance(shape.Pose.Position, world);
         return Math.Abs(radialDistance - shape.Radius) <= tolerance || (shape.Fill && radialDistance <= shape.Radius);
     }
 
@@ -19,5 +19,5 @@ internal sealed class CircleShapeBehavior : ShapeBehavior<Circle>
         ];
 
     protected override void ApplyHandleDrag(Circle shape, ShapeHandleKind handle, Vector world, Vector? lastWorld, double minShapeSize)
-        => ShapeInteractionEngine.ApplyCircleHandleDrag(shape, handle, world, lastWorld, minShapeSize);
+        => ShapeHandleOps.ApplyCircleHandleDrag(shape, handle, world, lastWorld, minShapeSize);
 }
