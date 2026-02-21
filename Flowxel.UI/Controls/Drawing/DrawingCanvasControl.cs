@@ -29,6 +29,9 @@ public class DrawingCanvasControl : Control
     private static readonly Cursor HandCursor = new(StandardCursorType.Hand);
     private static readonly Cursor GrabCursor = new(StandardCursorType.DragMove);
     private static readonly Cursor DrawCursor = new(StandardCursorType.Cross);
+    private static readonly double[] BindingDash = [4d, 3d];
+    private static readonly double[] ComputedDash = [5d, 4d];
+    private static readonly double[] PreviewDash = [6d, 4d];
 
     private const double MinShapeSize = 0.0001;
 
@@ -36,6 +39,8 @@ public class DrawingCanvasControl : Control
     private IDrawingCanvasRenderer _renderer;
     private readonly Dictionary<string, Bitmap?> _imageCache = new(StringComparer.OrdinalIgnoreCase);
     private readonly HashSet<string> _invalidImageWarnings = new(StringComparer.OrdinalIgnoreCase);
+    private DrawingCanvasSceneSnapshot _sceneSnapshot = DrawingCanvasSceneSnapshot.Empty;
+    private bool _isSceneSnapshotDirty = true;
 
     private Shape? _previewShape;
     private Shape? _hoveredShape;
@@ -426,13 +431,13 @@ public class DrawingCanvasControl : Control
     {
         Zoom = 1d;
         Pan = default;
-        InvalidateVisual();
+        InvalidateScene();
     }
 
     public void CenterViewOnOrigin()
     {
         Pan = new AvaloniaVector(Bounds.Width * 0.5, Bounds.Height * 0.5);
-        InvalidateVisual();
+        InvalidateScene();
     }
 
     public override void Render(DrawingContext context)
@@ -447,44 +452,21 @@ public class DrawingCanvasControl : Control
         DrawCanvasBoundary(context);
         DrawOriginMarker(context);
 
-        foreach (var shape in Shapes)
-        {
-            if (ReferenceEquals(shape, _selectedShape) || ReferenceEquals(shape, _hoveredShape))
-                continue;
+        var scene = GetSceneSnapshot();
+        foreach (var shape in scene.Shapes)
+            DrawShape(context, shape.Shape, shape.Stroke, shape.Thickness, shape.DashArray);
 
-            var isComputed = IsComputedShape(shape);
-            var isBindingCandidate = IsBindingCandidate(shape);
-            var stroke = isBindingCandidate ? SelectedStroke : (isComputed ? ComputedStroke : ShapeStroke);
-            var thickness = GetShapeStrokeThickness(shape) + (isBindingCandidate ? 1.25 : 0);
-            var dashPattern = isBindingCandidate
-                ? (double[])[4d, 3d]
-                : (isComputed && UseDashedComputedStroke) ? [5d, 4d] : null;
-            DrawShape(
-                context,
-                shape,
-                stroke,
-                thickness,
-                dashPattern);
-        }
+        if (scene.HoverShape is not null)
+            DrawShape(context, scene.HoverShape.Shape, scene.HoverShape.Stroke, scene.HoverShape.Thickness, scene.HoverShape.DashArray);
 
-        if (_hoveredShape is not null && !ReferenceEquals(_hoveredShape, _selectedShape))
-            DrawShape(context, _hoveredShape, HoverStroke, GetShapeStrokeThickness(_hoveredShape) + 1.25, null);
+        if (scene.SelectedShape is not null)
+            DrawShape(context, scene.SelectedShape.Shape, scene.SelectedShape.Stroke, scene.SelectedShape.Thickness, scene.SelectedShape.DashArray);
 
-        if (_selectedShape is not null)
-        {
-            var selectedComputed = IsComputedShape(_selectedShape);
-            DrawShape(
-                context,
-                _selectedShape,
-                selectedComputed ? ComputedStroke : SelectedStroke,
-                GetShapeStrokeThickness(_selectedShape) + 1.5,
-                (selectedComputed && UseDashedComputedStroke) ? [5d, 4d] : null);
-            if (!selectedComputed)
-                DrawGrabHandles(context, _selectedShape);
-        }
+        if (scene.DrawSelectedHandles && scene.SelectedShape is not null)
+            DrawGrabHandles(context, scene.SelectedShape.Shape);
 
-        if (_previewShape is not null)
-            DrawShape(context, _previewShape, PreviewStroke, GetShapeStrokeThickness(_previewShape), [6, 4]);
+        if (scene.PreviewShape is not null)
+            DrawShape(context, scene.PreviewShape, PreviewStroke, scene.PreviewThickness, PreviewDash);
     }
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
@@ -508,7 +490,7 @@ public class DrawingCanvasControl : Control
             if (change.NewValue is IList<string> newComputed)
                 AttachComputedShapeIdsCollection(newComputed);
 
-            InvalidateVisual();
+            InvalidateScene();
         }
 
         if (change.Property == BindingCandidateShapeIdsProperty)
@@ -519,7 +501,7 @@ public class DrawingCanvasControl : Control
             if (change.NewValue is IList<string> newCandidates)
                 AttachBindingCandidateShapeIdsCollection(newCandidates);
 
-            InvalidateVisual();
+            InvalidateScene();
         }
 
         if (change.Property == ZoomProperty ||
@@ -545,7 +527,7 @@ public class DrawingCanvasControl : Control
             if (change.Property == UseDebugOverlayRendererProperty)
                 _renderer = CreateRenderer();
 
-            InvalidateVisual();
+            InvalidateScene();
         }
     }
 
@@ -578,7 +560,7 @@ public class DrawingCanvasControl : Control
             _hoveredShape = _contextMenuTargetShape;
             ConfigureContextMenuTarget(_contextMenuTargetShape);
             _openContextMenuOnRightRelease = true;
-            InvalidateVisual();
+            InvalidateScene();
             e.Handled = true;
             return;
         }
@@ -606,7 +588,7 @@ public class DrawingCanvasControl : Control
         if (ActiveTool == DrawingTool.Point)
         {
             Shapes.Add(new FlowPoint { Pose = CreatePose(world.X, world.Y) });
-            InvalidateVisual();
+            InvalidateScene();
             e.Handled = true;
             return;
         }
@@ -615,7 +597,7 @@ public class DrawingCanvasControl : Control
         _previewShape = ShapeInteractionEngine.BuildShape(ActiveTool, world, world, MinShapeSize);
         e.Pointer.Capture(this);
         UpdateCursor();
-        InvalidateVisual();
+        InvalidateScene();
         e.Handled = true;
     }
 
@@ -641,7 +623,7 @@ public class DrawingCanvasControl : Control
             ShapeInteractionEngine.ApplyHandleDrag(_selectedShape, _activeHandle, world, _lastDragWorld, MinShapeSize);
             _lastDragWorld = world;
             UpdateCursor();
-            InvalidateVisual();
+            InvalidateScene();
             e.Handled = true;
             return;
         }
@@ -650,7 +632,7 @@ public class DrawingCanvasControl : Control
         {
             _previewShape = ShapeInteractionEngine.BuildShape(ActiveTool, _gestureStartWorld.Value, world, MinShapeSize);
             UpdateCursor();
-            InvalidateVisual();
+            InvalidateScene();
             e.Handled = true;
             return;
         }
@@ -659,7 +641,7 @@ public class DrawingCanvasControl : Control
         _hoveredShape = FindHitShape(world);
         UpdateCursor(world);
         if (!ReferenceEquals(previousHover, _hoveredShape))
-            InvalidateVisual();
+            InvalidateScene();
     }
 
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
@@ -710,7 +692,7 @@ public class DrawingCanvasControl : Control
         _previewShape = null;
         e.Pointer.Capture(null);
         UpdateCursor();
-        InvalidateVisual();
+        InvalidateScene();
         e.Handled = true;
     }
 
@@ -721,7 +703,7 @@ public class DrawingCanvasControl : Control
             _hoveredShape = null;
 
         UpdateCursor();
-        InvalidateVisual();
+        InvalidateScene();
     }
 
     protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
@@ -736,7 +718,7 @@ public class DrawingCanvasControl : Control
         var worldAfterZoom = ScreenToWorld(cursor);
         UpdateCursorPositions(cursor, worldAfterZoom);
         UpdateCursor(worldAfterZoom);
-        InvalidateVisual();
+        InvalidateScene();
         e.Handled = true;
     }
 
@@ -755,7 +737,7 @@ public class DrawingCanvasControl : Control
             _activeHandle = ShapeHandleKind.None;
             _lastDragWorld = null;
             UpdateCursor(world);
-            InvalidateVisual();
+            InvalidateScene();
             e.Handled = true;
             return;
         }
@@ -783,7 +765,7 @@ public class DrawingCanvasControl : Control
             _activeHandle = ShapeHandleKind.None;
             _lastDragWorld = null;
             UpdateCursor();
-            InvalidateVisual();
+            InvalidateScene();
             e.Handled = true;
             return;
         }
@@ -794,7 +776,7 @@ public class DrawingCanvasControl : Control
             _activeHandle = ShapeHandleKind.None;
             _lastDragWorld = null;
             UpdateCursor();
-            InvalidateVisual();
+            InvalidateScene();
             e.Handled = true;
             return;
         }
@@ -803,7 +785,7 @@ public class DrawingCanvasControl : Control
         {
             _selectedShape = hitShape;
             UpdateCursor();
-            InvalidateVisual();
+            InvalidateScene();
             e.Handled = true;
             return;
         }
@@ -813,7 +795,7 @@ public class DrawingCanvasControl : Control
             _activeHandle = ShapeHandleKind.None;
             _lastDragWorld = null;
             UpdateCursor();
-            InvalidateVisual();
+            InvalidateScene();
             e.Handled = true;
             return;
         }
@@ -822,7 +804,7 @@ public class DrawingCanvasControl : Control
         _lastDragWorld = world;
         e.Pointer.Capture(this);
         UpdateCursor();
-        InvalidateVisual();
+        InvalidateScene();
         e.Handled = true;
     }
 
@@ -885,11 +867,11 @@ public class DrawingCanvasControl : Control
                 ComputedShapeIds.RemoveAt(i);
         }
 
-        InvalidateVisual();
+        InvalidateScene();
     }
 
     private void OnComputedShapeIdsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-        => InvalidateVisual();
+        => InvalidateScene();
 
     private void AttachBindingCandidateShapeIdsCollection(IList<string> candidateShapeIds)
     {
@@ -907,7 +889,7 @@ public class DrawingCanvasControl : Control
     }
 
     private void OnBindingCandidateShapeIdsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-        => InvalidateVisual();
+        => InvalidateScene();
 
     private void OnDeleteShapeRequested(object? sender, EventArgs e)
     {
@@ -922,7 +904,7 @@ public class DrawingCanvasControl : Control
         _contextMenuTargetShape = null;
         _activeHandle = ShapeHandleKind.None;
         _lastDragWorld = null;
-        InvalidateVisual();
+        InvalidateScene();
     }
 
     private void OnCenterViewRequested(object? sender, EventArgs e)
@@ -962,7 +944,7 @@ public class DrawingCanvasControl : Control
             ComputedShapeIds.Remove(shape.Id);
         }
 
-        InvalidateVisual();
+        InvalidateScene();
     }
 
     private async Task ShowShapePropertiesDialogAsync(Shape shape)
@@ -983,7 +965,7 @@ public class DrawingCanvasControl : Control
             {
                 editor.ApplyChanges();
                 ClearImageCache();
-                InvalidateVisual();
+                InvalidateScene();
             });
         });
     }
@@ -1005,7 +987,7 @@ public class DrawingCanvasControl : Control
             dialog.PrimaryButtonCommand = new ActionCommand(() =>
             {
                 editor.ApplyTo(this);
-                InvalidateVisual();
+                InvalidateScene();
             });
         });
     }
@@ -1021,7 +1003,7 @@ public class DrawingCanvasControl : Control
             _selectedShape = _contextMenuTargetShape;
 
         ConfigureContextMenuTarget(_contextMenuTargetShape);
-        InvalidateVisual();
+        InvalidateScene();
     }
 
     private static Pose CreatePose(double x, double y, FlowVector? orientation = null)
@@ -1574,6 +1556,69 @@ public class DrawingCanvasControl : Control
 
     private FlowVector ScreenToWorld(AvaloniaPoint screen)
         => Viewport.ScreenToWorld(screen);
+
+    private DrawingCanvasSceneSnapshot GetSceneSnapshot()
+    {
+        if (!_isSceneSnapshotDirty)
+            return _sceneSnapshot;
+
+        _sceneSnapshot = BuildSceneSnapshot();
+        _isSceneSnapshotDirty = false;
+        return _sceneSnapshot;
+    }
+
+    private DrawingCanvasSceneSnapshot BuildSceneSnapshot()
+    {
+        var shapes = new List<DrawingCanvasSceneShape>(Shapes.Count);
+        foreach (var shape in Shapes)
+        {
+            if (ReferenceEquals(shape, _selectedShape) || ReferenceEquals(shape, _hoveredShape))
+                continue;
+
+            var isComputed = IsComputedShape(shape);
+            var isBindingCandidate = IsBindingCandidate(shape);
+            var stroke = isBindingCandidate ? SelectedStroke : (isComputed ? ComputedStroke : ShapeStroke);
+            var thickness = GetShapeStrokeThickness(shape) + (isBindingCandidate ? 1.25 : 0);
+            var dashPattern = isBindingCandidate
+                ? BindingDash
+                : (isComputed && UseDashedComputedStroke) ? ComputedDash : null;
+            shapes.Add(new DrawingCanvasSceneShape(shape, stroke, thickness, dashPattern, isComputed));
+        }
+
+        DrawingCanvasSceneShape? hoverShape = null;
+        if (_hoveredShape is not null && !ReferenceEquals(_hoveredShape, _selectedShape))
+            hoverShape = new DrawingCanvasSceneShape(_hoveredShape, HoverStroke, GetShapeStrokeThickness(_hoveredShape) + 1.25, null, IsComputedShape(_hoveredShape));
+
+        DrawingCanvasSceneShape? selectedShape = null;
+        var drawSelectedHandles = false;
+        if (_selectedShape is not null)
+        {
+            var selectedComputed = IsComputedShape(_selectedShape);
+            selectedShape = new DrawingCanvasSceneShape(
+                _selectedShape,
+                selectedComputed ? ComputedStroke : SelectedStroke,
+                GetShapeStrokeThickness(_selectedShape) + 1.5,
+                (selectedComputed && UseDashedComputedStroke) ? ComputedDash : null,
+                selectedComputed);
+            drawSelectedHandles = !selectedComputed;
+        }
+
+        return new DrawingCanvasSceneSnapshot
+        {
+            Shapes = shapes,
+            HoverShape = hoverShape,
+            SelectedShape = selectedShape,
+            DrawSelectedHandles = drawSelectedHandles,
+            PreviewShape = _previewShape,
+            PreviewThickness = _previewShape is null ? 0d : GetShapeStrokeThickness(_previewShape),
+        };
+    }
+
+    private void InvalidateScene()
+    {
+        _isSceneSnapshotDirty = true;
+        InvalidateVisual();
+    }
 
     private IDrawingCanvasRenderer CreateRenderer()
     {
