@@ -6,4 +6,5 @@
   &lt;TestAncestor&gt;
     &lt;TestId&gt;xUnit::1B0A3739-D011-48D0-A78C-F1FE2BE10D08::net10.0::Flowxel.Imaging.Tests.AdvancedOperationsTests.SlantedAntiAliasedLine_ExtractionProvidesSubpixelPose&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
-&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
+&lt;/SessionState&gt;</s:String>
+	</wpf:ResourceDictionary>

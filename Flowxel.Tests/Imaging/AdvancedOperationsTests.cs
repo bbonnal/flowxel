@@ -1,10 +1,10 @@
 using Flowxel.Core.Geometry.Primitives;
 using Flowxel.Core.Geometry.Shapes;
-using Flowxel.Graph;
-using Flowxel.Imaging.Operations;
-using Flowxel.Imaging.Operations.Constructions;
-using Flowxel.Imaging.Operations.Extractions;
-using Flowxel.Imaging.Operations.Transforms;
+using Flowxel.Processing;
+using Flowxel.Vision.OpenCv.Operations;
+using Flowxel.Operations.Constructions;
+using Flowxel.Vision.OpenCv.Operations.Extractions;
+using Flowxel.Vision.OpenCv.Operations.Transforms;
 using OpenCvSharp;
 using Point = Flowxel.Core.Geometry.Shapes.Point;
 
@@ -379,8 +379,8 @@ public class AdvancedOperationsTests
 
     private static async Task<TOutput> ExecuteMatOperationAsync<TOutput>(
         Mat source,
-        Func<ResourcePool, Graph<IExecutableNode>, Node<Mat, TOutput>> operationFactory,
-        Action<Node<Mat, TOutput>> configure)
+        Func<ResourcePool, Graph<IExecutableNode>, ExecutionNode<Mat, TOutput>> operationFactory,
+        Action<ExecutionNode<Mat, TOutput>> configure)
         where TOutput : notnull
     {
         var pool = new ResourcePool();
@@ -410,14 +410,14 @@ public class AdvancedOperationsTests
     }
 
     private sealed class SourceMatOperation(ResourcePool pool, Graph<IExecutableNode> graph, Mat source)
-        : Node<Empty, Mat>(pool, graph)
+        : ExecutionNode<Empty, Mat>(pool, graph)
     {
         protected override Mat ExecuteInternal(IReadOnlyList<Empty> inputs, IReadOnlyDictionary<string, object> parameters, CancellationToken ct)
             => source.Clone();
     }
 
     private sealed class SourceLineOperation(ResourcePool pool, Graph<IExecutableNode> graph, Line line)
-        : Node<Empty, Line>(pool, graph)
+        : ExecutionNode<Empty, Line>(pool, graph)
     {
         protected override Line ExecuteInternal(IReadOnlyList<Empty> inputs, IReadOnlyDictionary<string, object> parameters, CancellationToken ct)
             => line;

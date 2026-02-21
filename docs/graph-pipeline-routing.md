@@ -1,6 +1,6 @@
 # Graph Pipeline Routing
 
-This document describes how `Flowxel.Graph` and `Flowxel.Imaging` execute a DAG with deterministic, port-addressed data flow.
+This document describes how `Flowxel.Processing` and `Flowxel.Vision.OpenCv` execute a DAG with deterministic, port-addressed data flow.
 
 ## Core model
 
@@ -12,7 +12,7 @@ This document describes how `Flowxel.Graph` and `Flowxel.Imaging` execute a DAG 
   - `ToPortKey`
 - `ResourcePool` stores outputs by `(nodeId, portKey)`.
 
-Default port names are in `Flowxel.Graph/GraphPorts.cs`:
+Default port names are in `Flowxel.Processing/GraphPorts.cs`:
 
 - input: `in`
 - output: `out`
@@ -44,7 +44,7 @@ This removes ambiguity from predecessor enumeration order for multi-input operat
 
 ## Node input/output contract
 
-`Flowxel.Imaging.Operations.Node<TIn,TOut>` behavior:
+`Flowxel.Vision.OpenCv.Operations.Node<TIn,TOut>` behavior:
 
 - `InputPorts`:
   - default is `["in"]` for regular nodes.

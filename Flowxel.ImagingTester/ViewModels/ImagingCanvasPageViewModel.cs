@@ -14,11 +14,13 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Flowxel.Core.Geometry.Primitives;
 using Flowxel.Core.Geometry.Shapes;
-using Flowxel.Graph;
-using Flowxel.Imaging.Operations.Constructions;
-using Flowxel.Imaging.Operations.Extractions;
-using Flowxel.Imaging.Operations.Filters;
-using Flowxel.Imaging.Operations.IO;
+using Flowxel.Processing;
+using Flowxel.Operations.Constructions;
+using Flowxel.Vision.OpenCv.Operations.Extractions;
+using Flowxel.Vision.OpenCv.Operations.Filters;
+using Flowxel.Vision.OpenCv.Operations.IO;
+using Flowxel.Vision;
+using Flowxel.Vision.OpenCv;
 using OpenCvSharp;
 using Flowxel.UI.Controls;
 using Flowxel.UI.Controls.Processing;
@@ -38,6 +40,7 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
     private readonly IContentDialogService _dialogService;
     private readonly IFileDialogService _fileDialogService;
     private readonly IInfoBarService _infoBarService;
+    private readonly IVisionBackend _visionBackend;
     private readonly ISceneSerializer _sceneSerializer = new JsonSceneSerializer();
 
     private readonly Dictionary<string, string> _loadPathByNodeId = new(StringComparer.Ordinal);
@@ -56,11 +59,13 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
     public ImagingCanvasPageViewModel(
         IContentDialogService dialogService,
         IFileDialogService fileDialogService,
-        IInfoBarService infoBarService)
+        IInfoBarService infoBarService,
+        IVisionBackend visionBackend)
     {
         _dialogService = dialogService;
         _fileDialogService = fileDialogService;
         _infoBarService = infoBarService;
+        _visionBackend = visionBackend;
 
         SelectToolCommand = new RelayCommand(() =>
         {
@@ -312,7 +317,7 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
                 type.IsClass &&
                 !type.IsAbstract &&
                 typeof(IExecutableNode).IsAssignableFrom(type) &&
-                (type.Namespace ?? string.Empty).Contains("Flowxel.Imaging.Operations", StringComparison.Ordinal))
+                (type.Namespace ?? string.Empty).Contains("Flowxel.Vision.OpenCv.Operations", StringComparison.Ordinal))
             .OrderBy(type => type.Name)
             .Select(type => type.Name)
             .ToList() ?? [];
@@ -688,9 +693,9 @@ public partial class ImagingCanvasPageViewModel : ViewModelBase
         {
             IExecutableNode node = descriptor.OperationType switch
             {
-                "LoadOperation" => new LoadOperation(pool, graph),
-                "GaussianBlurOperation" => new GaussianBlurOperation(pool, graph),
-                "ExtractLineInRegionsOperation" => new ExtractLineInRegionsOperation(pool, graph),
+                "LoadOperation" => new LoadOperation(pool, graph, _visionBackend),
+                "GaussianBlurOperation" => new GaussianBlurOperation(pool, graph, _visionBackend),
+                "ExtractLineInRegionsOperation" => new ExtractLineInRegionsOperation(pool, graph, _visionBackend),
                 "ConstructLineLineIntersectionOperation" => new ConstructLineLineIntersectionOperation(pool, graph),
                 _ => throw new InvalidOperationException($"Unsupported operation type: {descriptor.OperationType}")
             };

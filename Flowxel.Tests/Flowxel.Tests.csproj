@@ -22,7 +22,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Flowxel.Core\Flowxel.Core.csproj" />
-    <ProjectReference Include="..\Flowxel.Graph\Flowxel.Graph.csproj" />
-    <ProjectReference Include="..\Flowxel.Imaging\Flowxel.Imaging.csproj" />
+    <ProjectReference Include="..\Flowxel.Processing\Flowxel.Processing.csproj" />
+    <ProjectReference Include="..\Flowxel.Operations\Flowxel.Operations.csproj" />
+    <ProjectReference Include="..\Flowxel.Vision.Abstractions\Flowxel.Vision.Abstractions.csproj" />
+    <ProjectReference Include="..\Flowxel.Vision.OpenCv\Flowxel.Vision.OpenCv.csproj" />
   </ItemGroup>
 </Project>

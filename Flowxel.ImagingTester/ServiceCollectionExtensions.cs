@@ -2,6 +2,8 @@ using Flowxel.ImagingTester.ViewModels;
 using Flowxel.ImagingTester.Views;
 using Flowxel.UI;
 using Flowxel.UI.Services;
+using Flowxel.Vision;
+using Flowxel.Vision.OpenCv;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -18,6 +20,7 @@ public static class ServiceCollectionExtensions
         _ = services.AddSingleton<IContentDialogService, ContentDialogService>();
         _ = services.AddSingleton<IFileDialogService, FileDialogService>();
         _ = services.AddSingleton<IInfoBarService, InfoBarService>();
+        _ = services.AddSingleton<IVisionBackend>(_ => OpenCvVisionBackend.Shared);
 
         _ = services.AddSingleton<MainWindow>();
         _ = services.AddSingleton<MainWindowViewModel>();

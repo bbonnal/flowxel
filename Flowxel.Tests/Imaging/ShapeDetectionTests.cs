@@ -1,9 +1,9 @@
 using Flowxel.Core.Geometry.Shapes;
-using Flowxel.Graph;
-using Flowxel.Imaging.Operations.Extractions;
-using Flowxel.Imaging.Operations.Filters;
-using Flowxel.Imaging.Operations.IO;
-using Flowxel.Imaging.Operations.Transforms;
+using Flowxel.Processing;
+using Flowxel.Vision.OpenCv.Operations.Extractions;
+using Flowxel.Vision.OpenCv.Operations.Filters;
+using Flowxel.Vision.OpenCv.Operations.IO;
+using Flowxel.Vision.OpenCv.Operations.Transforms;
 using Microsoft.Extensions.DependencyInjection;
 using OpenCvSharp;
 using Point = OpenCvSharp.Point;

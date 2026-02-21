@@ -1,4 +1,4 @@
-using Flowxel.Imaging.Operations.Filters;
+using Flowxel.Vision.OpenCv.Operations.Filters;
 using OpenCvSharp;
 
 namespace Flowxel.Imaging.Tests;

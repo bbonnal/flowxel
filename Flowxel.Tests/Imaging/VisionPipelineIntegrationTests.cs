@@ -1,8 +1,8 @@
 using System.Diagnostics;
-using Flowxel.Graph;
-using Flowxel.Imaging.Operations.Filters;
-using Flowxel.Imaging.Operations.IO;
-using Flowxel.Imaging.Operations.Transforms;
+using Flowxel.Processing;
+using Flowxel.Vision.OpenCv.Operations.Filters;
+using Flowxel.Vision.OpenCv.Operations.IO;
+using Flowxel.Vision.OpenCv.Operations.Transforms;
 using Microsoft.Extensions.DependencyInjection;
 using OpenCvSharp;
 
