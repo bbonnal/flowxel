@@ -13,6 +13,9 @@ public static class ShapeInteractionEngine
 
     public static Shape? BuildShape(DrawingTool tool, Vector start, Vector end, double minShapeSize)
     {
+        if (ToolShapeFactoryRegistry.TryGet(tool, out var factory))
+            return factory.Build(start, end, minShapeSize);
+
         var delta = end - start;
 
         switch (tool)
@@ -203,6 +206,9 @@ public static class ShapeInteractionEngine
 
     public static bool IsShapePerimeterHit(Shape shape, Vector world, double tolerance, double pointRadius)
     {
+        if (ShapeBehaviorRegistry.TryGet(shape, out var behavior))
+            return behavior.IsPerimeterHit(shape, world, tolerance, pointRadius);
+
         switch (shape)
         {
             case FlowPoint point:
@@ -261,6 +267,9 @@ public static class ShapeInteractionEngine
 
     public static IReadOnlyList<ShapeHandle> GetHandles(Shape shape)
     {
+        if (ShapeBehaviorRegistry.TryGet(shape, out var behavior))
+            return behavior.GetHandles(shape);
+
         switch (shape)
         {
             case FlowPoint point:
@@ -361,6 +370,12 @@ public static class ShapeInteractionEngine
 
     public static void ApplyHandleDrag(Shape shape, ShapeHandleKind handle, Vector world, Vector? lastWorld, double minShapeSize)
     {
+        if (ShapeBehaviorRegistry.TryGet(shape, out var behavior))
+        {
+            behavior.ApplyHandleDrag(shape, handle, world, lastWorld, minShapeSize);
+            return;
+        }
+
         switch (shape)
         {
             case FlowPoint point:
@@ -463,7 +478,7 @@ public static class ShapeInteractionEngine
         }
     }
 
-    private static void ApplyCircleHandleDrag(Circle circle, ShapeHandleKind handle, Vector world, Vector? lastWorld, double minShapeSize)
+    internal static void ApplyCircleHandleDrag(Circle circle, ShapeHandleKind handle, Vector world, Vector? lastWorld, double minShapeSize)
     {
         switch (handle)
         {
@@ -476,7 +491,7 @@ public static class ShapeInteractionEngine
         }
     }
 
-    private static void ApplyImageHandleDrag(ImageShape image, ShapeHandleKind handle, Vector world, Vector? lastWorld, double minShapeSize)
+    internal static void ApplyImageHandleDrag(ImageShape image, ShapeHandleKind handle, Vector world, Vector? lastWorld, double minShapeSize)
     {
         if (handle == ShapeHandleKind.Move && lastWorld is not null)
         {
@@ -521,7 +536,7 @@ public static class ShapeInteractionEngine
         }
     }
 
-    private static void ApplyTextBoxHandleDrag(TextBoxShape textBox, ShapeHandleKind handle, Vector world, Vector? lastWorld, double minShapeSize)
+    internal static void ApplyTextBoxHandleDrag(TextBoxShape textBox, ShapeHandleKind handle, Vector world, Vector? lastWorld, double minShapeSize)
     {
         if (handle == ShapeHandleKind.Move && lastWorld is not null)
         {
@@ -566,7 +581,7 @@ public static class ShapeInteractionEngine
         }
     }
 
-    private static void ApplyArrowHandleDrag(ArrowShape arrow, ShapeHandleKind handle, Vector world, Vector? lastWorld, double minShapeSize)
+    internal static void ApplyArrowHandleDrag(ArrowShape arrow, ShapeHandleKind handle, Vector world, Vector? lastWorld, double minShapeSize)
     {
         var start = arrow.StartPoint;
         var end = arrow.EndPoint;
@@ -608,7 +623,7 @@ public static class ShapeInteractionEngine
         }
     }
 
-    private static void ApplyReferentialDrag(ReferentialShape shape, ShapeHandleKind handle, Vector world, Vector? lastWorld, double minShapeSize)
+    internal static void ApplyReferentialDrag(ReferentialShape shape, ShapeHandleKind handle, Vector world, Vector? lastWorld, double minShapeSize)
     {
         switch (handle)
         {
@@ -632,7 +647,7 @@ public static class ShapeInteractionEngine
         }
     }
 
-    private static void ApplyDimensionDrag(DimensionShape shape, ShapeHandleKind handle, Vector world, Vector? lastWorld, double minShapeSize)
+    internal static void ApplyDimensionDrag(DimensionShape shape, ShapeHandleKind handle, Vector world, Vector? lastWorld, double minShapeSize)
     {
         switch (handle)
         {
@@ -657,7 +672,7 @@ public static class ShapeInteractionEngine
         }
     }
 
-    private static void ApplyAngleDimensionDrag(AngleDimensionShape shape, ShapeHandleKind handle, Vector world, Vector? lastWorld, double minShapeSize)
+    internal static void ApplyAngleDimensionDrag(AngleDimensionShape shape, ShapeHandleKind handle, Vector world, Vector? lastWorld, double minShapeSize)
     {
         switch (handle)
         {
@@ -686,7 +701,7 @@ public static class ShapeInteractionEngine
         }
     }
 
-    private static void ApplyIconDrag(IconShape shape, ShapeHandleKind handle, Vector world, Vector? lastWorld, double minShapeSize)
+    internal static void ApplyIconDrag(IconShape shape, ShapeHandleKind handle, Vector world, Vector? lastWorld, double minShapeSize)
     {
         switch (handle)
         {
@@ -699,7 +714,7 @@ public static class ShapeInteractionEngine
         }
     }
 
-    private static void ApplyArcDrag(ArcShape shape, ShapeHandleKind handle, Vector world, Vector? lastWorld, double minShapeSize)
+    internal static void ApplyArcDrag(ArcShape shape, ShapeHandleKind handle, Vector world, Vector? lastWorld, double minShapeSize)
     {
         switch (handle)
         {
@@ -726,7 +741,7 @@ public static class ShapeInteractionEngine
         }
     }
 
-    private static void SetLineFromEndpoints(Line line, Vector start, Vector end, double minShapeSize)
+    internal static void SetLineFromEndpoints(Line line, Vector start, Vector end, double minShapeSize)
     {
         var delta = end - start;
         if (delta.M <= minShapeSize)
@@ -747,7 +762,7 @@ public static class ShapeInteractionEngine
         arrow.HeadLength = Math.Max(12, arrow.Length * 0.15);
     }
 
-    private static void SetCenterlineRectangleFromEndpoints(CenterlineRectangleShape shape, Vector start, Vector end, double minShapeSize)
+    internal static void SetCenterlineRectangleFromEndpoints(CenterlineRectangleShape shape, Vector start, Vector end, double minShapeSize)
     {
         var delta = end - start;
         if (delta.M <= minShapeSize)
@@ -767,7 +782,7 @@ public static class ShapeInteractionEngine
         shape.Length = delta.M;
     }
 
-    private static void ResizeRectangle(FlowRectangle rectangle, Vector movingCorner, Vector fixedCorner, double minShapeSize)
+    internal static void ResizeRectangle(FlowRectangle rectangle, Vector movingCorner, Vector fixedCorner, double minShapeSize)
     {
         var width = Math.Abs(movingCorner.X - fixedCorner.X);
         var height = Math.Abs(movingCorner.Y - fixedCorner.Y);
@@ -789,7 +804,7 @@ public static class ShapeInteractionEngine
         apply(center, width, height);
     }
 
-    private static IReadOnlyList<ShapeHandle> GetBoxHandles(Vector topLeft, Vector topRight, Vector bottomRight, Vector bottomLeft, Vector center)
+    internal static IReadOnlyList<ShapeHandle> GetBoxHandles(Vector topLeft, Vector topRight, Vector bottomRight, Vector bottomLeft, Vector center)
         =>
         [
             new ShapeHandle(ShapeHandleKind.RectTopLeft, topLeft),
@@ -799,7 +814,7 @@ public static class ShapeInteractionEngine
             new ShapeHandle(ShapeHandleKind.Move, center)
         ];
 
-    private static bool TryBuildAxisAlignedBox(Vector a, Vector b, double minShapeSize, out Vector center, out double width, out double height)
+    internal static bool TryBuildAxisAlignedBox(Vector a, Vector b, double minShapeSize, out Vector center, out double width, out double height)
     {
         width = Math.Abs(a.X - b.X);
         height = Math.Abs(a.Y - b.Y);
@@ -807,12 +822,12 @@ public static class ShapeInteractionEngine
         return width > minShapeSize && height > minShapeSize;
     }
 
-    private static Pose CreatePose(double x, double y, Vector? orientation = null)
+    internal static Pose CreatePose(double x, double y, Vector? orientation = null)
         => orientation is null
             ? Pose.At(x, y)
             : Pose.At(new Vector(x, y), orientation.Value);
 
-    private static bool IsRectanglePerimeterHit(Vector topLeft, Vector topRight, Vector bottomRight, Vector bottomLeft, Vector point, double tolerance)
+    internal static bool IsRectanglePerimeterHit(Vector topLeft, Vector topRight, Vector bottomRight, Vector bottomLeft, Vector point, double tolerance)
     {
         return DistanceToSegment(point, topLeft, topRight) <= tolerance ||
                DistanceToSegment(point, topRight, bottomRight) <= tolerance ||
@@ -820,7 +835,7 @@ public static class ShapeInteractionEngine
                DistanceToSegment(point, bottomLeft, topLeft) <= tolerance;
     }
 
-    private static bool IsInsideConvexQuad(Vector topLeft, Vector topRight, Vector bottomRight, Vector bottomLeft, Vector point)
+    internal static bool IsInsideConvexQuad(Vector topLeft, Vector topRight, Vector bottomRight, Vector bottomLeft, Vector point)
     {
         var d1 = Cross(topRight - topLeft, point - topLeft);
         var d2 = Cross(bottomRight - topRight, point - topRight);
@@ -832,21 +847,21 @@ public static class ShapeInteractionEngine
         return !(hasNegative && hasPositive);
     }
 
-    private static bool IsArrowHit(ArrowShape arrow, Vector point, double tolerance)
+    internal static bool IsArrowHit(ArrowShape arrow, Vector point, double tolerance)
     {
         return DistanceToSegment(point, arrow.StartPoint, arrow.EndPoint) <= tolerance ||
                DistanceToSegment(point, arrow.EndPoint, arrow.HeadLeftPoint) <= tolerance ||
                DistanceToSegment(point, arrow.EndPoint, arrow.HeadRightPoint) <= tolerance;
     }
 
-    private static bool IsDimensionHit(DimensionShape dimension, Vector point, double tolerance)
+    internal static bool IsDimensionHit(DimensionShape dimension, Vector point, double tolerance)
     {
         return DistanceToSegment(point, dimension.StartPoint, dimension.OffsetStart) <= tolerance ||
                DistanceToSegment(point, dimension.EndPoint, dimension.OffsetEnd) <= tolerance ||
                DistanceToSegment(point, dimension.OffsetStart, dimension.OffsetEnd) <= tolerance;
     }
 
-    private static bool IsAngleDimensionHit(AngleDimensionShape dimension, Vector point, double tolerance)
+    internal static bool IsAngleDimensionHit(AngleDimensionShape dimension, Vector point, double tolerance)
     {
         if (DistanceToSegment(point, dimension.Center, dimension.StartPoint) <= tolerance ||
             DistanceToSegment(point, dimension.Center, dimension.EndPoint) <= tolerance)
@@ -861,7 +876,7 @@ public static class ShapeInteractionEngine
         return IsAngleOnSweep(localAngle, dimension.StartAngleRad, dimension.SweepAngleRad);
     }
 
-    private static bool IsArcHit(ArcShape arc, Vector point, double tolerance)
+    internal static bool IsArcHit(ArcShape arc, Vector point, double tolerance)
     {
         var radial = point - arc.Center;
         var radiusDistance = Math.Abs(radial.M - arc.Radius);
@@ -923,23 +938,23 @@ public static class ShapeInteractionEngine
         return normalized;
     }
 
-    private static double Dot(Vector a, Vector b)
+    internal static double Dot(Vector a, Vector b)
         => (a.X * b.X) + (a.Y * b.Y);
 
     private static double Cross(Vector a, Vector b)
         => (a.X * b.Y) - (a.Y * b.X);
 
-    private static double Distance(Vector a, Vector b)
+    internal static double Distance(Vector a, Vector b)
     {
         var dx = a.X - b.X;
         var dy = a.Y - b.Y;
         return Math.Sqrt((dx * dx) + (dy * dy));
     }
 
-    private static Vector Midpoint(Vector a, Vector b)
+    internal static Vector Midpoint(Vector a, Vector b)
         => new((a.X + b.X) * 0.5, (a.Y + b.Y) * 0.5);
 
-    private static double DistanceToSegment(Vector point, Vector segStart, Vector segEnd)
+    internal static double DistanceToSegment(Vector point, Vector segStart, Vector segEnd)
     {
         var dx = segEnd.X - segStart.X;
         var dy = segEnd.Y - segStart.Y;
