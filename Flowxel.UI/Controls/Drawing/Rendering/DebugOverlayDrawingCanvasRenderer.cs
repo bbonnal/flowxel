@@ -19,7 +19,7 @@ internal sealed class DebugOverlayDrawingCanvasRenderer(IDrawingCanvasRenderer i
         stopwatch.Stop();
 
         var stats = canvas.LastRenderStats;
-        var text = $"render {stopwatch.Elapsed.TotalMilliseconds:0.00} ms | backend {canvas.RenderBackendKind} | drawn {stats.DrawnShapes}/{stats.TotalShapes} (culled {stats.CulledShapes}) | zoom {canvas.Zoom:0.###} | pan ({canvas.Pan.X:0.#}, {canvas.Pan.Y:0.#})";
+        var text = $"render {stopwatch.Elapsed.TotalMilliseconds:0.00} ms | backend {canvas.RenderBackendKind} | drawn {stats.DrawnShapes}/{stats.TotalShapes} (culled {stats.CulledShapes}) | textCache size {canvas.TextLayoutCacheCount} | zoom {canvas.Zoom:0.###} | pan ({canvas.Pan.X:0.#}, {canvas.Pan.Y:0.#})";
         var formatted = new FormattedText(
             text,
             CultureInfo.InvariantCulture,
