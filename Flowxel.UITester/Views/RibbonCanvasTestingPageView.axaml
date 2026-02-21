@@ -109,6 +109,7 @@
                 </Border>
 
                 <ruiDrawing:DrawingCanvasControl Shapes="{Binding Shapes}"
+                                                UseDebugOverlayRenderer="True"
                                                 ActiveTool="{Binding ActiveTool}"
                                                 Zoom="{Binding Zoom}"
                                                 Pan="{Binding Pan}"

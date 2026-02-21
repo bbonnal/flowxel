@@ -6,6 +6,7 @@
              x:DataType="vm:CanvasDocumentViewModel">
 
     <ruiDrawing:DrawingCanvasControl Shapes="{Binding Shapes}"
+                                    UseDebugOverlayRenderer="True"
                                     ActiveTool="{Binding ActiveTool, Mode=TwoWay}"
                                     Zoom="{Binding Zoom, Mode=TwoWay}"
                                     Pan="{Binding Pan, Mode=TwoWay}"

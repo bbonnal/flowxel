@@ -33,6 +33,7 @@ public class DrawingCanvasControl : Control
     private const double MinShapeSize = 0.0001;
 
     private readonly DrawingCanvasContextMenu _contextMenu;
+    private IDrawingCanvasRenderer _renderer;
     private readonly Dictionary<string, Bitmap?> _imageCache = new(StringComparer.OrdinalIgnoreCase);
     private readonly HashSet<string> _invalidImageWarnings = new(StringComparer.OrdinalIgnoreCase);
 
@@ -185,6 +186,9 @@ public class DrawingCanvasControl : Control
     public static readonly StyledProperty<double> HitTestToleranceProperty =
         AvaloniaProperty.Register<DrawingCanvasControl, double>(nameof(HitTestTolerance), 8d);
 
+    public static readonly StyledProperty<bool> UseDebugOverlayRendererProperty =
+        AvaloniaProperty.Register<DrawingCanvasControl, bool>(nameof(UseDebugOverlayRenderer), false);
+
     public static readonly StyledProperty<AvaloniaPoint> CursorAvaloniaPositionProperty =
         AvaloniaProperty.Register<DrawingCanvasControl, AvaloniaPoint>(
             nameof(CursorAvaloniaPosition),
@@ -204,6 +208,7 @@ public class DrawingCanvasControl : Control
         ComputedShapeIds = [];
 
         _contextMenu = new DrawingCanvasContextMenu();
+        _renderer = CreateRenderer();
         ContextMenu = _contextMenu;
     }
 
@@ -399,6 +404,12 @@ public class DrawingCanvasControl : Control
         set => SetValue(HitTestToleranceProperty, value);
     }
 
+    public bool UseDebugOverlayRenderer
+    {
+        get => GetValue(UseDebugOverlayRendererProperty);
+        set => SetValue(UseDebugOverlayRendererProperty, value);
+    }
+
     public AvaloniaPoint CursorAvaloniaPosition
     {
         get => GetValue(CursorAvaloniaPositionProperty);
@@ -427,7 +438,11 @@ public class DrawingCanvasControl : Control
     public override void Render(DrawingContext context)
     {
         base.Render(context);
+        _renderer.Render(this, context);
+    }
 
+    internal void RenderCore(DrawingContext context)
+    {
         context.FillRectangle(CanvasBackground, new Rect(Bounds.Size));
         DrawCanvasBoundary(context);
         DrawOriginMarker(context);
@@ -511,6 +526,7 @@ public class DrawingCanvasControl : Control
             change.Property == PanProperty ||
             change.Property == ActiveToolProperty ||
             change.Property == InteractionModeProperty ||
+            change.Property == UseDebugOverlayRendererProperty ||
             change.Property == CanvasBackgroundProperty ||
             change.Property == ShowCanvasBoundaryProperty ||
             change.Property == CanvasBoundaryWidthProperty ||
@@ -526,6 +542,9 @@ public class DrawingCanvasControl : Control
             change.Property == OriginXAxisBrushProperty ||
             change.Property == OriginYAxisBrushProperty)
         {
+            if (change.Property == UseDebugOverlayRendererProperty)
+                _renderer = CreateRenderer();
+
             InvalidateVisual();
         }
     }
@@ -710,10 +729,9 @@ public class DrawingCanvasControl : Control
         base.OnPointerWheelChanged(e);
 
         var cursor = e.GetPosition(this);
-        var worldBeforeZoom = ScreenToWorld(cursor);
         var zoomFactor = Math.Pow(1.12, e.Delta.Y);
-        Zoom = Math.Clamp(Zoom * zoomFactor, MinZoom, MaxZoom);
-        Pan = new AvaloniaVector(cursor.X - (worldBeforeZoom.X * Zoom), cursor.Y - (worldBeforeZoom.Y * Zoom));
+        var nextViewport = Viewport.ZoomAroundScreen(cursor, zoomFactor, MinZoom, MaxZoom);
+        SetViewport(nextViewport);
 
         var worldAfterZoom = ScreenToWorld(cursor);
         UpdateCursorPositions(cursor, worldAfterZoom);
@@ -1543,11 +1561,27 @@ public class DrawingCanvasControl : Control
         });
     }
 
+    private CanvasViewportTransform Viewport => new(Zoom, Pan);
+
+    private void SetViewport(CanvasViewportTransform viewport)
+    {
+        Zoom = viewport.Zoom;
+        Pan = viewport.Pan;
+    }
+
     private AvaloniaPoint WorldToScreen(FlowVector world)
-        => new((world.X * Zoom) + Pan.X, (world.Y * Zoom) + Pan.Y);
+        => Viewport.WorldToScreen(world);
 
     private FlowVector ScreenToWorld(AvaloniaPoint screen)
-        => new((screen.X - Pan.X) / Zoom, (screen.Y - Pan.Y) / Zoom);
+        => Viewport.ScreenToWorld(screen);
+
+    private IDrawingCanvasRenderer CreateRenderer()
+    {
+        if (!UseDebugOverlayRenderer)
+            return new DefaultDrawingCanvasRenderer();
+
+        return new DebugOverlayDrawingCanvasRenderer(new DefaultDrawingCanvasRenderer());
+    }
 
     private sealed class ActionCommand(Action execute) : ICommand
     {

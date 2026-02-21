@@ -95,6 +95,7 @@
                                       CanClose="False"
                                       HorizontalSizeMode="Stretch">
                         <ruiDrawing:DrawingCanvasControl Shapes="{Binding Shapes}"
+                                                         UseDebugOverlayRenderer="True"
                                                          ComputedShapeIds="{Binding ComputedShapeIds}"
                                                          UseDashedComputedStroke="False"
                                                          StrokeThickness="2.5"
