@@ -1,25 +1,24 @@
 using Flowxel.Core.Geometry.Primitives;
-using Flowxel.UI.Controls.Drawing.Shapes;
+using Line = Flowxel.Core.Geometry.Shapes.Line;
 using Shape = Flowxel.Core.Geometry.Shapes.Shape;
 
 namespace Flowxel.UI.Controls.Drawing;
 
-internal sealed class ReferentialToolShapeFactory : IToolShapeFactory
+internal sealed class LineToolShapeBuilder : IToolShapeBuilder
 {
-    public DrawingTool Tool => DrawingTool.Referential;
+    public DrawingTool Tool => DrawingTool.Line;
 
     public Shape? Build(Vector start, Vector end, double minShapeSize)
     {
         var delta = end - start;
-        var axisLength = delta.M;
-        if (axisLength <= minShapeSize)
+        var length = delta.M;
+        if (length <= minShapeSize)
             return null;
 
-        return new ReferentialShape
+        return new Line
         {
             Pose = ShapeMath.CreatePose(start.X, start.Y, delta.Normalize()),
-            XAxisLength = axisLength,
-            YAxisLength = axisLength
+            Length = length
         };
     }
 }

@@ -3,7 +3,7 @@ using Flowxel.Core.Geometry.Shapes;
 
 namespace Flowxel.UI.Controls.Drawing;
 
-internal interface IToolShapeFactory
+internal interface IToolShapeBuilder
 {
     DrawingTool Tool { get; }
     Shape? Build(Vector start, Vector end, double minShapeSize);

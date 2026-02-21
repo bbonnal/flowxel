@@ -7,7 +7,7 @@ public static class ShapeInteractionEngine
 {
     public static Shape? BuildShape(DrawingTool tool, Vector start, Vector end, double minShapeSize)
     {
-        if (!ToolShapeFactoryRegistry.TryGet(tool, out var factory))
+        if (!ToolShapeBuilderRegistry.TryGet(tool, out var factory))
             return null;
 
         return factory.Build(start, end, minShapeSize);

@@ -4,7 +4,7 @@ using Shape = Flowxel.Core.Geometry.Shapes.Shape;
 
 namespace Flowxel.UI.Controls.Drawing;
 
-internal sealed class TextBoxToolShapeFactory : IToolShapeFactory
+internal sealed class TextBoxToolShapeBuilder : IToolShapeBuilder
 {
     public DrawingTool Tool => DrawingTool.TextBox;
 

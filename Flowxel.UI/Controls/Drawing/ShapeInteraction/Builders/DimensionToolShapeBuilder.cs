@@ -4,9 +4,9 @@ using Shape = Flowxel.Core.Geometry.Shapes.Shape;
 
 namespace Flowxel.UI.Controls.Drawing;
 
-internal sealed class ArrowToolShapeFactory : IToolShapeFactory
+internal sealed class DimensionToolShapeBuilder : IToolShapeBuilder
 {
-    public DrawingTool Tool => DrawingTool.Arrow;
+    public DrawingTool Tool => DrawingTool.Dimension;
 
     public Shape? Build(Vector start, Vector end, double minShapeSize)
     {
@@ -15,11 +15,12 @@ internal sealed class ArrowToolShapeFactory : IToolShapeFactory
         if (length <= minShapeSize)
             return null;
 
-        return new ArrowShape
+        return new DimensionShape
         {
             Pose = ShapeMath.CreatePose(start.X, start.Y, delta.Normalize()),
             Length = length,
-            HeadLength = Math.Max(12, length * 0.15)
+            Offset = Math.Max(24, length * 0.2),
+            Text = length.ToString("0.##")
         };
     }
 }

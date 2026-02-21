@@ -1,12 +1,12 @@
 using Flowxel.Core.Geometry.Primitives;
-using Line = Flowxel.Core.Geometry.Shapes.Line;
+using Flowxel.UI.Controls.Drawing.Shapes;
 using Shape = Flowxel.Core.Geometry.Shapes.Shape;
 
 namespace Flowxel.UI.Controls.Drawing;
 
-internal sealed class LineToolShapeFactory : IToolShapeFactory
+internal sealed class CenterlineRectangleToolShapeBuilder : IToolShapeBuilder
 {
-    public DrawingTool Tool => DrawingTool.Line;
+    public DrawingTool Tool => DrawingTool.CenterlineRectangle;
 
     public Shape? Build(Vector start, Vector end, double minShapeSize)
     {
@@ -15,10 +15,11 @@ internal sealed class LineToolShapeFactory : IToolShapeFactory
         if (length <= minShapeSize)
             return null;
 
-        return new Line
+        return new CenterlineRectangleShape
         {
             Pose = ShapeMath.CreatePose(start.X, start.Y, delta.Normalize()),
-            Length = length
+            Length = length,
+            Width = Math.Max(24, length * 0.2)
         };
     }
 }

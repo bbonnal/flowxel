@@ -1,12 +1,12 @@
 using Flowxel.Core.Geometry.Primitives;
-using Flowxel.Core.Geometry.Shapes;
+using Flowxel.UI.Controls.Drawing.Shapes;
 using Shape = Flowxel.Core.Geometry.Shapes.Shape;
 
 namespace Flowxel.UI.Controls.Drawing;
 
-internal sealed class CircleToolShapeFactory : IToolShapeFactory
+internal sealed class ArcToolShapeBuilder : IToolShapeBuilder
 {
-    public DrawingTool Tool => DrawingTool.Circle;
+    public DrawingTool Tool => DrawingTool.Arc;
 
     public Shape? Build(Vector start, Vector end, double minShapeSize)
     {
@@ -15,10 +15,16 @@ internal sealed class CircleToolShapeFactory : IToolShapeFactory
         if (radius <= minShapeSize)
             return null;
 
-        return new Circle
+        var sweep = new Vector(1, 0).AngleTo(delta.Normalize());
+        if (Math.Abs(sweep) <= 0.05)
+            sweep = Math.PI / 2;
+
+        return new ArcShape
         {
             Pose = ShapeMath.CreatePose(start.X, start.Y),
-            Radius = radius
+            Radius = radius,
+            StartAngleRad = 0,
+            SweepAngleRad = sweep
         };
     }
 }

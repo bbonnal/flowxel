@@ -2,7 +2,6 @@ using System;
 using Avalonia;
 using Avalonia.Input;
 using Avalonia.Threading;
-using Flowxel.Core.Geometry.Primitives;
 using Shape = Flowxel.Core.Geometry.Shapes.Shape;
 using Vector = Flowxel.Core.Geometry.Primitives.Vector;
 

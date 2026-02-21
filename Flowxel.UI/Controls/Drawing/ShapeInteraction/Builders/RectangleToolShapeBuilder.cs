@@ -4,7 +4,7 @@ using Shape = Flowxel.Core.Geometry.Shapes.Shape;
 
 namespace Flowxel.UI.Controls.Drawing;
 
-internal sealed class RectangleToolShapeFactory : IToolShapeFactory
+internal sealed class RectangleToolShapeBuilder : IToolShapeBuilder
 {
     public DrawingTool Tool => DrawingTool.Rectangle;
 

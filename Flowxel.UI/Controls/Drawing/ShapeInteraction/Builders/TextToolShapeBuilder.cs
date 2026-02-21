@@ -4,18 +4,18 @@ using Shape = Flowxel.Core.Geometry.Shapes.Shape;
 
 namespace Flowxel.UI.Controls.Drawing;
 
-internal sealed class IconToolShapeFactory : IToolShapeFactory
+internal sealed class TextToolShapeBuilder : IToolShapeBuilder
 {
-    public DrawingTool Tool => DrawingTool.Icon;
+    public DrawingTool Tool => DrawingTool.Text;
 
     public Shape? Build(Vector start, Vector end, double minShapeSize)
     {
         var delta = end - start;
-        return new IconShape
+        return new TextShape
         {
             Pose = ShapeMath.CreatePose(start.X, start.Y),
-            Size = Math.Max(16, delta.M),
-            IconKey = "★"
+            FontSize = Math.Max(12, delta.M * 0.1),
+            Text = "Text"
         };
     }
 }

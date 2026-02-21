@@ -4,21 +4,20 @@ using Shape = Flowxel.Core.Geometry.Shapes.Shape;
 
 namespace Flowxel.UI.Controls.Drawing;
 
-internal sealed class MultilineTextToolShapeFactory : IToolShapeFactory
+internal sealed class ImageToolShapeBuilder : IToolShapeBuilder
 {
-    public DrawingTool Tool => DrawingTool.MultilineText;
+    public DrawingTool Tool => DrawingTool.Image;
 
     public Shape? Build(Vector start, Vector end, double minShapeSize)
     {
-        if (!ShapeMath.TryBuildAxisAlignedBox(start, end, minShapeSize, out var center, out var width, out _))
+        if (!ShapeMath.TryBuildAxisAlignedBox(start, end, minShapeSize, out var center, out var width, out var height))
             return null;
 
-        return new MultilineTextShape
+        return new ImageShape
         {
             Pose = ShapeMath.CreatePose(center.X, center.Y),
             Width = width,
-            FontSize = 16,
-            Text = "Line 1\\nLine 2"
+            Height = height
         };
     }
 }
